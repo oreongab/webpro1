@@ -1,0 +1,207 @@
+/* --- สีหลัก --- */
+:root{
+  --g1:#0070A0; --g2:#099393; --g3:#00293A;
+  --btn:#2EC4B6; --ink:#0B0F10; --white:#FFF;
+  --pill-bg:#E9EEF0; --pill-ph:#96A3AB;
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+
+/* --- กำหนดขนาดพื้นฐาน --- */
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{ margin:0; font-family:'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; }
+
+/* --- รูปพื้นหลัง --- */
+.hero{
+  height: 50svh; /* กำหนดความสูงของรูป */
+  padding-top: var(--safe-top);
+  background: url("1.jpg") center/cover no-repeat;  /* เปลี่ยนรูปเป็นที่ต้องการ */
+  background-position: center;
+  background-size: cover;
+}
+
+/* --- ฟอร์มบล็อก --- */
+.sheet{
+  min-height: 60svh;
+  background: linear-gradient(180deg, var(--g1) 0%, var(--g2) 2%, var(--g3) 100%);
+  margin-top: -30px;
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  color: var(--white);
+  padding: 18px 20px calc(30px + var(--safe-bottom));
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- ชื่อหัวข้อ --- */
+.title{ 
+  margin: 6px 0 16px;
+  font-size: 26px;
+  text-align: center;
+  font-weight: 800;
+}
+
+/* --- ฟอร์ม --- */
+.form{ display: flex; flex-direction: column; }
+.field-wrap { position: relative; }
+.field{
+  width: 100%; 
+  height: 46px; 
+  border: none; 
+  outline: none; 
+  border-radius: 999px;
+  padding: 0 16px; 
+  background: var(--pill-bg); 
+  color: var(--ink); 
+  font-size: 16px; 
+  margin-bottom: 14px; 
+  box-shadow: 0 0 0 1px rgba(0,0,0,.05) inset;
+}
+
+.field::placeholder{ color: var(--pill-ph); }
+
+/* --- ปุ่มตา --- */
+.eye{
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  width: 30px; height: 30px; border: none; border-radius: 50%;
+  background: transparent; display: grid; place-items: center; cursor: pointer;
+}
+.eye .slash { display: block; }
+.eye[aria-pressed="true"] .slash { display: none; }
+
+/* --- ปุ่มและแถวคั่น --- */
+.row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 2px 4px 8px; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #EAFFFF; opacity: .9; }
+.link { color: #E7FFFF; font-size: 13px; text-decoration: none; }
+.link:hover { text-decoration: underline; }
+.btn{
+  width: 66%; 
+  align-self: center; 
+  height: 46px; 
+  border: none; 
+  border-radius: 999px;
+  background: var(--btn); 
+  color: #073B4C; 
+  font-weight: 700; 
+  font-size: 16px; 
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .25), inset 0 2px 0 rgba(255, 255, 255, .35);
+  margin: 16px 0 6px;
+}
+.muted{ text-align: center; font-size: 14px; margin: 8px 0 10px; opacity: .95; }
+.divider { display: flex; align-items: center; gap: 10px; margin: 8px 0 12px; }
+.line { flex: 1; height: 1px; background: rgba(255, 255, 255, .38); }
+.divider span { font-size: 12px; opacity: .95; }
+
+/* --- ปุ่ม Google --- */
+.btn-google{
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 90%; align-self: center; height: 48px; border: none; border-radius: 999px;
+  background: #F1F3F4; color: #1F2937; font-weight: 600; cursor: pointer;
+}
+.btn-google svg { width: 18px; height: 18px; }
+
+/* --- ปรับเส้นคั่นตรงกลาง --- */
+.divider { display: flex; align-items: center; gap: 10px; margin: 16px 0 16px; }
+/* --- Media Query สำหรับ Desktop (หน้าจอใหญ่) --- */
+@media (min-width: 768px) {
+    /* 1. Body Layout */
+    body.page-signup {
+        /* เปลี่ยนเป็นแถวแนวนอน */
+        display: flex;
+        flex-direction: row; 
+        align-items: center; 
+        justify-content: center;
+        /* ใช้สีพื้นหลังเดียวกับสีสุดท้ายของ Gradient เพื่อให้ดูเต็มเฟรม */
+        background: var(--g3); 
+        min-height: 100vh;
+    }
+
+    /* 2. Hero Image (ซ้าย) */
+    .hero {
+        /* ใช้พื้นที่ 50% ของความกว้าง */
+        width: 50%; 
+        height: 100vh; 
+        padding-top: 0;
+    }
+
+    /* 3. Form Sheet (ขวา) */
+    .sheet {
+        /* ใช้พื้นที่ 50% ของความกว้าง */
+        width: 50%; 
+        min-height: 100vh; 
+        margin-top: 0; /* ลบ margin ติดลบ */
+        border-radius: 0; /* ลบมุมโค้ง */
+        
+        /* Gradient เป็นแนวดิ่ง (บนลงล่าง) */
+        background: linear-gradient(180deg, var(--g1) 0%, var(--g2) 2%, var(--g3) 100%);
+        
+        /* จัดเนื้อหาฟอร์มให้อยู่ตรงกลางตามแนวตั้ง */
+        justify-content: center;
+        /* ปรับ padding ให้คงที่สำหรับ Desktop */
+        padding: 40px 40px; 
+    }
+
+    /* 4. Form Container (จำกัดความกว้างภายใน Sheet) */
+    .form {
+        max-width: 380px; /* จำกัดความกว้างของฟอร์ม */
+        align-self: center; /* จัดฟอร์มให้อยู่ตรงกลาง */
+        width: 100%;
+    }
+
+    /* 5. Buttons (ปรับให้เต็มความกว้างของ Form Container) */
+    .btn, .btn-google {
+        width: 100%; 
+    }
+    
+    /* 6. Fix Password/Confirm Field Margin */
+    .field {
+        margin-bottom: 18px; /* เพิ่มระยะห่างด้านล่างสำหรับ Desktop */
+    }
+}
+/* --- ปุ่ม Sign Up (.btn) --- */
+.btn{
+  width: 66%; 
+  /* ... (โค้ดเดิม) ... */
+  margin: 16px 0 6px;
+  /* *** เพิ่ม Transition *** */
+  transition: all 0.2s ease-out; 
+}
+
+/* *** รีแอคชั่นปุ่ม Sign Up (Mobile & Desktop) *** */
+.btn:hover {
+  filter: brightness(1.05); 
+  box-shadow: 0 8px 18px rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.5);
+}
+.btn:active {
+  background: #1cb5a9; /* สีเข้มขึ้นเล็กน้อย */
+  box-shadow: 0 2px 4px rgba(0,0,0,.35), inset 0 1px 1px rgba(0,0,0,.15); 
+  transform: translateY(1px); /* กดลง */
+}
+
+/* --- ปุ่ม Google (.btn-google) --- */
+.btn-google{
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 90%; 
+  align-self: center; 
+  height: 48px; 
+  border: none; 
+  border-radius: 999px;
+  background: #F1F3F4; 
+  color: #1F2937; 
+  font-weight: 600; 
+  cursor: pointer;
+  /* *** เพิ่ม Transition *** */
+  transition: background-color 0.15s ease-out;
+}
+
+/* *** รีแอคชั่นปุ่ม Google (Mobile & Desktop) *** */
+.btn-google:hover {
+  background: #E5E7EB; /* เข้มขึ้นเล็กน้อยเมื่อชี้ */
+}
+.btn-google:active {
+  background: #D1D5DB; /* เข้มขึ้นอีกเมื่อกด */
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.15);
+  transform: translateY(1px); /* กดลงเล็กน้อย */
+}
