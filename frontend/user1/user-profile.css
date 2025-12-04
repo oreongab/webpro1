@@ -1,0 +1,514 @@
+:root {
+  --primary: #2EC4B6;
+  --ink: #0B0F10;
+  --white: #FFF;
+  --gray-bg: #F5F5F5;
+  --gray-text: #666;
+  --border-color: #EEE;
+  --log-out-red: #D9534F;
+  --delete-red: #CC0000;
+  --active-bg: #EAF8F7;
+}
+
+/* --- Base Styles (Mobile First) --- */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  background: var(--gray-bg);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* --- Utility Classes --- */
+.desktop-only { display: none; }
+.mobile-only  { display: flex; }
+
+/* ===================================================== */
+/* Header (Mobile)                                       */
+/* ===================================================== */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: var(--gray-bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  color: var(--ink);
+  border-radius: 6px;
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease,
+    opacity 0.1s ease;
+}
+
+.header button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.header button:active,
+.header button.active-touch {
+  background-color: rgba(0, 0, 0, 0.12);
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+/* ===================================================== */
+/* Desktop Back Button                                   */
+/* ===================================================== */
+
+.desktop-back-button {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 20;
+  display: none; /* เปิดเฉพาะบน desktop ใน media query ด้านล่าง */
+}
+
+.desktop-back-button .back-icon {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease,
+    opacity 0.1s ease;
+}
+
+.desktop-back-button .back-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: #444;
+}
+
+.desktop-back-button .back-icon:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.desktop-back-button .back-icon:active,
+.desktop-back-button .back-icon.active-touch {
+  background-color: rgba(0, 0, 0, 0.12);
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+/* --- Main Content --- */
+.container { padding: 0 16px; }
+.content   { display: flex; flex-direction: column; }
+
+/* ===================================================== */
+/* 1. Profile Card                                       */
+/* ===================================================== */
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 0;
+  background: var(--gray-bg);
+}
+
+/* Avatar ดีไซน์เหมือนหน้า Change Proto */
+.profile-card .avatar {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: #F7F7F7;           /* วงในเทาอ่อน */
+  border: 3px solid #CFCFCF;     /* วงนอกเทาอ่อน */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+/* svg placeholder */
+.profile-card .avatar .avatar-placeholder {
+  width: 80%;
+  height: 80%;
+}
+
+/* รูปจริงของ user */
+.profile-card .avatar .avatar-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+/* ถ้า .has-image → แสดงรูปจริงแทน svg */
+.profile-card .avatar.has-image .avatar-placeholder {
+  display: none;
+}
+.profile-card .avatar.has-image .avatar-image {
+  display: block;
+}
+
+.profile-card .info { margin-bottom: 0; }
+
+.profile-card .username {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+}
+.profile-card .email {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: var(--gray-text);
+}
+
+/* Edit Button */
+.edit-btn {
+  background: var(--white);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease,
+    opacity 0.1s ease;
+  margin-top: 10px;
+}
+.edit-btn:hover {
+  background: #F0F0F0;
+}
+.edit-btn:active,
+.edit-btn.active-touch {
+  background: var(--active-bg);
+  transform: scale(0.98);
+  opacity: 0.96;
+}
+
+/* ===================================================== */
+/* 2. Favorites Section                                  */
+/* ===================================================== */
+
+.favorites-section { padding: 20px 0; }
+
+.fav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.fav-header h3 {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+.fav-header svg {
+  margin-right: 5px;
+  stroke: var(--primary);
+}
+
+/* View all link */
+.view-all {
+  font-size: 14px;
+  color: var(--primary);
+  text-decoration: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 999px;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease,
+    opacity 0.1s ease;
+}
+.view-all:hover {
+  background-color: rgba(46, 196, 182, 0.08);
+}
+.view-all:active,
+.view-all.active-touch {
+  background-color: rgba(46, 196, 182, 0.16);
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+.fav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.fav-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  text-decoration: none;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border-color);
+  transition:
+    background-color 0.1s ease,
+    transform 0.08s ease,
+    opacity 0.08s ease;
+}
+.fav-item:last-child { border-bottom: none; }
+.fav-item:hover       { background: #F8F8F8; }
+.fav-item:active,
+.fav-item.active-touch {
+  background: #F0F0F0;
+  transform: scale(0.99);
+  opacity: 0.96;
+}
+
+.fav-image-placeholder {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  background: var(--white);
+  display: grid;
+  place-items: center;
+  margin-right: 15px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+.fav-image-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* กัน broken image ถ้า src="" */
+.fav-image-placeholder img[src=""] {
+  content: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+}
+
+.fav-details {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.fav-name { font-weight: 600; }
+.fav-icon { display: none; }
+
+/* ===================================================== */
+/* 3. Settings List (Mobile Bottom)                      */
+/* ===================================================== */
+
+.settings-list.mobile-only {
+  padding: 0 16px 30px;
+  gap: 0;
+  flex-direction: column;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  font-size: 16px;
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    transform 0.08s ease,
+    opacity 0.08s ease;
+  width: 100%;
+  border-top: 1px solid var(--border-color);
+}
+.setting-item:first-child { border-top: none; }
+
+.setting-item svg {
+  color: var(--gray-text);
+  stroke: var(--gray-text);
+}
+.setting-item:hover {
+  background: #F8F8F8;
+}
+.setting-item:active,
+.setting-item.active-touch {
+  background: #F0F0F0;
+  transform: scale(0.99);
+  opacity: 0.96;
+}
+
+.log-out-btn-link,
+.delete-account-btn-link {
+  font-weight: 600;
+}
+.log-out-btn-link {
+  color: var(--log-out-red);
+}
+.log-out-btn-link svg {
+  stroke: var(--log-out-red);
+}
+.log-out-btn-link:active,
+.log-out-btn-link.active-touch {
+  background-color: #FEE;
+}
+.delete-account-btn-link {
+  color: var(--delete-red);
+}
+.delete-account-btn-link svg {
+  stroke: var(--delete-red);
+}
+.delete-account-btn-link:active,
+.delete-account-btn-link.active-touch {
+  background-color: #FDD;
+}
+
+/* ===================================================== */
+/* 4. Desktop Layout (min-width: 768px)                  */
+/* ===================================================== */
+
+@media (min-width: 768px) {
+  /* ซ่อน header บน desktop (เราใช้ desktop-back-button แทน) */
+  .header,
+  .mobile-only .chevron {
+    display: none !important;
+  }
+
+  /* แสดงปุ่ม back สำหรับ desktop */
+  .desktop-back-button {
+    display: block;
+  }
+
+  .desktop-only { display: flex; }
+  .mobile-only  { display: none !important; }
+
+  .container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 40px;
+  }
+  .content {
+    flex-direction: row;
+    gap: 40px;
+  }
+
+  .profile-card {
+    flex: 0 0 280px;
+    align-items: flex-start;
+    text-align: left;
+    padding: 20px;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.05);
+  }
+  .profile-card .avatar {
+    margin: 0 auto 15px 0;
+  }
+  .profile-card .info {
+    margin-bottom: 20px;
+  }
+
+  .edit-btn.desktop-only {
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+
+  .settings-list.desktop-only {
+    padding: 0;
+    margin-top: 0;
+    width: 100%;
+    flex-direction: column;
+    gap: 0;
+  }
+  .setting-item {
+    padding: 12px 0;
+    border-top: none;
+    width: 100%;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .setting-item:last-of-type {
+    border-bottom: none;
+  }
+  .setting-item:first-of-type {
+    border-top: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .log-out-btn-link,
+  .delete-account-btn-link {
+    color: var(--ink);
+  }
+  .log-out-btn-link svg,
+  .delete-account-btn-link svg {
+    stroke: var(--gray-text);
+  }
+  .log-out-btn-link {
+    color: var(--log-out-red);
+  }
+  .log-out-btn-link svg {
+    stroke: var(--log-out-red);
+  }
+  .delete-account-btn-link {
+    color: var(--delete-red);
+  }
+  .delete-account-btn-link svg {
+    stroke: var(--delete-red);
+  }
+
+  .favorites-section {
+    flex-grow: 1;
+    padding: 0;
+  }
+  .fav-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding-top: 15px;
+  }
+  .fav-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: var(--white);
+    box-shadow: 0 2px 5px rgba(0,0,0,.03);
+    overflow: hidden;
+  }
+  .fav-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,.1);
+  }
+  .fav-item:active,
+  .fav-item.active-touch {
+    background: #F0F0F0;
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0,0,0,.05);
+  }
+
+  .fav-image-placeholder {
+    width: 100%;
+    height: 120px;
+    margin: 0;
+    border: none;
+    border-radius: 8px 8px 0 0;
+    background: var(--gray-bg);
+  }
+  .fav-details {
+    padding: 10px 15px 15px;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+  }
+  .fav-name { font-weight: 700; }
+  .fav-icon { display: none; }
+}

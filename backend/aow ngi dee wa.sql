@@ -1,12 +1,14 @@
 create schema aowngaideewa;
 use aowngaideewa;
 create table user(
-user_id int not null primary key,
+user_id int not null AUTO_INCREMENT primary key,
 user_name  varchar(35) not null,
 first_name varchar(35) not null,
 last_name varchar(35) not null,
 user_email varchar(255) not null,
 user_password varchar(255) not null);
+
+ALTER TABLE user AUTO_INCREMENT = 1;
 
 create table place(
 place_id int not null primary key,

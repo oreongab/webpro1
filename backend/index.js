@@ -13,16 +13,20 @@ app.use(express.json()); // อ่านข้อมูล JSON ที่ส่�
 
 // 1. API สมัครสมาชิก (Register)
 app.post('/register', async (req, res) => {
-    const { user_name, user_email, user_password } = req.body;
+    const { user_name, first_name, last_name, user_email, user_password } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(user_password, SALT_ROUNDS);
-        const sql = 'INSERT INTO users (user_name, user_email, user_password) VALUES (?, ?, ?)';
-        const [result] = await db.execute(sql, [user_name, user_email, hashedPassword]);
+        const sql = 'INSERT INTO user (user_name, first_name, last_name, user_email, user_password) VALUES (?, ?, ?, ?, ?)';
+        const [result] = await db.execute(sql, [user_name, first_name, last_name, user_email, hashedPassword]);
         
-        res.status(201).json({ message: 'User created', userId: result.insertId });
+        res.status(201).json({ message: 'User created successfully', userId: result.insertId });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error creating user', error: error.message });
+        if (error.code === 'ER_DUP_ENTRY') {
+            res.status(400).json({ message: 'Email already exists' });
+        } else {
+            res.status(500).json({ message: 'Error creating user', error: error.message });
+        }
     }
 });
 
@@ -30,7 +34,7 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
     const { user_email, user_password } = req.body;
     try {
-        const sql = 'SELECT * FROM users WHERE user_email = ?';
+        const sql = 'SELECT * FROM user WHERE user_email = ?';
         const [rows] = await db.execute(sql, [user_email]);
 
         if (rows.length === 0) {
@@ -43,6 +47,7 @@ app.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(user_password, user.user_password);
         if (isMatch) {
             res.json({ message: 'Authentication successful', user_name: user.user_name });
+            console.log(`User ${user.user_name} logged in successfully`);
         } else {
             res.status(401).json({ message: 'Incorrect password' });
         }
@@ -55,7 +60,7 @@ app.post('/login', async (req, res) => {
 // 3. API ดึงข้อมูลทั้งหมด (Get All Users)
 app.get('/users', async (req, res) => {
     try {
-        const [rows] = await db.execute('SELECT user_id, user_name, user_email FROM users');
+        const [rows] = await db.execute('SELECT user_id, user_name, user_email FROM user');
         res.json(rows);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -67,7 +72,7 @@ app.delete('/users/:id', async (req, res) => {
     const id = req.params.id; 
     
     try {
-        const sql = 'DELETE FROM users WHERE user_id = ?';
+        const sql = 'DELETE FROM user WHERE user_id = ?';
         const [result] = await db.execute(sql, [id]);
 
         if (result.affectedRows > 0) {
@@ -85,7 +90,7 @@ app.post('/edituser', async (req, res) => {
     const { user_id, user_name, user_email, user_password } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(user_password, SALT_ROUNDS);
-        const sql = 'UPDATE users SET user_name = ?, user_email = ?, user_password = ? WHERE user_id = ?';
+        const sql = 'UPDATE user SET user_name = ?, user_email = ?, user_password = ? WHERE user_id = ?';
         const [result] = await db.execute(sql, [user_name, user_email, hashedPassword, user_id]);
 
         if (result.affectedRows > 0) {
@@ -104,3 +109,4 @@ app.post('/edituser', async (req, res) => {
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
+
