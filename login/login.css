@@ -1,0 +1,203 @@
+:root{
+  /* ไล่เฉด 3 สี */
+  --g1:#0070A0; --g2:#099393; --g3:#00293A;
+
+  --btn:#2EC4B6; --ink:#0B0F10; --white:#FFF;
+  --pill-bg:#E9EEF0; --pill-ph:#96A3AB;
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  background:#0F172A; color:var(--ink);
+  min-height:100dvh; display:flex; flex-direction:column;
+}
+
+/* รูปด้านบน */
+.hero{
+  height:46svh; padding-top:var(--safe-top);
+  background:url("./view.png") center/cover no-repeat;
+}
+
+/* แผ่นฟอร์ม: ไล่เฉด 3 สี */
+.sheet{
+  min-height:54svh;
+  background:linear-gradient(180deg, var(--g1) 0%, var(--g2) 2%, var(--g3) 100%);
+  margin-top:-22px; border-top-left-radius:28px; border-top-right-radius:28px;
+  color:var(--white); padding:18px 20px calc(24px + var(--safe-bottom));
+  display:flex; flex-direction:column;
+}
+
+/* หัวเรื่อง */
+.title{ margin:6px 0 14px; text-align:center; font-weight:800; font-size:22px; text-shadow:0 1px 2px rgba(0,0,0,.35) }
+
+/* ฟอร์ม */
+.form{display:flex; flex-direction:column}
+.field-wrap{ position:relative; }
+.field{
+  width:100%; height:46px; border:none; outline:none; border-radius:999px;
+  padding:0 16px; background:var(--pill-bg); color:var(--ink); font-size:16px;
+  margin-bottom:12px; box-shadow:0 0 0 1px rgba(0,0,0,.05) inset;
+}
+.field::placeholder{ color:var(--pill-ph); }
+
+/* ปุ่มตา (SVG เดียว) */
+.eye{
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  width:30px; height:30px; border:none; border-radius:50%;
+  background:transparent; display:grid; place-items:center; cursor:pointer;
+}
+/* ค่าเริ่ม aria-pressed="false" = ซ่อนรหัส → โชว์เส้นขีด */
+.eye .slash{ display:block; }
+/* เมื่อ aria-pressed="true" = โชว์รหัส → ซ่อนเส้นขีด */
+.eye[aria-pressed="true"] .slash{ display:none; }
+
+/* แถวล่าง/ปุ่ม/เส้นคั่น (เหมือนเดิม) */
+.row{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:2px 4px 8px }
+.check{ display:flex; align-items:center; gap:8px; font-size:13px; color:#EAFFFF; opacity:.9 }
+.link{ color:#E7FFFF; font-size:13px; text-decoration:none }
+.link:hover{ text-decoration:underline }
+.btn{
+  width:66%; align-self:center; height:46px; border:none; border-radius:999px;
+  background:var(--btn); color:#073B4C; font-weight:700; font-size:16px; cursor:pointer;
+  box-shadow:0 6px 16px rgba(0,0,0,.25), inset 0 2px 0 rgba(255,255,255,.35);
+  margin:14px 0 6px;
+}
+.muted{text-align:center; font-size:14px; margin:8px 0 10px; opacity:.95}
+.divider{display:flex; align-items:center; gap:10px; margin:8px 0 12px}
+.line{flex:1; height:1px; background:rgba(255,255,255,.38)}
+.divider span{font-size:12px; opacity:.95}
+.btn-google{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  width:90%; align-self:center; height:48px; border:none; border-radius:999px;
+  background:#F1F3F4; color:#1F2937; font-weight:600; cursor:pointer;
+}
+.btn-google svg{width:18px; height:18px}
+
+/* SR only */
+.sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0 }
+.sheet{ padding:22px 22px calc(30px + var(--safe-bottom)); }
+.title{ margin:12px 0 18px; }
+
+.form{ display:flex; flex-direction:column; gap:14px; }
+.field{ margin-bottom:0; padding-right:50px; }
+
+.row{ margin:10px 4px 16px; align-items:center; justify-content:space-between; gap:10px; }
+.btn{ margin:16px 0 12px; }
+.muted{ margin:12px 0 10px; }
+.divider{ margin:14px 0 16px; }
+.btn-google{ margin-top:14px; width:90%; align-self:center; }
+
+.eye{ right:12px; } /* กันข้อความไม่ชนไอคอน */
+/* --- Media Query สำหรับ Desktop (หน้าจอใหญ่) --- */
+@media (min-width: 768px) {
+    body.page-login {
+        /* เปลี่ยน layout เป็นแถวแนวนอน (Desktop) */
+        flex-direction: row; 
+        align-items: center; 
+        justify-content: center;
+        /* *** แก้ไข 1: เปลี่ยนสีพื้นหลัง body ให้เป็นสีเดียวกับสีสุดท้ายของ Gradient (--g3) *** */
+        /* เพื่อให้เมื่อ Hero (50%) จบลง สีพื้นหลังที่เหลือ (sheet 50% และ body) กลืนกัน */
+        background: var(--g3); 
+        min-height: 100vh;
+    }
+
+    /* รูปด้านบน (Hero) ยังคงเดิม: 50% ของหน้าจอ */
+    .hero {
+        width: 50%; 
+        height: 100vh; 
+        padding-top: 0;
+    }
+
+    /* แผ่นฟอร์ม (Sheet) */
+    .sheet {
+        width: 50%; 
+        min-height: 100vh; 
+        margin-top: 0; 
+        border-radius: 0; 
+        /* *** แก้ไข 2: เปลี่ยน Gradient เป็นแนวดิ่ง (180deg) เหมือนเดิม *** */
+        background: linear-gradient(180deg, var(--g1) 0%, var(--g2) 2%, var(--g3) 100%);
+        
+        justify-content: center;
+        /* ต้องลบ padding-bottom ที่มี calc(var(--safe-bottom)) ออกด้วยใน Desktop */
+        padding: 22px 22px 30px; 
+    }
+    
+    /* ... ส่วนอื่น ๆ ยังคงเดิม ... */
+    .form {
+        max-width: 360px;
+        align-self: center;
+        width: 100%;
+    }
+
+    .btn, .btn-google {
+        width: 100%;
+    }
+}
+/* เพิ่ม transition เพื่อให้การเปลี่ยนแปลงดูนุ่มนวลขึ้น */
+.btn{
+  width:66%; align-self:center; height:46px; border:none; border-radius:999px;
+  background:var(--btn); color:#073B4C; font-weight:700; font-size:16px; cursor:pointer;
+  box-shadow:0 6px 16px rgba(0,0,0,.25), inset 0 2px 0 rgba(255,255,255,.35);
+  margin:14px 0 6px;
+  /* ************************************************* */
+  /* *** เพิ่มบรรทัดนี้: Transition for Smoothness *** */
+  transition: all 0.2s ease-out; 
+  /* ************************************************* */
+}
+
+/* *** ใส่โค้ดนี้ต่อจาก .btn เดิม *** */
+.btn:hover {
+  filter: brightness(1.05); /* สว่างขึ้นเล็กน้อยเมื่อชี้ (Desktop only) */
+  box-shadow: 0 8px 18px rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.5);
+}
+.btn:active {
+  background: #1cb5a9; /* ปรับสีให้เข้มขึ้นเมื่อกดค้าง */
+  box-shadow: 0 2px 4px rgba(0,0,0,.35), inset 0 1px 1px rgba(0,0,0,.15); /* ทำให้เงาเล็กลงเหมือนถูกกด */
+  transform: translateY(1px); /* ขยับปุ่มลงเล็กน้อย */
+}
+/* *** ปุ่ม Sign In with Google (โครงสร้างเหมือน Login, แต่ใช้สีเดิม) *** */
+.btn-google{
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  gap:10px;
+  
+  /* 1. ปรับความกว้างให้เหมือนปุ่ม Login ในโหมด Mobile */
+  width:66%; 
+  
+  align-self:center; 
+  height:48px; 
+  border:none; 
+  border-radius:999px;
+  
+  /* 2. ใช้พื้นหลังและสีตัวอักษรเดิม */
+  background:#F1F3F4; /* สีเทาอ่อนเดิม */
+  color:#1F2937; /* สีตัวอักษรเดิม */
+  
+  font-weight:700; /* ทำให้ตัวหนาเท่าปุ่ม Login */
+  cursor:pointer;
+  
+  /* 3. ใช้เงาของปุ่ม Login (ยกนูน) */
+  box-shadow:0 6px 16px rgba(0,0,0,.25), inset 0 2px 0 rgba(255,255,255,.35);
+
+  margin-top:14px; 
+  transition: all 0.2s ease-out; 
+}
+
+/* *** ปรับ Hover/Active ให้ใช้รีแอคชั่นของปุ่ม Login (กดลงไป) *** */
+
+.btn-google:hover {
+  /* ทำให้เงาสว่างขึ้นเล็กน้อยเมื่อชี้ */
+  filter: brightness(1.02); /* สว่างขึ้นเล็กน้อย */
+  box-shadow: 0 8px 18px rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.5);
+}
+.btn-google:active {
+  /* ทำให้ดูเหมือนถูกกดลงไป */
+  background: #E9EEF0; /* สีพื้นหลังเข้มขึ้นเล็กน้อยเมื่อกด */
+  box-shadow: 0 2px 4px rgba(0,0,0,.35), inset 0 1px 1px rgba(0,0,0,.15); /* เงาเล็กลง */
+  transform: translateY(1px); /* ขยับลงเล็กน้อย */
+}
