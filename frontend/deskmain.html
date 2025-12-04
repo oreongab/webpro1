@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="deskmain.css">
+    <script src="filter.js" defer></script>
+    <script src="nav.js" defer></script>
+    <script src="category.js" defer></script>
+    <title>Aow Ngai Dee Wa</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="choose">
+                <a href="#home">Home</a>
+                <span class="category-wrapper">
+                    <a href="#category" id="categoryLink">Category</a>
+                </span>
+                <a href="#favorites">Favorites</a>
+                <a href="#rank">Rank</a>
+            </div>
+
+            <div class="nav-right">
+                <button class="login">Sign up</button>
+            </div>
+        </nav>
+
+        <div class="topic">
+            <h1>Aow Ngai Dee Wa</h1>
+            <div class="search-container">
+                <div class="seach">
+                    <input type="text" placeholder="Search for places...">
+                    <span class="material-icons">search</span>
+                </div>
+                <div class="filter">
+                    <span class="material-icons">tune</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="categorybar">
+            <span class="material-icons">chevron_left</span>
+            <div id="cateName">
+                <button class="CandR">Cafés & Restaurants</button>
+                <button class="Temple">Temple</button>
+                <button class="Natural">Natural</button>
+                <button class="Mall">Mall</button>
+                <button class="Art">Art</button>
+                <button class="Museums">Museums</button>
+                <button class="History">Historical Attractions</button>
+                <button class="PandG">Parks & Gardens</button>
+                <button class="Markets">Markets</button>
+                <button class="Sports">Sports</button>
+                <button class="Other">Other</button>
+            </div>
+            <span class="material-icons">chevron_right</span>
+        </div>
+
+        <div class="place">
+            <div id="place1">
+                <img src="https://static.thairath.co.th/media/Dtbezn3nNUxytg04aveWoepodnwuliOMyHRAfwOCZ3tpDh.jpg" alt="กิ่วแม่ปาน">
+                <span class="material-icons favorite-icon">favorite_border</span>
+                <div class="place-info">
+                    <div class="time">
+                        <div>Sun - Sat</div>
+                        <div>10.00 am - 17.00 pm</div>
+                    </div>
+                    <div class="rating">
+                        <div class="stars">
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span class="ratingnum">5.0</span>
+                        </div>
+                        <div class="location">กิ่วแม่ปาน</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="place2">
+                <img src="https://www.ananda.co.th/blog/thegenc/wp-content/uploads/2024/03/%E0%B8%94%E0%B8%B5%E0%B9%84%E0%B8%8B%E0%B8%99%E0%B9%8C%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%B1%E0%B8%87%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%95%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD-2024-05-23T123623.816.png" alt="เกาะราชา">
+                <span class="material-icons favorite-icon">favorite_border</span>
+                <div class="place-info">
+                    <div class="time">
+                        <div>Sun - Sat</div>
+                        <div>01.00 am - 23.59 pm</div>
+                    </div>
+                    <div class="rating">
+                        <div class="stars">
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span class="ratingnum">5.0</span>
+                        </div>
+                        <div class="location">เกาะนางยวน</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="place3">
+                <img src="https://www.ananda.co.th/blog/thegenc/wp-content/uploads/2024/03/934-x-550-px-26.png" alt="ภูชี้ฟ้า">
+                <span class="material-icons favorite-icon">favorite_border</span>
+                <div class="place-info">
+                    <div class="time">
+                        <div>Sun - Sat</div>
+                        <div>06.00 am - 18.00 pm</div>
+                    </div>
+                    <div class="rating">
+                        <div class="stars">
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span class="ratingnum">5.0</span>
+                        </div>
+                        <div class="location">วัดอรุณราชวราราม</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="place4">
+                <img src="https://www.ananda.co.th/blog/thegenc/wp-content/uploads/2024/03/934-x-550-px-27.png" alt="น้ำตกทีลอซู">
+                <span class="material-icons favorite-icon">favorite_border</span>
+                <div class="place-info">
+                    <div class="time">
+                        <div>Good vibes / Hangout / Somboon</div>
+                    </div>
+                    <div class="rating">
+                        <div class="stars">
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span class="ratingnum">5.0</span>
+                        </div>
+                        <div class="location">ประชาคาเฟ่</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="place5">
+                <img src="https://www.ananda.co.th/blog/thegenc/wp-content/uploads/2024/03/%E0%B8%94%E0%B8%B5%E0%B9%84%E0%B8%8B%E0%B8%99%E0%B9%8C%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%B1%E0%B8%87%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%95%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD-2024-05-23T130104.313.png" alt="ภูลมโล">
+                <span class="material-icons favorite-icon">favorite_border</span>
+                <div class="place-info">
+                    <div class="time">
+                        <div>Sun - Sat</div>
+                        <div>01.00 am - 23.59 pm</div>
+                    </div>
+                    <div class="rating">
+                        <div class="stars">
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span class="ratingnum">5.0</span>
+                        </div>
+                        <div class="location">ถลางน้ำตก</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="place6">
+                <img src="https://www.ananda.co.th/blog/thegenc/wp-content/uploads/2024/03/%E0%B8%94%E0%B8%B5%E0%B9%84%E0%B8%8B%E0%B8%99%E0%B9%8C%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%B1%E0%B8%87%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%95%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD-2024-05-23T125728.906.png" alt="ปราสาทหินพันยอด">
+                <span class="material-icons favorite-icon">favorite_border</span>
+                <div class="place-info">
+                    <div class="time">
+                        <div>Sun - Sat</div>
+                        <div>10.00 am - 19.00 pm</div>
+                    </div>
+                    <div class="rating">
+                        <div class="stars">
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span class="ratingnum">5.0</span>
+                        </div>
+                        <div class="location">SIAM PARAGON</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="place7">
+                <img src="https://ik.imagekit.io/tvlk/blog/2019/01/%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%AA%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%81%E0%B8%A9-800x534.jpg?tr=q-70,c-at_max,w-500,h-300,dpr-2" alt="ภูเขาทอง">
+                <span class="material-icons favorite-icon">favorite_border</span>
+                <div class="place-info">
+                    <div class="time">
+                        <div>Sun - Sat</div>
+                        <div>01.00 am - 23.59 pm</div>
+                    </div>
+                    <div class="rating">
+                        <div class="stars">
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span class="ratingnum">5.0</span>
+                        </div>
+                        <div class="location">เกาะพี พี</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="place8">
+                <img src="https://ik.imagekit.io/tvlk/blog/2019/01/%E0%B9%80%E0%B8%A2%E0%B8%B2%E0%B8%A7%E0%B8%A3%E0%B8%B2%E0%B8%8A2-1-800x534.jpg?tr=q-70,c-at_max,w-500,h-300,dpr-2" alt="เยาวราช">
+                <span class="material-icons favorite-icon">favorite_border</span>
+                <div class="place-info">
+                    <div class="time">
+                        <div>Sun - Sat</div>
+                        <div>09.00 am - 19.00 pm</div>
+                    </div>
+                    <div class="rating">
+                        <div class="stars">
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span>★</span>
+                            <span class="ratingnum">5.0</span>
+                        </div>
+                        <div class="location">ดอยอินทนนท์</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page">
+            <span class="material-icons">chevron_left</span>
+            <a href="#" class="pagenumber">1</a>
+            <a href="#" class="pagenumber">2</a>
+            <a href="#" class="pagenumber">3</a>
+            <a href="#" class="pagenumber">4</a>
+            <a href="#" class="pagenumber">5</a>
+            <a href="#" class="pagenumber">6</a>
+            <a href="#" class="pagenumber">7</a>
+            <a href="#" class="pagenumber">8</a>
+            <a href="#" class="pagenumber">9</a>
+            <a href="#" class="pagenumber">10</a>
+            <a href="#" class="pagenumber">11</a>
+            <a href="#" class="pagenumber">12</a>
+            <a href="#" class="pagenumber">13</a>
+            <a href="#" class="pagenumber">14</a>
+            <a href="#" class="pagenumber">15</a>
+            <a href="#" class="pagenumber">16</a>
+            <a href="#" class="pagenumber">17</a>
+            <a href="#" class="pagenumber">18</a>
+            <a href="#" class="pagenumber">19</a>
+            <a href="#" class="pagenumber">20</a>
+            <span class="material-icons">chevron_right</span>
+        </div>
+    </main>
+
+    <footer>
+        <h3>Aow Ngai Dee Wa</h3>
+        <p>Website for finding places to visit</p>
+
+        <div class="footer-col">
+            <p>About</p>
+            <p>Terms & Policies</p>
+            <p>Privacy</p>
+        </div>
+
+        <div class="contact">
+            <p>Make by / Contact us</p>
+            <span><i class="fa-brands fa-instagram"></i> Yada Intra</span>
+            <span><i class="fa-brands fa-instagram"></i> Pattamapon Thongplew</span>
+        </div>
+
+        <div class="version">
+            <p>2025 Aow Ngai Dee Wa<br>All rights reserved</p>
+            <p>v1.0.0</p>
+        </div>
+    </footer>
+
+</body>
+</html>

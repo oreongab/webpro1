@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="อันดับสถานที่ท่องเที่ยวยอดนิยม - Aow Ngai Dee Wa">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="rank.css">
+    <script src="nav.js"></script>
+    <title>Rank - Aow Ngai Dee Wa</title>
+
+    
+</head>
+<body>
+    <header>
+        <nav aria-label="Main navigation">
+            <ul class="choose">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#category">Category</a></li>
+                <li><a href="#favorites">Favorites</a></li>
+                <li><a href="#rank" class="active" aria-current="page">Rank</a></li>
+            </ul>
+            <div class="nav-right">
+                <button class="login">Sign up</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Search Section -->
+        <section class="search-section" aria-label="Search and filter">
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <label for="searchInput" class="visually-hidden">Search for places</label>
+                    <input 
+                        type="search" 
+                        class="search-input" 
+                        id="searchInput" 
+                        placeholder="Search for places..."
+                        aria-label="Search for places">
+                    <span class="material-icons search-icon" aria-hidden="true">search</span>
+                </div>
+                <div class="filter-btn-wrapper">
+                    <button class="filter-toggle" aria-label="Open filter options">
+                        <span class="material-icons" aria-hidden="true">tune</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category Filter Bar -->
+        <section class="categorybar" aria-label="Category filter">
+            <button 
+                class="scroll-btn" 
+                onclick="scrollCategories('left')" 
+                aria-label="Scroll categories left">
+                <span class="material-icons" aria-hidden="true">chevron_left</span>
+            </button>
+            
+            <nav id="cateName" aria-label="Category navigation">
+                <button class="all active" onclick="filterRankings('all')">All</button>
+                <button class="CandR" onclick="filterRankings('Cafés & Restaurants')">Cafés & Restaurants</button>
+                <button class="Temple" onclick="filterRankings('Temple')">Temple</button>
+                <button class="Natural" onclick="filterRankings('Natural')">Natural</button>
+                <button class="Mall" onclick="filterRankings('Mall')">Mall</button>
+                <button class="Art" onclick="filterRankings('Art')">Art</button>
+                <button class="Museums" onclick="filterRankings('Museums')">Museums</button>
+                <button class="History" onclick="filterRankings('Historical Attractions')">Historical Attractions</button>
+                <button class="PandG" onclick="filterRankings('Parks & Gardens')">Parks & Gardens</button>
+                <button class="Markets" onclick="filterRankings('Markets')">Markets</button>
+                <button class="Sports" onclick="filterRankings('Sports')">Sports</button>
+                <button class="Other" onclick="filterRankings('Other')">Other</button>
+            </nav>
+            
+            <button 
+                class="scroll-btn" 
+                onclick="scrollCategories('right')" 
+                aria-label="Scroll categories right">
+                <span class="material-icons" aria-hidden="true">chevron_right</span>
+            </button>
+        </section>
+
+        <!-- Ranking List -->
+        <section id="rankContainer" class="loading" aria-live="polite" aria-busy="true">
+            <p>กำลังโหลดอันดับ...</p>
+        </section>
+    </main>
+
+    <footer>
+        <h2>Aow Ngai Dee Wa</h2>
+        <p>Website for finding places to visit</p>
+        
+        <nav class="footer-col" aria-label="Footer navigation">
+            <a href="#about">About</a>
+            <a href="#terms">Terms & Policies</a>
+            <a href="#privacy">Privacy</a>
+        </nav>
+
+        <address class="contact">
+            <p>Make by / Contact us</p>
+            <span><i class="fa-brands fa-instagram" aria-hidden="true"></i> Yada Intra</span>
+            <span><i class="fa-brands fa-instagram" aria-hidden="true"></i> Pattamapon Thongplew</span>
+        </address>
+
+        <div class="version">
+            <p>© 2025 Aow Ngai Dee Wa<br>All rights reserved</p>
+            <p>v1.0.0</p>
+        </div>
+    </footer>
+
+    <script src="navigation.js"></script>
+    <script src="rank.js"></script>
+</body>
+</html>

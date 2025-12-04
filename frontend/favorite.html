@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desk-favorite</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="favorite.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="choose">
+                <a href="#home">Home</a>
+                <a href="#category">Category</a>
+                <a href="#favorites" class="active">Favorites</a>
+                <a href="#rank">Rank</a>
+            </div>
+            <div class="nav-right">
+                <button class="login">Sign up</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="categorybar">
+            <span class="material-icons" onclick="scrollCategories('left')">chevron_left</span>
+            <div id="cateName">
+                <button class="all active" onclick="filterByCategory('all')">All</button>
+                <button class="CandR" onclick="filterByCategory('Cafés & Restaurants')">Cafés & Restaurants</button>
+                <button class="Temple" onclick="filterByCategory('Temple')">Temple</button>
+                <button class="Natural" onclick="filterByCategory('Natural')">Natural</button>
+                <button class="Mall" onclick="filterByCategory('Mall')">Mall</button>
+                <button class="Art" onclick="filterByCategory('Art')">Art</button>
+                <button class="Museums" onclick="filterByCategory('Museums')">Museums</button>
+                <button class="History" onclick="filterByCategory('Historical Attractions')">Historical Attractions</button>
+                <button class="PandG" onclick="filterByCategory('Parks & Gardens')">Parks & Gardens</button>
+                <button class="Markets" onclick="filterByCategory('Markets')">Markets</button>
+                <button class="Sports" onclick="filterByCategory('Sports')">Sports</button>
+                <button class="Other" onclick="filterByCategory('Other')">Other</button>
+            </div>
+            <span class="material-icons" onclick="scrollCategories('right')">chevron_right</span>
+        </div>
+
+        <div id="placeContainer" class="loading">
+            กำลังโหลดรายการโปรดของคุณ...
+        </div>
+
+        <div id="paginationContainer" class="page" style="display: none;"></div>
+    </main>
+
+    <footer>
+        <h3>Aow Naga Desk Wa</h3>
+        <p>Webpage for finding places to visit</p>
+        
+        <div class="footer-col">
+            <p>About</p>
+            <p>Terms & Policies</p>
+            <p>Privacy</p>
+        </div>
+
+        <div class="contact">
+            <p>Make by / Contact us</p>
+            <span>📷 Yada Ritra</span>
+            <span>📷 Pattaranoon Thongplew</span>
+        </div>
+
+        <div class="version">
+            <p>© 2025 Aow Naga Desk Wa<br>All right Reserved</p>
+            <p>v1.0.0</p>
+        </div>
+    </footer>
+
+    <script src="favorite.js"></script>
+</body>
+</html>
