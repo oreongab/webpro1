@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Profile Edit</title>
+    <link rel="stylesheet" href="edit.css" />
+</head>
+<body>
+    <!-- 🔙 ลูกศรย้อนกลับ -->
+    <div class="back-button">
+        <button class="back-icon" aria-label="Go back">
+            <svg viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+    </div>
+
+    <div class="container">
+
+        <!-- 👤 โซนรูปโปรไฟล์ -->
+        <div class="profile-header">
+            <div class="profile-avatar" aria-label="Profile Picture">
+                <!-- 1) SVG default icon (จะโชว์ตอนยังไม่มีรูป user) -->
+                <svg class="avatar-placeholder" viewBox="0 0 48 48" aria-hidden="true">
+                    <circle cx="24" cy="24" r="21"
+                            fill="none"
+                            stroke="#CFCFCF"
+                            stroke-width="2.5" />
+                    <circle cx="24" cy="18" r="6"
+                            fill="#B5B5B5" />
+                    <path d="M13 33c2-4.2 5.5-6.5 11-6.5S33 28.8 35 33"
+                          fill="#B5B5B5" />
+                </svg>
+
+                <!-- 2) รูปจริงของ user (ซ่อนอยู่จนกว่าจะมี src) -->
+                <img
+                    id="profileAvatar"
+                    class="avatar-image"
+                    src=""
+                    alt="User avatar"
+                />
+            </div>
+
+            <!-- ปุ่ม/ข้อความสำหรับเปลี่ยนรูป -->
+            <div class="change-photo" id="changePhotoTrigger">
+                <span>Change Photo</span>
+            </div>
+
+            <!-- input รับไฟล์รูปจากเครื่อง user -->
+            <input
+                type="file"
+                id="avatarInput"
+                accept="image/*"
+                hidden
+            />
+        </div>
+
+        <!-- ฟอร์มเดิม -->
+        <form class="edit-form" novalidate>
+            <input id="firstName" type="text" placeholder="First Name" >
+            <input id="lastName" type="text" placeholder="Last Name">
+            <input id="userName" type="text" placeholder="User Name">
+            <input id="email" type="text" placeholder="Email">
+            
+            <div class="password-container">
+                <input type="password" id="passwordInput" placeholder="Password">
+                <span class="toggle-password" id="togglePassword">
+                    <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </span>
+            </div>
+
+            <div class="save-button">
+                <button type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="edit.js"></script>
+</body>
+</html>

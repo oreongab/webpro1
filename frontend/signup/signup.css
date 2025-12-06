@@ -19,7 +19,7 @@ body{
 /* รูปด้านบน */
 .hero{
   height:55svh; padding-top:var(--safe-top);
-  background:url("./view.png") center/cover no-repeat;
+  background:url("./1.jpg") center/cover no-repeat;
   flex-shrink:0;
 }
 

@@ -1,32 +1,7 @@
 // user-profile.js
 (function () {
-
   /* ---------------------------------------------
-   * 1. Touch feedback (mobile active state)
-   * ------------------------------------------- */
-  function attachTouchListeners() {
-    document
-      .querySelectorAll(
-        '.log-out-btn-link, .delete-account-btn-link, .fav-item, .edit-btn, .setting-item, .header .back-btn, .header .home-btn, .desktop-back-button .back-icon, .view-all'
-      )
-      .forEach((btn) => {
-        btn.addEventListener(
-          'touchstart',
-          function () {
-            this.classList.add('active-touch');
-          },
-          { passive: true }
-        );
-        const clear = function () {
-          this.classList.remove('active-touch');
-        };
-        btn.addEventListener('touchend', clear, { passive: true });
-        btn.addEventListener('touchcancel', clear, { passive: true });
-      });
-  }
-
-  /* ---------------------------------------------
-   * 2. Avatar helper – สลับ icon / รูปจริง
+   * Avatar helper – สลับ icon / รูปจริง
    * ------------------------------------------- */
   function setAvatar(url) {
     const container = document.getElementById('userAvatarContainer');
@@ -43,7 +18,7 @@
   }
 
   /* ---------------------------------------------
-   * 3. Render user info (ชื่อ + email + avatar)
+   * Render user info (ชื่อ + email + avatar)
    * ------------------------------------------- */
   function renderUserFromObject(u) {
     const usernameEl = document.getElementById('username');
@@ -54,9 +29,6 @@
     usernameEl.textContent = display;
     emailEl.textContent = u.email || '';
 
-    usernameEl.dataset.username = u.username || u.displayName || '';
-    emailEl.dataset.email = u.email || '';
-
     if (u.avatarUrl) {
       setAvatar(u.avatarUrl);
     } else {
@@ -65,76 +37,144 @@
   }
 
   /* ---------------------------------------------
-   * 4. โหลด user จาก window.__USER__ หรือ /api/me
+   * โหลด user จาก localStorage และ API
    * ------------------------------------------- */
   async function tryLoadCurrentUser() {
-    // 1) หลังบ้าน inject window.__USER__ ไว้แล้ว
-    if (window.__USER__ && typeof window.__USER__ === 'object') {
-      try {
-        renderUserFromObject(window.__USER__);
-        return;
-      } catch (err) {
-        console.warn('render window.__USER__ failed:', err);
-      }
+    // ดึง user_id จาก localStorage
+    const userId = localStorage.getItem('currentUserId');
+    
+    if (!userId) {
+      console.warn('No user logged in');
+      renderUserFromObject({
+        displayName: 'Guest',
+        username: 'guest',
+        email: 'Not logged in'
+      });
+      return;
     }
 
-    // 2) ถ้ายังไม่มี ลองเรียก API ฝั่ง backend
+    // เรียก API เพื่อดึงข้อมูล user
     try {
-      const resp = await fetch('/api/me', {
-        credentials: 'include',
+      const resp = await fetch(`http://localhost:3000/users/${userId}`, {
+        method: 'GET',
         headers: { Accept: 'application/json' },
       });
-      if (!resp.ok) throw new Error('fetch /api/me failed');
+      if (!resp.ok) throw new Error('Failed to fetch user data');
       const user = await resp.json();
-      renderUserFromObject(user);
+      
+      // ดึงรูป avatar จาก localStorage เท่านั้น
+      const savedAvatar = localStorage.getItem('userAvatar') || '';
+      
+      // แสดงข้อมูล user
+      renderUserFromObject({
+        displayName: user.user_name,
+        username: user.user_name,
+        name: `${user.first_name} ${user.last_name}`,
+        email: user.user_email,
+        avatarUrl: savedAvatar
+      });
     } catch (err) {
-      console.info('No user info, fallback to Guest.', err);
-      const usernameEl = document.getElementById('username');
-      const emailEl = document.getElementById('email');
-      if (usernameEl) usernameEl.textContent = 'Guest';
-      if (emailEl) emailEl.textContent = '';
+      console.error('Error loading user info:', err);
+      renderUserFromObject({
+        displayName: 'Guest',
+        username: 'guest',
+        email: 'Not logged in'
+      });
       setAvatar('');
     }
   }
 
   /* ---------------------------------------------
-   * 5. ซ่อน Favorites ถ้ามีแต่ placeholder
+   * แสดง Favorites (ถ้ามี)
    * ------------------------------------------- */
-  function renderFavoritesTemplateCheck() {
-    const favList = document.querySelector('.fav-list');
+  function renderFavorites() {
+    const favList = document.getElementById('favList');
     const favoritesSection = document.querySelector('.favorites-section');
     if (!favList || !favoritesSection) return;
 
-    const favItems = favList.querySelectorAll('.fav-item');
-    if (favItems.length === 1 && favItems[0].dataset.name === 'Placeholder Name') {
-      favoritesSection.style.display = 'none';
+    // ดึงข้อมูล favorites จาก localStorage (ตัวอย่าง)
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+
+    if (favorites.length === 0) {
+      favList.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No favorites yet</p>';
+      return;
     }
+
+    // แสดง favorites
+    favList.innerHTML = favorites.map(fav => `
+      <a href="${fav.url || '#'}" class="fav-item">
+        <div class="fav-image-placeholder">
+          <img src="${fav.image || ''}" alt="${fav.name}" class="fav-img">
+        </div>
+        <div class="fav-details">
+          <span class="fav-name">${fav.name}</span>
+        </div>
+      </a>
+    `).join('');
   }
 
   /* ---------------------------------------------
-   * 6. Init
+   * Init
    * ------------------------------------------- */
   document.addEventListener('DOMContentLoaded', function () {
-    attachTouchListeners();
     tryLoadCurrentUser();
-    renderFavoritesTemplateCheck();
+    renderFavorites();
 
     // ปุ่ม back (mobile header)
-    document
-      .querySelector('.header .back-btn')
-      ?.addEventListener('click', () => window.history.back());
+    document.querySelector('.header .back-btn')?.addEventListener('click', () => {
+      window.history.back();
+    });
 
     // ปุ่ม back (desktop)
-    document
-      .querySelector('.desktop-back-button .back-icon')
-      ?.addEventListener('click', () => window.history.back());
+    document.querySelector('.desktop-back-button .back-icon')?.addEventListener('click', () => {
+      window.history.back();
+    });
 
-    // ปุ่ม home (mobile header) → ปรับ URL ตามจริงได้
-    const HOME_URL = '/';
-    document
-      .querySelector('.header .home-btn')
-      ?.addEventListener('click', () => {
-        window.location.href = HOME_URL;
+    // ปุ่ม home (mobile header)
+    document.querySelector('.header .home-btn')?.addEventListener('click', () => {
+      window.location.href = '../deskmain.html';
+    });
+
+    // ปุ่ม Edit Profile
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        window.location.href = '../Edit/edit.html';
       });
+    });
+
+    // ปุ่ม Log Out
+    document.querySelector('.log-out-btn-link')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('Are you sure you want to log out?')) {
+        localStorage.removeItem('currentUserId');
+        localStorage.removeItem('currentUserName');
+        window.location.href = '../login/login.html';
+      }
+    });
+
+    // ปุ่ม Delete Account
+    document.querySelector('.delete-account-btn-link')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('Are you sure you want to delete your account? .')) {
+        const userId = localStorage.getItem('currentUserId');
+        if (userId) {
+          // เรียก API ลบ account
+          fetch(`http://localhost:3000/users/${userId}`, {
+            method: 'DELETE'
+          })
+          .then(response => response.json())
+          .then(data => {
+            alert(data.message || 'Account deleted successfully');
+            localStorage.removeItem('currentUserId');
+            localStorage.removeItem('currentUserName');
+            window.location.href = '../login/login.html';
+          })
+          .catch(err => {
+            console.error('Error deleting account:', err);
+            alert('Failed to delete account');
+          });
+        }
+      }
+    });
   });
 })();

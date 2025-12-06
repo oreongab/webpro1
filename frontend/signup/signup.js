@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const pw = document.getElementById('password');
-    const eye = document.querySelector('.eye');
     const form = document.getElementById('signupForm');
     const emailInput = document.getElementById('email');
 
@@ -14,17 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.remove('invalid');
         }
     });
-
-    function setVisible(show){
-        const s = pw.selectionStart, e = pw.selectionEnd;
-        pw.type = show ? 'text' : 'password';
-        eye.setAttribute('aria-pressed', String(show));
-        eye.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
-        if (document.activeElement === pw && s != null) pw.setSelectionRange(s, e);
-    }
-
-    eye.addEventListener('mousedown', e => e.preventDefault());
-    eye.addEventListener('click', () => setVisible(pw.type === 'password'));
 
     // Sign Up
     form.addEventListener('submit', async function(event) {

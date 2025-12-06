@@ -1,8 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const pw = document.getElementById('password');
-    const eye = document.querySelector('.eye');
     const form = document.querySelector('.form');
     const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const keepMeLoggedInCheckbox = document.getElementById('keepMeLoggedIn');
+
+    // โหลดข้อมูล email ที่บันทึกไว้ (ถ้ามี)
+    const savedEmail = localStorage.getItem('savedEmail');
+    
+    if (savedEmail) {
+        emailInput.value = savedEmail;
+        keepMeLoggedInCheckbox.checked = true;
+    }
 
     // Email validation
     emailInput.addEventListener('input', function() {
@@ -14,18 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.remove('invalid');
         }
     });
-
-    function setVisible(show){
-        const s = pw.selectionStart, e = pw.selectionEnd;
-        pw.type = show ? 'text' : 'password';
-        eye.setAttribute('aria-pressed', String(show));
-        eye.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
-        if (document.activeElement === pw && s != null) pw.setSelectionRange(s, e);
-    }
-
-    eye.addEventListener('mousedown', e => e.preventDefault());
-    eye.addEventListener('click', () => setVisible(pw.type === 'password'));
-
 
     // เชื่อมต่อกับ Backend API
     form.addEventListener('submit', async function(event) {
@@ -57,6 +53,18 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Response data:', data);
             
             if (response.ok) {
+                // บันทึก user_id และข้อมูล user ใน localStorage
+                localStorage.setItem('currentUserId', data.user_id);
+                localStorage.setItem('currentUserName', data.user_name);
+                localStorage.setItem('currentUserPassword', passwordValue);
+                
+                // บันทึกหรือลบ email ตามการติ๊ก checkbox
+                if (keepMeLoggedInCheckbox.checked) {
+                    localStorage.setItem('savedEmail', emailValue);
+                } else {
+                    localStorage.removeItem('savedEmail');
+                }
+                
                 alert('เข้าสู่ระบบสำเร็จ');
                 window.location.href = '../deskmain.html';
             } else {
