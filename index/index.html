@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Aow Ngai Dee Wa – Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Material Icons -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+
+  <!-- CSS & JS -->
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="home.js"></script>
+</head>
+<body>
+  <!-- ========== TOP NAV ========== -->
+  <header class="top-nav">
+    <div class="top-nav-inner">
+      <!-- ซ้าย: avatar (กดได้) -->
+      <div class="nav-left">
+        <button class="avatar-btn" aria-label="Open profile">
+          <div class="avatar-circle">
+            <span class="material-icons">person</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- กลาง: เมนู desktop -->
+      <nav class="nav-links">
+        <a href="#" class="nav-link active">Home</a>
+        <a href="#" class="nav-link">Rank</a>
+        <a href="#" class="nav-link">Category</a>
+        <a href="#" class="nav-link">Favorites</a>
+      </nav>
+
+      <!-- ขวา: ปุ่มสามขีด (มือถือ) -->
+      <button class="nav-toggle" aria-label="Open menu">
+        <span class="material-icons">menu</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========== MOBILE MENU (ตัด Log out ออกแล้ว) ========== -->
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+      <button class="avatar-btn" aria-label="Open profile from menu">
+        <div class="avatar-circle big">
+          <span class="material-icons">person</span>
+        </div>
+      </button>
+
+      <div class="user-info">
+        <div class="username">Username1</div>
+      </div>
+
+      <button class="mobile-menu-close" aria-label="Close menu">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <nav class="mobile-menu-links">
+      <a href="#" class="mobile-link active">Home</a>
+      <a href="#" class="mobile-link">Rank</a>
+      <a href="#" class="mobile-link">Category</a>
+      <a href="#" class="mobile-link">Favorites</a>
+    </nav>
+  </div>
+
+  <!-- ========== MAIN ========== -->
+  <main class="page-main">
+    <!-- HERO -->
+    <section class="hero">
+      <img src="image1.png" alt="Aow Ngai Dee Wa" class="hero-img" />
+      <div class="hero-overlay"></div>
+      <div class="hero-text">
+        <h1>Aow Ngai Dee Wa</h1>
+      </div>
+    </section>
+
+    <!-- Search + Filter -->
+    <section class="search-section">
+      <div class="search-box">
+        <span class="material-icons">search</span>
+        <input type="text" id="searchInput" placeholder="Search for places" />
+      </div>
+      <button class="filter-icon-btn" id="categoryBtn" aria-label="Open category">
+        <span class="material-icons">tune</span>
+      </button>
+    </section>
+
+    <!-- Chips -->
+    <section class="chip-bar">
+      <button class="chip active">Cafés &amp; Restaurants</button>
+      <button class="chip">Temple</button>
+      <button class="chip">Natural</button>
+      <button class="chip">View</button>
+      <button class="chip">Art</button>
+      <button class="chip">Museums</button>
+      <button class="chip">Markets</button>
+      <button class="chip">Beaches</button>
+      <button class="chip">Parks &amp; Gardens</button>
+      <button class="chip">Other</button>
+    </section>
+
+    <!-- GRID การ์ดสถานที่ (template รอข้อมูลหลังบ้าน) -->
+    <section class="card-grid-section">
+      <template id="placeCardTemplate">
+        <article class="place-card">
+          <div class="card-rank-badge">
+            <span class="card-rank-number">1</span>
+          </div>
+
+          <button class="card-fav-btn" type="button" aria-label="Favorite">
+            <span class="material-icons">favorite_border</span>
+          </button>
+
+          <img class="card-image" src="" alt="" />
+
+          <div class="card-open-info">
+            <div class="card-open-days"></div>
+            <div class="card-open-hours"></div>
+          </div>
+
+          <div class="card-bottom">
+            <div class="card-stars"></div>
+            <div class="card-rating"></div>
+            <div class="card-title"></div>
+          </div>
+        </article>
+      </template>
+
+      <!-- เริ่มแรกซ่อนอยู่ รอหลังบ้านเรียก renderPlaceCards -->
+      <div id="placeGrid" class="card-grid"></div>
+    </section>
+
+    <!-- Pagination: เลือกหน้า 1–10 -->
+    <section class="pagination" data-total-pages="10">
+      <button class="page-arrow" data-dir="prev" disabled>&lt;</button>
+      <span class="page-num">1</span>
+      <span class="page-num">2</span>
+      <span class="page-num">3</span>
+      <span class="page-num">4</span>
+      <span class="page-num">5</span>
+      <span class="page-num">6</span>
+      <span class="page-num">7</span>
+      <span class="page-num">8</span>
+      <span class="page-num">9</span>
+      <span class="page-num">10</span>
+      <button class="page-arrow" data-dir="next">&gt;</button>
+    </section>
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="site-footer">
+    <div class="footer-main">
+      <div class="footer-title">Aow Ngai Dee Wa</div>
+      <div class="footer-subtitle">
+        Website for finding places to visit
+      </div>
+
+      <div class="footer-links">
+        <a href="#about">About</a>
+        <a href="#terms">Terms &amp; Policies</a>
+        <a href="#privacy">Privacy</a>
+      </div>
+
+      <div class="footer-madeby">Make by / Contact us</div>
+
+      <div class="footer-ig-list">
+        <a href="#" target="_blank" class="footer-ig">
+          <span class="ig-icon"></span>
+          <span>Yada Intra</span>
+        </a>
+        <a href="#" target="_blank" class="footer-ig">
+          <span class="ig-icon"></span>
+          <span>Pattamapon Thongplew</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>
+        2025 <strong>Aow Ngai Dee Wa</strong><br />
+        All rights reserved
+      </span>
+      <span>v1.0.0</span>
+    </div>
+  </footer>
+</body>
+</html>

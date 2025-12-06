@@ -1,0 +1,681 @@
+:root {
+  --primary: #00a8a8;
+  --primary-dark: #00727a;
+  --bg: #f5f7f9;
+  --ink: #222;
+  --muted: #777;
+  --footer-grad: linear-gradient(180deg, #00a8a8, #006a70);
+  --card-radius: 18px;
+  --shadow-soft: 0 6px 18px rgba(0,0,0,0.18);
+  --transition: 0.25s ease;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.page-main {
+  max-width: 1180px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.4rem 1.5rem 5rem;
+  flex: 1;
+}
+
+/* ========== TOP NAV ========== */
+
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: linear-gradient(90deg, #0097a7, #00acc1);
+  color: #fff;
+}
+
+.top-nav-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0.6rem 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+/* avatar เป็นปุ่มกดได้ */
+.avatar-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.avatar-circle .material-icons {
+  font-size: 20px;
+}
+
+.avatar-circle.big {
+  width: 56px;
+  height: 56px;
+}
+
+.avatar-btn:hover .avatar-circle,
+.avatar-btn:focus-visible .avatar-circle {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.5);
+}
+
+/* เมนูกลาง */
+.nav-links {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+}
+
+.nav-link {
+  color: #e0f7fa;
+  text-decoration: none;
+  font-size: 0.95rem;
+  position: relative;
+  padding-bottom: 4px;
+  transition: color var(--transition);
+  cursor: pointer;
+}
+
+.nav-link.active,
+.nav-link:hover {
+  color: #ffffff;
+}
+
+.nav-link.active::after,
+.nav-link:hover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: #fff;
+}
+
+/* ปุ่มสามขีด (มือถือ) */
+.nav-toggle {
+  border: none;
+  background: none;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+}
+
+/* ========== MOBILE MENU ========== */
+
+.mobile-menu {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  display: none;
+  flex-direction: column;
+  z-index: 40;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.mobile-menu.open {
+  display: flex;
+}
+
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 1.2rem 0.8rem;
+  background: linear-gradient(180deg, #0097a7, #00727a);
+  color: #fff;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.username {
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.mobile-menu-close {
+  border: none;
+  background: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.mobile-menu-links {
+  background: #ffffff;
+  padding: 1rem 1.4rem 0.8rem;
+}
+
+.mobile-link {
+  display: block;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid #eee;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.mobile-link:hover {
+  background: #f3f8f8;
+}
+
+.mobile-link:active {
+  background: #e0f2f1;
+}
+
+.mobile-link.active {
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+/* ========== HERO ========== */
+
+.hero {
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 1.8rem;
+}
+
+.hero-img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,0.15),
+    rgba(0,0,0,0.55)
+  );
+}
+
+.hero-text {
+  position: absolute;
+  left: 2rem;
+  bottom: 2rem;
+  color: #fff;
+}
+
+.hero-text h1 {
+  margin: 0;
+  font-size: 2.7rem;
+  letter-spacing: 0.03em;
+}
+
+/* ========== SEARCH & FILTER ========== */
+
+.search-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: nowrap;
+}
+
+.search-box {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  cursor: text;
+}
+
+.search-box .material-icons {
+  color: var(--muted);
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+/* ปุ่ม filter icon */
+.filter-icon-btn {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: none;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.filter-icon-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+}
+
+.filter-icon-btn .material-icons {
+  color: var(--primary);
+}
+
+/* ========== CHIP BAR ========== */
+
+.chip-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.3rem;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.chip-bar::-webkit-scrollbar {
+  height: 6px;
+}
+.chip-bar::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.18);
+  border-radius: 999px;
+}
+
+.chip {
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 0.2rem 0.9rem;
+  font-size: 0.83rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition), color var(--transition),
+              border-color var(--transition), transform var(--transition),
+              box-shadow var(--transition);
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+}
+
+.chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* ========== CARD GRID ========== */
+
+.card-grid-section {
+  min-height: 240px;
+}
+
+.card-grid {
+  display: none;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.place-card {
+  position: relative;
+  width: 100%;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  background: #000;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.place-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+}
+
+.card-image {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+  display: block;
+}
+
+/* rank */
+.card-rank-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.card-rank-number {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* heart */
+.card-fav-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.28);
+  z-index: 2;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-fav-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+}
+
+.card-fav-btn .material-icons {
+  font-size: 22px;
+  color: #ff6b6b;
+}
+
+.card-fav-btn.is-fav .material-icons {
+  color: #ff1744;
+}
+
+/* open info */
+.card-open-info {
+  position: absolute;
+  left: 12px;
+  bottom: 58px;
+  color: #fff;
+  font-size: 0.85rem;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+
+.card-open-days {
+  font-weight: 500;
+}
+
+/* bottom bar */
+.card-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-height: 38px;
+  background: rgba(245,245,245,0.96);
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px 5px;
+  font-size: 0.83rem;
+}
+
+.card-stars {
+  color: #ffd700;
+  white-space: nowrap;
+}
+
+.card-rating {
+  font-weight: 600;
+}
+
+.card-title {
+  text-align: right;
+  font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ========== PAGINATION ========== */
+
+.pagination {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 1.6rem;
+  flex-wrap: wrap;
+}
+
+.page-arrow,
+.page-num {
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 0.22rem 0.7rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.page-arrow:hover,
+.page-num:hover {
+  background: #f2f2f2;
+}
+
+.page-arrow[disabled] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.page-num.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* ========== FOOTER ========== */
+
+.site-footer {
+  background: var(--footer-grad);
+  color: #e0f7fa;
+  padding: 1.5rem 1.5rem 0.6rem;
+}
+
+.site-footer a {
+  color: #e0f7fa;
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
+
+.footer-main {
+  max-width: 1180px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-title {
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.footer-subtitle {
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+
+/* About | Terms | Privacy */
+.footer-links {
+  display: inline-flex;
+  border-top: 1px solid rgba(255,255,255,0.5);
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+  margin-bottom: 1rem;
+}
+
+.footer-links a {
+  padding: 0.5rem 2.5rem;
+  font-size: 0.95rem;
+}
+
+.footer-links a + a {
+  border-left: 1px solid rgba(255,255,255,0.5);
+}
+
+.footer-madeby {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+/* IG */
+.footer-ig-list {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: flex-start;
+}
+
+.footer-ig {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: #e0f7fa;
+  font-size: 0.92rem;
+}
+
+.footer-ig:hover span:last-child {
+  text-decoration: underline;
+}
+
+/* โลโก้ IG จริง */
+.ig-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* bottom */
+.footer-bottom {
+  max-width: 1180px;
+  margin: 0.7rem auto 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255,255,255,0.4);
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+/* ========== RESPONSIVE ========== */
+
+/* จอเล็ก: การ์ดแถวเดียวไล่ลงมา */
+@media (max-width: 900px) {
+  .page-main {
+    padding-inline: 1rem;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* มือถือทั่วไป */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex: 0;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .top-nav-inner {
+    padding-inline: 1rem;
+    justify-content: space-between;
+  }
+
+  .page-main {
+    padding-top: 1rem;
+  }
+
+  .hero-img {
+    height: 320px;
+  }
+
+  .hero-text h1 {
+    font-size: 2rem;
+  }
+
+  .footer-links a {
+    padding: 0.5rem 1.4rem;
+  }
+}
+
+/* มือถือจอเล็กมาก: chip ขึ้นหลายแถว */
+@media (max-width: 480px) {
+  .chip-bar {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+}
