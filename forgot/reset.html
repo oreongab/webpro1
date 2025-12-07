@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <title>Reset Password – Paradise</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body class="auth-page">
+
+  <main class="auth-wrapper">
+    <section class="auth-card">
+      <h1 class="auth-title">Reset your password</h1>
+      <p class="auth-subtitle">
+        ใส่รหัสยืนยันที่ได้รับทางอีเมล แล้วตั้งรหัสผ่านใหม่ของคุณ
+      </p>
+
+      <!-- TODO: เพิ่ม action / method ให้เชื่อมหลังบ้าน -->
+      <form class="auth-form">
+        <label for="code" class="auth-label">Verification Code</label>
+        <input
+          id="code"
+          name="code"
+          type="text"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          required
+          placeholder="6-digit code"
+          class="auth-input"
+        />
+
+        <label for="password" class="auth-label">New Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="new-password"
+          required
+          placeholder="New password"
+          class="auth-input"
+        />
+
+        <label for="confirmPassword" class="auth-label">Confirm New Password</label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          autocomplete="new-password"
+          required
+          placeholder="Confirm password"
+          class="auth-input"
+        />
+
+        <button type="submit" class="auth-btn primary-btn">
+          Save new password
+        </button>
+
+        <a href="../login/login.html" class="auth-btn ghost-btn">
+          Back to Login
+        </a>
+      </form>
+    </section>
+  </main>
+
+</body>
+</html>

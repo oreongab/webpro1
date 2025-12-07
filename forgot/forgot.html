@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <title>Forgot Password – Paradise</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body class="auth-page">
+
+  <main class="auth-wrapper">
+    <section class="auth-card">
+      <h1 class="auth-title">Forgot your password?</h1>
+      <p className="auth-subtitle">
+        ใส่อีเมลที่ใช้สมัคร ระบบจะส่งรหัสยืนยันไปที่อีเมลของคุณ<br>
+        เพื่อนำไปใช้ตั้งรหัสผ่านใหม่
+      </p>
+
+      <!-- TODO: เพิ่ม action / method ให้เชื่อมหลังบ้าน -->
+      <form class="auth-form">
+        <label for="email" class="auth-label">Email</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          required
+          placeholder="Email"
+          class="auth-input"
+        />
+
+        <button type="submit" class="auth-btn primary-btn">
+          Send reset code
+        </button>
+
+        <a href="../login/login.html" class="auth-btn ghost-btn">
+          Back to Login
+        </a>
+      </form>
+    </section>
+  </main>
+
+</body>
+</html>
