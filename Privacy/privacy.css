@@ -1,0 +1,132 @@
+:root {
+  /* ใช้โทนเดียวกับ about / terms */
+  --bg-gradient: linear-gradient(135deg, #00636e, #009688);
+  --privacy-text-main: #ffffff;
+  --privacy-font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --arrow-color: #ffffff;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.privacy-body {
+  font-family: var(--privacy-font);
+  background: var(--bg-gradient);
+  color: var(--privacy-text-main);
+}
+
+/* ===== DESKTOP LAYOUT ===== */
+
+.privacy-page {
+  min-height: 100vh;
+  padding: 32px 80px 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ปุ่ม back มุมซ้ายบน (หัวลูกศร) */
+.privacy-back-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+
+  position: absolute;
+  top: 24px;
+  left: 24px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.privacy-back-btn:hover {
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.arrow-icon {
+  width: 14px;
+  height: 14px;
+  border-top: 2.5px solid var(--arrow-color);
+  border-left: 2.5px solid var(--arrow-color);
+  transform: rotate(-45deg);  /* ชี้ซ้าย */
+}
+
+/* หัวข้อกลางด้านบน */
+.privacy-header {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.privacy-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* เนื้อหากลางหน้าแบบในรูป */
+.privacy-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 32px;
+}
+
+.privacy-content {
+  max-width: 720px;
+  text-align: left;
+}
+
+.privacy-content p {
+  margin: 0 0 24px;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* ===== MOBILE / TABLET ===== */
+
+@media (max-width: 768px) {
+  .privacy-page {
+    padding: 20px 20px 24px;
+  }
+
+  .privacy-back-btn {
+    top: 16px;
+    left: 16px;
+  }
+
+  .privacy-header {
+    margin-top: 32px;
+  }
+
+  .privacy-header h1 {
+    font-size: 22px;
+  }
+
+  .privacy-main {
+    margin-top: 24px;
+    justify-content: flex-start;
+  }
+
+  .privacy-content {
+    max-width: 100%;
+  }
+
+  .privacy-content p {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+}
