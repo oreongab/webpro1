@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Aow Ngai Dee Wa – Favorites</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Material Icons -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+
+  <!-- CSS & JS -->
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="home.js"></script>
+</head>
+
+<body class="favorites-page">
+  <!-- ========== TOP NAV (แถบเขียวเต็มจอ) ========== -->
+  <header class="top-nav favorites-nav">
+    <div class="top-nav-inner">
+      <!-- ซ้าย: avatar -->
+      <div class="nav-left">
+        <button class="avatar-btn" aria-label="Open profile">
+          <div class="avatar-circle">
+            <span class="material-icons">person</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- กลาง: เมนู desktop -->
+      <nav class="nav-links">
+        <a href="home.html" class="nav-link">Home</a>
+        <a href="rank.html" class="nav-link">Rank</a>
+        <a href="category.html" class="nav-link">Category</a>
+        <a href="favorites.html" class="nav-link active">Favorites</a>
+      </nav>
+
+      <!-- ขวา: ปุ่ม hamburger (มือถือ) -->
+      <div class="nav-right">
+        <button class="nav-toggle" aria-label="Open menu">
+          <span class="material-icons">menu</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== MOBILE MENU ========== -->
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+      <button class="avatar-btn" aria-label="Open profile from menu">
+        <div class="avatar-circle big">
+          <span class="material-icons">person</span>
+        </div>
+      </button>
+
+      <div class="user-info">
+        <div class="username">Username1</div>
+      </div>
+
+      <button class="mobile-menu-close" aria-label="Close menu">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <nav class="mobile-menu-links">
+      <a href="home.html" class="mobile-link">Home</a>
+      <a href="rank.html" class="mobile-link">Rank</a>
+      <a href="category.html" class="mobile-link">Category</a>
+      <a href="favorites.html" class="mobile-link active">Favorites</a>
+    </nav>
+  </div>
+
+  <!-- ========== MAIN ========== -->
+  <!-- ลบกรอบขาวออก ให้เนื้อหาทั้งหมดเป็นพื้นขาวตามขอบจอ -->
+  <main class="page-main favorites-main">
+    <!-- ลบหัวข้อ My Favorites -->
+    <section class="card-grid-section favorites-grid-section">
+      <template id="placeCardTemplate">
+        <article class="place-card">
+          <div class="card-rank-badge">
+            <span class="card-rank-number">1</span>
+          </div>
+
+          <button class="card-fav-btn" type="button" aria-label="Favorite">
+            <span class="material-icons">favorite_border</span>
+          </button>
+
+          <img class="card-image" src="" alt="" />
+
+          <div class="card-open-info">
+            <div class="card-open-days"></div>
+            <div class="card-open-hours"></div>
+          </div>
+
+          <div class="card-bottom">
+            <div class="card-stars"></div>
+            <div class="card-rating"></div>
+            <div class="card-title"></div>
+          </div>
+        </article>
+      </template>
+
+      <!-- เริ่มแรกยังไม่แสดงอะไร รอหลังบ้านเรียก window.renderPlaceCards([...]) -->
+      <div id="placeGrid" class="card-grid"></div>
+    </section>
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="site-footer" id="about">
+    <div class="footer-main">
+      <div class="footer-title">Aow Ngai Dee Wa</div>
+      <div class="footer-subtitle">
+        Website for finding places to visit
+      </div>
+
+      <div class="footer-links">
+        <a href="#about">About</a>
+        <a href="#terms" id="terms">Terms &amp; Policies</a>
+        <a href="#privacy" id="privacy">Privacy</a>
+      </div>
+
+      <div class="footer-madeby">Make by / Contact us</div>
+
+      <div class="footer-ig-list">
+        <!-- Yada Intra -->
+        <a href="https://www.instagram.com/8y_punch?igsh=bXB3NnI2MmN4Mjls"
+           target="_blank"
+           rel="noopener"
+           class="footer-ig">
+          <span class="ig-icon"></span>
+          <span>Yada Intra</span>
+        </a>
+
+        <!-- Pattamapon Thongplew -->
+        <a href="https://www.instagram.com/pmyoyu_?igsh=NGwyNGpxN2Y0MXEx"
+           target="_blank"
+           rel="noopener"
+           class="footer-ig">
+          <span class="ig-icon"></span>
+          <span>Pattamapon Thongplew</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>
+        2025 <strong>Aow Ngai Dee Wa</strong><br />
+        All rights reserved
+      </span>
+      <span>v1.0.0</span>
+    </div>
+  </footer>
+</body>
+</html>
