@@ -42,6 +42,9 @@
 
       <!-- ข้อมูลหลัก -->
       <section class="place-detail-main">
+        <!-- ชื่อสถานที่ -->
+        <h1 id="detail-title" class="place-detail-title"></h1>
+
         <!-- เวลาเปิด -->
         <div class="place-detail-row">
           <div class="place-detail-icon">
@@ -57,8 +60,9 @@
           <div class="place-detail-icon">
             <span class="material-icons">place</span>
           </div>
-          <div class="place-detail-text" id="detail-location">
-            <!-- ที่ตั้งจากหลังบ้าน -->
+          <div class="place-detail-text">
+            <div id="detail-address"></div>
+            <div id="detail-province"></div>
           </div>
         </div>
 
@@ -100,9 +104,9 @@
 
       <!-- รายละเอียด -->
       <section class="place-detail-description">
-        <h2>รายละเอียด</h2>
-        <p id="detail-description">
-          <!-- รายละเอียดสถานที่จากหลังบ้าน -->
+        <h2>Event</h2>
+        <p id="detail-event">
+          <!-- อีเวนท์จากหลังบ้าน -->
         </p>
       </section>
     </div><!-- /place-detail-content -->

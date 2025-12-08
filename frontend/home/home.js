@@ -97,6 +97,18 @@ function renderPlaceCards(places) {
 
     node.dataset.id = p.id ?? index + 1;
 
+    // คลิกการ์ดไปหน้า detail
+    node.style.cursor = 'pointer';
+    node.addEventListener('click', (e) => {
+      // ถ้าคลิกที่ปุ่มหัวใจให้ไม่ไปหน้า detail
+      if (e.target.closest('.card-fav-btn')) return;
+      
+      const placeId = node.dataset.id;
+      if (placeId) {
+        window.location.href = `../place/place-detail.html?id=${placeId}`;
+      }
+    });
+
     // ซ่อน rank badge
     const rankBadge = node.querySelector(".card-rank-badge");
     if (rankBadge) rankBadge.style.display = "none";

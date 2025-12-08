@@ -197,6 +197,44 @@ app.get('/places', async (req, res) => {
     }
 });
 
+//place detail 
+app.get('/places/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // ถ้า id ไม่ใช่ตัวเลขให้ส่งต่อไปยัง route ถัดไป
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'Invalid place ID' });
+        }
+        
+        const sql = `
+            SELECT
+                p.place_id,
+                p.place_name,
+                p.place_province,
+                p.opening_hours,
+                p.place_score,
+                pi.image_path,
+                p.place_address,
+                p.starting_price,
+                p.place_event
+            FROM place p
+            LEFT JOIN place_images pi ON p.place_id = pi.place_id
+            WHERE p.place_id = ?
+        `;
+        const [rows] = await db.execute(sql, [id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'Place not found' });
+        }
+
+        res.json(rows[0]);
+    } catch (error) {
+        console.error('Error fetching place details:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // กรอง categorybar
 const categoryMapping = {
     'cafes':      'Cafe & Restaurants',
@@ -307,6 +345,7 @@ app.get('/categories', async (req, res) => {
     }
 });
 
+//filter by opening days
 
 
 
