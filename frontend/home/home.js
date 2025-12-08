@@ -34,12 +34,19 @@ function setupAvatarClick() {
 
 // ========== active state nav ==========
 function setupNavActive() {
+  const categoryOverlay = document.getElementById("categoryOverlay");
+
   const navLinks = document.querySelectorAll(".nav-link");
   navLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
       navLinks.forEach((l) => l.classList.remove("active"));
       link.classList.add("active");
+
+      // เปิด category panel เมื่อคลิก "Category" link
+      if (link.textContent.trim() === "Category" && categoryOverlay) {
+        categoryOverlay.classList.add("open");
+      }
     });
   });
 
@@ -49,6 +56,11 @@ function setupNavActive() {
       e.preventDefault();
       mobileLinks.forEach((l) => l.classList.remove("active"));
       link.classList.add("active");
+
+      // เปิด category panel เมื่อคลิก "Category" link ใน mobile menu
+      if (link.textContent.trim() === "Category" && categoryOverlay) {
+        categoryOverlay.classList.add("open");
+      }
     });
   });
 }
@@ -139,204 +151,288 @@ function setupFavoriteToggle() {
   });
 }
 
-// ========== ปุ่ม Opening-days Filter (icon tune) ==========
-function setupCategoryButton() {
-  const btn = document.getElementById("categoryBtn");
-  const panel = document.getElementById("openingDaysPanel");
-  if (!btn || !panel) return;
-
-  const clearBtn = panel.querySelector(".filter-clear");
-  const applyBtn = panel.querySelector(".filter-apply");
-  const dayChips = panel.querySelectorAll(".day-chip");
-
-  // toggle day active
-  dayChips.forEach((chip) => {
-    chip.addEventListener("click", () => {
-      chip.classList.toggle("active");
+// ========== Opening Days Panel (ปุ่ม tune icon) ==========
+function setupOpeningDaysPanel() {
+  const categoryBtn = document.getElementById('categoryBtn');
+  const openingDaysPanel = document.getElementById('openingDaysPanel');
+  
+  if (categoryBtn && openingDaysPanel) {
+    categoryBtn.addEventListener('click', () => {
+      const isHidden = openingDaysPanel.getAttribute('aria-hidden') === 'true';
+      openingDaysPanel.setAttribute('aria-hidden', isHidden ? 'false' : 'true');
     });
-  });
-
-  // clear
-  clearBtn?.addEventListener("click", () => {
-    panel.querySelectorAll("input[type='checkbox']").forEach((cb) => {
-      cb.checked = false;
-    });
-    dayChips.forEach((chip) => chip.classList.remove("active"));
-    console.log("Opening days: clear");
-  });
-
-  // apply
-  applyBtn?.addEventListener("click", () => {
-    console.log("Opening days: apply");
-    closePanel();
-  });
-
-  function openPanel() {
-    panel.style.display = "block";
-
-    const rect = btn.getBoundingClientRect();
-    const panelRect = panel.firstElementChild.getBoundingClientRect();
-
-    let left = rect.right - panelRect.width;
-    if (left < 16) left = 16;
-
-    const top = rect.bottom + 8 + window.scrollY;
-
-    panel.style.position = "absolute";
-    panel.style.left = `${left + window.scrollX}px`;
-    panel.style.top = `${top}px`;
-
-    panel.classList.add("open");
-    panel.setAttribute("aria-hidden", "false");
   }
 
-  function closePanel() {
-    panel.classList.remove("open");
-    panel.setAttribute("aria-hidden", "true");
+  // ปิดเมื่อคลิก Clear หรือ Apply
+  const clearBtn = openingDaysPanel?.querySelector('.filter-clear');
+  const applyBtn = openingDaysPanel?.querySelector('.filter-apply');
+  
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      // ล้าง checkbox ทั้งหมด
+      openingDaysPanel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+      // ล้าง active จาก day chips
+      openingDaysPanel.querySelectorAll('.day-chip').forEach(chip => chip.classList.remove('active'));
+    });
+  }
+  
+  if (applyBtn) {
+    applyBtn.addEventListener('click', () => {
+      openingDaysPanel?.setAttribute('aria-hidden', 'true');
+      // TODO: ใช้ filter กับข้อมูล
+      console.log('Apply opening days filter');
+    });
   }
 
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (panel.classList.contains("open")) {
-      closePanel();
-    } else {
-      openPanel();
-    }
-  });
-
-  // click นอก panel ปิด
-  document.addEventListener("click", (e) => {
-    if (!panel.classList.contains("open")) return;
-    const insidePanel = e.target.closest("#openingDaysPanel");
-    const isButton = e.target.closest("#categoryBtn");
-    if (!insidePanel && !isButton) {
-      closePanel();
-    }
-  });
-
-  // Esc ปิด
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && panel.classList.contains("open")) {
-      closePanel();
-    }
+  // Day chips toggle
+  const dayChips = openingDaysPanel?.querySelectorAll('.day-chip');
+  dayChips?.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('active');
+    });
   });
 }
 
-// ========== CATEGORY OVERLAY (Place Type + Province) ==========
-function setupCategoryOverlay() {
-  const overlay = document.getElementById("categoryOverlay");
-  if (!overlay) return;
+// ========== Category Filter Panel ==========
+let selectedTypes = [];
+let selectedProvinces = [];
 
-  const panel = overlay.querySelector(".category-panel");
-  const closeBtn = overlay.querySelector(".category-close");
-  const clearBtn = overlay.querySelector(".category-clear");
-  const applyBtn = overlay.querySelector(".category-apply");
-  const placeList = overlay.querySelector(".category-place-list");
-  const provinceList = overlay.querySelector(".category-province-list");
-  const provinceSearch = document.getElementById("provinceSearch");
+// ฟังก์ชันสำหรับล้าง category selections โดยไม่โหลดข้อมูลใหม่
+function clearCategorySelections() {
+  selectedTypes = [];
+  selectedProvinces = [];
+  
+  document.querySelectorAll('.category-list input[type="checkbox"]').forEach(cb => {
+    cb.checked = false;
+  });
+  
+  const searchInput = document.getElementById('provinceSearch');
+  if (searchInput) searchInput.value = '';
+  
+  document.querySelectorAll('.category-province-list li').forEach(item => {
+    item.style.display = '';
+  });
+}
 
-  // ปุ่มเปิด: nav + mobile link ที่ชื่อ Category
-  const openers = [
-    ...document.querySelectorAll(".nav-link"),
-    ...document.querySelectorAll(".mobile-link"),
-  ].filter((el) => el.textContent.trim() === "Category");
+// Export เพื่อให้ chip-filter.js เรียกใช้ได้
+window.clearCategorySelections = clearCategorySelections;
 
-  function openOverlay() {
-    overlay.classList.add("open");
-    overlay.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden"; // ล็อกไม่ให้หน้าเลื่อน
+function setupCategoryPanel() {
+  const categoryOverlay = document.getElementById('categoryOverlay');
+  const categoryClose = document.querySelector('.category-close');
+  const applyBtn = document.querySelector('.category-apply');
+  const clearBtn = document.querySelector('.category-clear');
+
+  // ปิด panel
+  if (categoryClose) {
+    categoryClose.addEventListener('click', () => {
+      categoryOverlay?.classList.remove('open');
+    });
   }
 
-  function closeOverlay() {
-    overlay.classList.remove("open");
-    overlay.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
+  // ปิดเมื่อคลิกที่ overlay
+  if (categoryOverlay) {
+    categoryOverlay.addEventListener('click', (e) => {
+      if (e.target === categoryOverlay) {
+        categoryOverlay.classList.remove('open');
+      }
+    });
   }
 
-  openers.forEach((el) => {
-    el.addEventListener("click", (e) => {
-      e.preventDefault();
-      openOverlay();
+  // จัดการ checkbox สำหรับ Place Type
+  const placeCheckboxes = document.querySelectorAll('.category-place-list input[type="checkbox"]');
+  placeCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', (e) => {
+      const value = e.target.value;
+      if (e.target.checked) {
+        if (!selectedTypes.includes(value)) {
+          selectedTypes.push(value);
+        }
+      } else {
+        selectedTypes = selectedTypes.filter(type => type !== value);
+      }
+      console.log('Selected types:', selectedTypes);
     });
   });
 
-  closeBtn?.addEventListener("click", () => {
-    closeOverlay();
+  // จัดการ checkbox สำหรับ Province
+  const provinceCheckboxes = document.querySelectorAll('.category-province-list input[type="checkbox"]');
+  provinceCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', (e) => {
+      const value = e.target.value;
+      if (e.target.checked) {
+        if (!selectedProvinces.includes(value)) {
+          selectedProvinces.push(value);
+        }
+      } else {
+        selectedProvinces = selectedProvinces.filter(prov => prov !== value);
+      }
+      console.log('Selected provinces:', selectedProvinces);
+    });
   });
 
-  // คลิกนอก panel ปิด
-  overlay.addEventListener("click", (e) => {
-    if (!overlay.classList.contains("open")) return;
-    const inside = e.target.closest(".category-panel");
-    if (!inside) {
-      closeOverlay();
+  // ปุ่ม Apply
+  if (applyBtn) {
+    applyBtn.addEventListener('click', async () => {
+      const categoryOverlay = document.getElementById('categoryOverlay');
+      
+      // ล้าง active chip ก่อน
+      document.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
+      
+      // ถ้าเลือกประเภทเดียว ให้ active chip ตามนั้น
+      if (selectedTypes.length === 1) {
+        const categoryToChipMap = {
+          'Art': 'Art',
+          'Beaches': 'Beaches',
+          'Cafe & Restaurants': 'Cafés & Restaurants',
+          'Historical Attractions': 'Historical Attractions',
+          'Markets': 'Markets',
+          'Museums': 'Museums',
+          'Mall': 'Mall',
+          'Natural': 'Natural',
+          'Parks & Gardens': 'Parks & Gardens',
+          'Temple': 'Temple',
+          'Sports': 'Sports',
+          'Other': 'Other'
+        };
+        
+        const chipText = categoryToChipMap[selectedTypes[0]];
+        if (chipText) {
+          const chip = Array.from(document.querySelectorAll('.chip')).find(
+            c => c.textContent.trim() === chipText
+          );
+          if (chip) chip.classList.add('active');
+        }
+      }
+      
+      await applyFilters();
+      categoryOverlay?.classList.remove('open');
+    });
+  }
+
+  // ปุ่ม Clear
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      clearFilters();
+    });
+  }
+
+  // Province search
+  setupProvinceSearch();
+}
+
+// ค้นหา province
+function setupProvinceSearch() {
+  const searchInput = document.getElementById('provinceSearch');
+  if (!searchInput) return;
+
+  searchInput.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const provinceItems = document.querySelectorAll('.category-province-list li');
+
+    provinceItems.forEach(item => {
+      const text = item.textContent.toLowerCase();
+      if (text.includes(searchTerm)) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  });
+}
+
+// ใช้ filter
+async function applyFilters() {
+  console.log('Applying filters...');
+  console.log('Types:', selectedTypes);
+  console.log('Provinces:', selectedProvinces);
+
+  try {
+    // สร้าง query string
+    const params = new URLSearchParams();
+    
+    if (selectedTypes.length > 0) {
+      selectedTypes.forEach(type => params.append('types', type));
     }
-  });
-
-  // ปิดด้วย ESC
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && overlay.classList.contains("open")) {
-      closeOverlay();
+    
+    if (selectedProvinces.length > 0) {
+      selectedProvinces.forEach(province => params.append('provinces', province));
     }
-  });
 
-  // ===== เลือกได้ฝั่งละ 1 อย่าง =====
-  function setupSingleSelect(listEl) {
-    if (!listEl) return;
-    const boxes = listEl.querySelectorAll("input[type='checkbox']");
-    boxes.forEach((box) => {
-      box.addEventListener("change", () => {
-        if (!box.checked) return;
-        boxes.forEach((b) => {
-          if (b !== box) b.checked = false;
-        });
-      });
-    });
-  }
+    const url = `http://localhost:3000/categories?${params.toString()}`;
+    console.log('Fetching:', url);
 
-  setupSingleSelect(placeList);
-  setupSingleSelect(provinceList);
-
-  // ===== province search =====
-  if (provinceSearch && provinceList) {
-    const items = provinceList.querySelectorAll("li");
-
-    provinceSearch.addEventListener("input", () => {
-      const q = provinceSearch.value.trim().toLowerCase();
-      items.forEach((li) => {
-        const text = li.textContent.toLowerCase();
-        li.style.display = text.includes(q) ? "" : "none";
-      });
-    });
-  }
-
-  // ===== Clear / Apply =====
-  clearBtn?.addEventListener("click", () => {
-    overlay
-      .querySelectorAll(".category-list input[type='checkbox']")
-      .forEach((cb) => (cb.checked = false));
-    if (provinceSearch) {
-      provinceSearch.value = "";
-      provinceSearch.dispatchEvent(new Event("input"));
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-    console.log("Category: clear");
-  });
 
-  applyBtn?.addEventListener("click", () => {
-    const selectedPlace = overlay.querySelector(
-      ".category-place-list input[type='checkbox']:checked"
-    );
-    const selectedProvince = overlay.querySelector(
-      ".category-province-list input[type='checkbox']:checked"
-    );
+    const data = await response.json();
+    console.log('Filtered data:', data);
 
-    console.log("Category: apply", {
-      placeType: selectedPlace?.value || null,
-      province: selectedProvince?.value || null,
+    if (data.length === 0) {
+      const grid = document.getElementById('placeGrid');
+      if (grid) {
+        grid.innerHTML = '<p style="text-align:center; padding:2rem; color:#666;">ไม่พบสถานที่ที่ตรงกับเงื่อนไข</p>';
+      }
+      return;
+    }
+
+    // แปลงข้อมูลและแสดงผล
+    const places = data.map((item, index) => {
+      let imagePath = 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
+      if (item.image_path) {
+        const fileName = item.image_path.includes('/') || item.image_path.includes('\\')
+          ? item.image_path.split(/[/\\]/).pop()
+          : item.image_path;
+        imagePath = `../../img_place/${fileName}`;
+      }
+
+      return {
+        id: item.place_id,
+        rank: index + 1,
+        title: item.place_name,
+        imageUrl: imagePath,
+        openDays: '',
+        openHours: item.opening_hours || '',
+        rating: item.place_score || 0
+      };
     });
 
-    closeOverlay();
+    renderPlaceCards(places);
+
+  } catch (error) {
+    console.error('Error applying filters:', error);
+    alert('เกิดข้อผิดพลาดในการกรองข้อมูล');
+  }
+}
+
+// ล้าง filter ทั้งหมด
+function clearFilters() {
+  selectedTypes = [];
+  selectedProvinces = [];
+
+  // uncheck checkboxes ทั้งหมด
+  document.querySelectorAll('.category-list input[type="checkbox"]').forEach(cb => {
+    cb.checked = false;
   });
+
+  // ล้าง search
+  const searchInput = document.getElementById('provinceSearch');
+  if (searchInput) searchInput.value = '';
+
+  // แสดง province ทั้งหมด
+  document.querySelectorAll('.category-province-list li').forEach(item => {
+    item.style.display = '';
+  });
+  
+  // ล้าง chip selection ด้วย
+  document.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
+  
+  // แสดงข้อมูลทั้งหมด
+  window.fetchPlaces();
+
+  console.log('Filters cleared');
 }
 
 // ========== กัน error ฟังก์ชันเดิม ==========
@@ -441,9 +537,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (typeof setupChipActive === 'function') {
     setupChipActive(); // จาก chip-filter.js
   }
+  setupOpeningDaysPanel(); // Opening days filter (tune icon button)
+  setupCategoryPanel(); // Category filter panel (nav link)
   setupFavoriteToggle();
-  setupCategoryButton();    // ปุ่ม filter (Opening days)
-  setupCategoryOverlay();   // หน้าต่าง Category
   setupAuthButtons();
   fetchPlaces();            // ดึงข้อมูลสถานที่
 });

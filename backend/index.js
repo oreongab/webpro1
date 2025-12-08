@@ -197,7 +197,7 @@ app.get('/places', async (req, res) => {
     }
 });
 
-// กรอง category
+// กรอง categorybar
 const categoryMapping = {
     'cafes':      'Cafe & Restaurants',
     'temples':    'Temple',
@@ -247,7 +247,65 @@ app.get('/places/category/:type', async (req, res) => {
     }
 });
 
+//category
+// API กรองตาม category และ province
+app.get('/categories', async (req, res) => {
+    try {
+        const { types, provinces } = req.query; 
+        
+        console.log('=== /categories endpoint ===');
+        console.log('Received query:', req.query);
+        console.log('Types:', types);
+        console.log('Provinces:', provinces);
+        
+        let sql = `
+            SELECT DISTINCT p.place_id,
+                p.place_name,
+                p.place_eng_province,
+                p.opening_hours,
+                p.place_score,
+                pi.image_path
+            FROM place p
+            LEFT JOIN place_images pi USING (place_id)
+            LEFT JOIN place_category pc USING (place_id)
+            LEFT JOIN category c USING (category_id)
+            WHERE 1=1
+        `;
+        
+        let params = [];
 
+        // กรองตาม type (category)
+        if (types) {
+            const typeList = Array.isArray(types) ? types : [types];
+            const placeholders = typeList.map(() => '?').join(',');
+            sql += ` AND c.category_name IN (${placeholders})`;
+            params.push(...typeList);
+            console.log('Filtering by types:', typeList);
+        }
+
+        // กรองตาม province
+        if (provinces) {
+            const provinceList = Array.isArray(provinces) ? provinces : [provinces];
+            const placeholders = provinceList.map(() => '?').join(',');
+            sql += ` AND p.place_province IN (${placeholders})`;
+            params.push(...provinceList);
+            console.log('Filtering by provinces:', provinceList);
+        }
+
+        sql += ` ORDER BY p.place_id`;
+
+        console.log('SQL:', sql);
+        console.log('Params:', params);
+
+        const [rows] = await db.execute(sql, params);
+        console.log('Results count:', rows.length);
+        res.json(rows);
+
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
 
 
 

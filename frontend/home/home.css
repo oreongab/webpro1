@@ -299,8 +299,12 @@ body {
 }
 
 /* ปุ่ม filter icon */
-.filter-icon-btn {
+.filter-btn-wrapper {
+  position: relative;
   flex: 0 0 auto;
+}
+
+.filter-icon-btn {
   width: 42px;
   height: 42px;
   border-radius: 999px;
@@ -326,14 +330,16 @@ body {
 /* ========== FILTER PANEL (Opening days) ========== */
 .filter-panel {
   position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
   opacity: 0;
   pointer-events: none;
   transform: translateY(-10px);
   transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 25;
+  z-index: 999;
 }
 
-.filter-panel.open {
+.filter-panel[aria-hidden="false"] {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);

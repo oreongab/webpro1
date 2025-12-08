@@ -22,16 +22,31 @@ function setupChipActive() {
     const chip = e.target.closest(".chip");
     if (!chip) return;
 
+    // Toggle: ถ้าคลิก chip ที่ active อยู่แล้ว ให้ deselect และแสดงทั้งหมด
+    const isCurrentlyActive = chip.classList.contains("active");
+    
     bar.querySelectorAll(".chip").forEach((c) => c.classList.remove("active"));
-    chip.classList.add("active");
     
-    const category = chip.textContent.trim();
-    const endpoint = chipCategoryMap[category];
-    
-    if (endpoint) {
-      await fetchPlacesByCategory(endpoint);
+    if (isCurrentlyActive) {
+      // ถ้าเดิมเป็น active อยู่แล้ว ให้แสดงทั้งหมด
+      await window.fetchPlaces();
     } else {
-      await fetchPlaces();
+      // ถ้ายังไม่ active ให้เปิด active และกรอง
+      chip.classList.add("active");
+      
+      // ล้าง category panel selection เพราะใช้ chip filter แทน
+      if (window.clearCategorySelections) {
+        window.clearCategorySelections();
+      }
+      
+      const category = chip.textContent.trim();
+      const endpoint = chipCategoryMap[category];
+      
+      if (endpoint) {
+        await fetchPlacesByCategory(endpoint);
+      } else {
+        await window.fetchPlaces();
+      }
     }
   });
 }
