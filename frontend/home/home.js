@@ -379,10 +379,10 @@ async function applyFilters() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log('Filtered data:', data);
+    const result = await response.json();
+    console.log('Filtered result:', result);
 
-    if (data.length === 0) {
+    if (!result.success || !result.data || result.data.length === 0) {
       const grid = document.getElementById('placeGrid');
       if (grid) {
         grid.innerHTML = '<p style="text-align:center; padding:2rem; color:#666;">ไม่พบสถานที่ที่ตรงกับเงื่อนไข</p>';
@@ -391,7 +391,7 @@ async function applyFilters() {
     }
 
     // แปลงข้อมูลและแสดงผล
-    const places = data.map((item, index) => {
+    const places = result.data.map((item, index) => {
       let imagePath = 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
       if (item.image_path) {
         const fileName = item.image_path.includes('/') || item.image_path.includes('\\')
@@ -415,7 +415,7 @@ async function applyFilters() {
 
   } catch (error) {
     console.error('Error applying filters:', error);
-    alert('เกิดข้อผิดพลาดในการกรองข้อมูล');
+    alert('เกิดข้อผิดพลาดในการกรองข้อมูล: ' + error.message);
   }
 }
 

@@ -5,8 +5,13 @@ async function fetchPlaceDetail(placeId) {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
-    return data;
+    const result = await response.json();
+    
+    // ตรวจสอบว่า API ส่ง success: true และมี data
+    if (result.success && result.data) {
+      return result.data;
+    }
+    return null;
   } catch (error) {
     console.error('Error fetching place detail:', error);
     return null;
@@ -16,7 +21,9 @@ async function fetchPlaceDetail(placeId) {
 // สร้างดาว
 function buildStars(rating) {
   if (!rating) return '';
-  const fullStars = Math.round(rating);
+  // แปลงเป็น number ก่อน
+  const ratingNum = typeof rating === 'number' ? rating : parseFloat(rating);
+  const fullStars = Math.round(ratingNum);
   let html = '';
   for (let i = 0; i < 5; i++) {
     if (i < fullStars) {
@@ -30,14 +37,26 @@ function buildStars(rating) {
 
 // แสดงข้อมูลบนหน้า
 function displayPlaceDetail(place) {
-  // รูป
+  // รูป - ใช้รูปแรกจาก images array
   const detailImage = document.getElementById('detail-image');
-  if (detailImage && place.image_path) {
-    const fileName = place.image_path.includes('/') || place.image_path.includes('\\')
-      ? place.image_path.split(/[/\\]/).pop()
-      : place.image_path;
-    detailImage.src = `../../img_place/${fileName}`;
-    detailImage.alt = place.place_name;
+  if (detailImage) {
+    let imagePath = 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
+    
+    // ตรวจสอบ images ให้ดี
+    if (place.images && Array.isArray(place.images) && place.images.length > 0) {
+      const firstImage = place.images[0];
+      const fileName = firstImage.includes('/') || firstImage.includes('\\')
+        ? firstImage.split(/[/\\]/).pop()
+        : firstImage;
+      imagePath = `../../img_place/${fileName}`;
+    }
+    
+    detailImage.src = imagePath;
+    detailImage.alt = place.place_name || '';
+    detailImage.onerror = function() {
+      this.onerror = null;
+      this.src = 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
+    };
   }
 
   // ชื่อสถานที่
@@ -63,15 +82,18 @@ function displayPlaceDetail(place) {
     detailProvince.textContent = place.place_province || '';
   }
 
-  // คะแนน
+  // คะแนน - แปลงเป็น number ก่อน
   const detailRatingLabel = document.getElementById('detail-rating-label');
   const detailStars = document.getElementById('detail-stars');
   const detailRatingScore = document.getElementById('detail-rating-score');
   
-  if (place.place_score) {
+  // แปลง place_score เป็น number
+  const rating = place.place_score ? parseFloat(place.place_score) : 0;
+  
+  if (rating > 0) {
     if (detailRatingLabel) detailRatingLabel.textContent = 'Review';
-    if (detailStars) detailStars.innerHTML = buildStars(place.place_score);
-    if (detailRatingScore) detailRatingScore.textContent = place.place_score.toFixed(1);
+    if (detailStars) detailStars.innerHTML = buildStars(rating);
+    if (detailRatingScore) detailRatingScore.textContent = rating.toFixed(1);
   } else {
     if (detailRatingLabel) detailRatingLabel.textContent = 'ไม่มีรีวิว';
     if (detailStars) detailStars.innerHTML = '';
@@ -81,13 +103,14 @@ function displayPlaceDetail(place) {
   // ค่าเข้าชม
   const detailPrice = document.getElementById('detail-price');
   if (detailPrice) {
-    detailPrice.textContent = place.starting_price || 'ฟรี';
+    const price = place.starting_price ? parseFloat(place.starting_price) : 0;
+    detailPrice.textContent = price > 0 ? `${price} บาท` : 'ฟรี';
   }
 
-  // หมวด (ถ้ามี)
+  // หมวด
   const detailCategory = document.getElementById('detail-category');
   if (detailCategory) {
-    detailCategory.textContent = place.category_name || 'ไม่ระบุหมวด';
+    detailCategory.textContent = place.categories || 'ไม่ระบุหมวด';
   }
 
   // อีเวนท์

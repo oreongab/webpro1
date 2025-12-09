@@ -198,40 +198,56 @@ app.get('/places', async (req, res) => {
 });
 
 //place detail 
+// ใน server.js - แก้ place detail API
 app.get('/places/:id', async (req, res) => {
     try {
         const { id } = req.params;
         
-        // ถ้า id ไม่ใช่ตัวเลขให้ส่งต่อไปยัง route ถัดไป
         if (isNaN(id)) {
-            return res.status(400).json({ message: 'Invalid place ID' });
+            return res.status(400).json({ success: false, message: 'Invalid place ID' });
         }
         
+        // ⚠️ แก้: ใช้ CAST เพื่อแปลง numeric เป็น DECIMAL
         const sql = `
             SELECT
                 p.place_id,
                 p.place_name,
                 p.place_province,
-                p.opening_hours,
-                p.place_score,
-                pi.image_path,
                 p.place_address,
-                p.starting_price,
-                p.place_event
+                p.opening_hours,
+                CAST(p.place_score AS DECIMAL(10,1)) as place_score,
+                CAST(p.starting_price AS DECIMAL(10,0)) as starting_price,
+                p.place_event,
+                GROUP_CONCAT(DISTINCT c.category_name SEPARATOR ', ') as categories
             FROM place p
-            LEFT JOIN place_images pi ON p.place_id = pi.place_id
+            LEFT JOIN place_category pc ON p.place_id = pc.place_id
+            LEFT JOIN category c ON pc.category_id = c.category_id
             WHERE p.place_id = ?
+            GROUP BY p.place_id
         `;
+        
         const [rows] = await db.execute(sql, [id]);
 
         if (rows.length === 0) {
-            return res.status(404).json({ message: 'Place not found' });
+            return res.status(404).json({ success: false, message: 'Place not found' });
         }
 
-        res.json(rows[0]);
+        const place = rows[0];
+
+        // ดึงรูปภาพแยก
+        const imageSQL = `SELECT image_path FROM place_images WHERE place_id = ? ORDER BY image_id`;
+        const [images] = await db.execute(imageSQL, [id]);
+        
+        place.images = images.map(img => img.image_path);
+
+        res.json({ 
+            success: true, 
+            data: place
+        });
+        
     } catch (error) {
-        console.error('Error fetching place details:', error);
-        res.status(500).json({ error: error.message });
+        console.error('Get place detail error:', error);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
@@ -289,30 +305,29 @@ app.get('/places/category/:type', async (req, res) => {
 // API กรองตาม category และ province
 app.get('/categories', async (req, res) => {
     try {
-        const { types, provinces } = req.query; 
+        const { types, provinces } = req.query;
         
         console.log('=== /categories endpoint ===');
-        console.log('Received query:', req.query);
         console.log('Types:', types);
         console.log('Provinces:', provinces);
         
         let sql = `
-            SELECT DISTINCT p.place_id,
+            SELECT DISTINCT 
+                p.place_id,
                 p.place_name,
+                p.place_province,
                 p.place_eng_province,
                 p.opening_hours,
                 p.place_score,
-                pi.image_path
+                (SELECT image_path FROM place_images WHERE place_id = p.place_id LIMIT 1) as image_path
             FROM place p
-            LEFT JOIN place_images pi USING (place_id)
-            LEFT JOIN place_category pc USING (place_id)
-            LEFT JOIN category c USING (category_id)
+            LEFT JOIN place_category pc ON p.place_id = pc.place_id
+            LEFT JOIN category c ON pc.category_id = c.category_id
             WHERE 1=1
         `;
         
         let params = [];
 
-        // กรองตาม type (category)
         if (types) {
             const typeList = Array.isArray(types) ? types : [types];
             const placeholders = typeList.map(() => '?').join(',');
@@ -321,11 +336,11 @@ app.get('/categories', async (req, res) => {
             console.log('Filtering by types:', typeList);
         }
 
-        // กรองตาม province
         if (provinces) {
             const provinceList = Array.isArray(provinces) ? provinces : [provinces];
             const placeholders = provinceList.map(() => '?').join(',');
-            sql += ` AND p.place_province IN (${placeholders})`;
+            // ใช้ place_eng_province แทน place_province
+            sql += ` AND p.place_eng_province IN (${placeholders})`;
             params.push(...provinceList);
             console.log('Filtering by provinces:', provinceList);
         }
@@ -337,11 +352,17 @@ app.get('/categories', async (req, res) => {
 
         const [rows] = await db.execute(sql, params);
         console.log('Results count:', rows.length);
-        res.json(rows);
+        
+        res.json({ 
+            success: true, 
+            filters: { types, provinces }, 
+            count: rows.length, 
+            data: rows 
+        });
 
     } catch (err) {
-        console.error('Error:', err);
-        res.status(500).json({ error: err.message });
+        console.error('Filter error:', err);
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 
