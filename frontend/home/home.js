@@ -13,56 +13,6 @@ function setupMobileMenu() {
   closeBtn?.addEventListener("click", () => {
     menu.classList.remove("open");
   });
-
-  menu.addEventListener("click", (e) => {
-    const link = e.target.closest(".mobile-link");
-    if (link) {
-      menu.classList.remove("open");
-    }
-  });
-}
-
-// ========== avatar click ==========
-function setupAvatarClick() {
-  const avatarBtns = document.querySelectorAll(".avatar-btn");
-  avatarBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      console.log("Profile button clicked");
-    });
-  });
-}
-
-// ========== active state nav ==========
-function setupNavActive() {
-  const categoryOverlay = document.getElementById("categoryOverlay");
-
-  const navLinks = document.querySelectorAll(".nav-link");
-  navLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      navLinks.forEach((l) => l.classList.remove("active"));
-      link.classList.add("active");
-
-      // เปิด category panel เมื่อคลิก "Category" link
-      if (link.textContent.trim() === "Category" && categoryOverlay) {
-        categoryOverlay.classList.add("open");
-      }
-    });
-  });
-
-  const mobileLinks = document.querySelectorAll(".mobile-link");
-  mobileLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      mobileLinks.forEach((l) => l.classList.remove("active"));
-      link.classList.add("active");
-
-      // เปิด category panel เมื่อคลิก "Category" link ใน mobile menu
-      if (link.textContent.trim() === "Category" && categoryOverlay) {
-        categoryOverlay.classList.add("open");
-      }
-    });
-  });
 }
 
 // ========== ดาว ==========
@@ -142,6 +92,11 @@ function renderPlaceCards(places) {
 
     grid.appendChild(node);
   });
+  
+  // โหลดสถานะ favorite หลังจาก render cards
+  if (window.favoriteHandler) {
+    window.favoriteHandler.loadFavoriteStates();
+  }
 }
 
 // เปิดให้หลังบ้านใช้
@@ -149,16 +104,31 @@ window.renderPlaceCards = renderPlaceCards;
 
 // ========== toggle หัวใจ ==========
 function setupFavoriteToggle() {
-  document.addEventListener("click", (e) => {
+  document.addEventListener("click", async (e) => {
     const btn = e.target.closest(".card-fav-btn");
     if (!btn) return;
 
-    btn.classList.toggle("is-fav");
-    const icon = btn.querySelector(".material-icons");
-    if (icon) {
-      icon.textContent = btn.classList.contains("is-fav")
-        ? "favorite"
-        : "favorite_border";
+    // หา place_id จาก card
+    const card = btn.closest('.place-card');
+    const placeId = card?.dataset.id;
+    
+    if (!placeId) {
+      console.warn('No place_id found');
+      return;
+    }
+
+    // ใช้ favorite handler
+    if (window.favoriteHandler) {
+      await window.favoriteHandler.toggleFavorite(placeId, btn);
+    } else {
+      // fallback ถ้ายังไม่โหลด handler
+      btn.classList.toggle("is-active");
+      const icon = btn.querySelector(".material-icons");
+      if (icon) {
+        icon.textContent = btn.classList.contains("is-active")
+          ? "favorite"
+          : "favorite_border";
+      }
     }
   });
 }
@@ -447,9 +417,34 @@ function clearFilters() {
   console.log('Filters cleared');
 }
 
-// ========== กัน error ฟังก์ชันเดิม ==========
+// ========== เช็ค Login Status และแสดงข้อมูล User ==========
 function setupAuthButtons() {
-  // ไม่มีปุ่ม sign in / sign up แล้ว
+  const userStr = localStorage.getItem('loggedInUser');
+  const usernameDisplay = document.querySelector('.mobile-menu-header .username');
+  
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      console.log('User logged in:', user);
+      
+      // แสดงชื่อ user ใน mobile menu
+      if (usernameDisplay) {
+        usernameDisplay.textContent = user.user_name || user.first_name || 'User';
+      }
+      
+      // อาจเพิ่มการแสดงสถานะ login ในที่อื่นๆ ได้
+    } catch (e) {
+      console.error('Parse user error:', e);
+      localStorage.removeItem('loggedInUser');
+    }
+  } else {
+    console.log('No user logged in');
+    
+    // ถ้าไม่ได้ login ให้แสดง "Guest" หรือ "Login"
+    if (usernameDisplay) {
+      usernameDisplay.textContent = 'Guest';
+    }
+  }
 }
 
 // ========== ดึงข้อมูลสถานที่จาก backend ==========
@@ -544,8 +539,6 @@ window.fetchPlaces = fetchPlaces;
 // ========== INIT ==========
 document.addEventListener("DOMContentLoaded", () => {
   setupMobileMenu();
-  setupAvatarClick();
-  setupNavActive();
   if (typeof setupChipActive === 'function') {
     setupChipActive(); // จาก chip-filter.js
   }

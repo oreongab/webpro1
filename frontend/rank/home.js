@@ -13,50 +13,6 @@ function setupMobileMenu() {
   closeBtn?.addEventListener("click", () => {
     menu.classList.remove("open");
   });
-
-  menu.addEventListener("click", (e) => {
-    const link = e.target.closest(".mobile-link");
-    if (link) {
-      menu.classList.remove("open");
-    }
-  });
-}
-
-// ========== avatar click ==========
-function setupAvatarClick() {
-  const avatarBtns = document.querySelectorAll(".avatar-btn");
-  avatarBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      console.log("Profile button clicked");
-      // TODO: เปิดหน้า profile หรือ popup
-    });
-  });
-}
-
-// ========== active state nav ==========
-function setupNavActive() {
-  const navLinks = document.querySelectorAll(".nav-link");
-  navLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-      // ถ้า link เป็นไปหน้าอื่นไม่ต้อง prevent ก็ได้
-      if (link.getAttribute("href") === "#") {
-        e.preventDefault();
-      }
-      navLinks.forEach((l) => l.classList.remove("active"));
-      link.classList.add("active");
-    });
-  });
-
-  const mobileLinks = document.querySelectorAll(".mobile-link");
-  mobileLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-      if (link.getAttribute("href") === "#") {
-        e.preventDefault();
-      }
-      mobileLinks.forEach((l) => l.classList.remove("active"));
-      link.classList.add("active");
-    });
-  });
 }
 
 // ========== chips ==========
@@ -232,9 +188,34 @@ function setupCategoryButton() {
     }
   });
 }
-// ========== ปุ่ม Login/Signup (dummy) ==========
+// ========== เช็ค Login Status และแสดงข้อมูล User ==========
 function setupAuthButtons() {
-  // ลบ Sign in/Sign up
+  const userStr = localStorage.getItem('loggedInUser');
+  const usernameDisplay = document.querySelector('.mobile-menu-header .username');
+  
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      console.log('User logged in:', user);
+      
+      // แสดงชื่อ user ใน mobile menu
+      if (usernameDisplay) {
+        usernameDisplay.textContent = user.user_name || user.first_name || 'User';
+      }
+    } catch (e) {
+      console.error('Parse user error:', e);
+      localStorage.removeItem('loggedInUser');
+    }
+  } else {
+    console.log('No user logged in');
+    
+    // ถ้าไม่ได้ login ให้แสดง "Guest"
+    if (usernameDisplay) {
+      usernameDisplay.textContent = 'Guest';
+    }
+  }
+  
+  // ลบ Sign in/Sign up buttons
   const authButtons = document.querySelectorAll(".mobile-auth");
   authButtons.forEach((btn) => {
     btn.remove();
@@ -244,8 +225,6 @@ function setupAuthButtons() {
 // ========== INIT ==========
 document.addEventListener("DOMContentLoaded", () => {
   setupMobileMenu();
-  setupAvatarClick();
-  setupNavActive();
   setupChipActive();
   setupFavoriteToggle();
   setupCategoryButton();

@@ -1,14 +1,12 @@
 create schema aowngaideewa;
 use aowngaideewa;
 create table user(
-user_id int not null AUTO_INCREMENT primary key,
+user_id int not null primary key,
 user_name  varchar(35) not null,
 first_name varchar(35) not null,
 last_name varchar(35) not null,
 user_email varchar(255) not null,
 user_password varchar(255) not null);
-
-ALTER TABLE user AUTO_INCREMENT = 1;
 
 create table place(
 place_id int not null primary key,
@@ -19,6 +17,8 @@ starting_price numeric(5) default 0 null,
 opening_hours text null,
 place_event text null,
 place_score numeric(1,1) default 0 null);
+
+alter table place add place_eng_province varchar(50) not null;
 
 create table category(
 category_id int not null primary key,
@@ -70,5 +70,18 @@ INSERT INTO place_images (image_id, place_id, image_path) VALUES
 
 select * from place_images;
 
+ALTER TABLE user MODIFY user_id INT NOT NULL AUTO_INCREMENT;
+ALTER TABLE user AUTO_INCREMENT = 1;
 
- 
+ALTER TABLE favorite ADD FOREIGN KEY (user_id) REFERENCES user(user_id);
+
+ALTER TABLE favorite DROP FOREIGN KEY favorite_ibfk_1;
+
+
+SELECT DISTINCT  p.place_id, p.place_name, p.opening_hours, p.place_score, image_path from place p
+left join place_images using ( place_id )
+join  place_category using ( place_id )
+join category using (category_id) where category_name = "Cafe & Restaurants";
+
+alter table favorite modify favorite_id INT NOT NULL AUTO_INCREMENT;
+ALTER TABLE favorite AUTO_INCREMENT = 001;

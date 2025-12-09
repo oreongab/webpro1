@@ -40,10 +40,10 @@
    * โหลด user จาก localStorage และ API
    * ------------------------------------------- */
   async function tryLoadCurrentUser() {
-    // ดึง user_id จาก localStorage
-    const userId = localStorage.getItem('currentUserId');
+    // ดึง user object จาก localStorage
+    const userStr = localStorage.getItem('loggedInUser');
     
-    if (!userId) {
+    if (!userStr) {
       console.warn('No user logged in');
       renderUserFromObject({
         displayName: 'Guest',
@@ -53,12 +53,16 @@
       return;
     }
 
-    // เรียก API เพื่อดึงข้อมูล user
     try {
+      const userData = JSON.parse(userStr);
+      const userId = userData.user_id;
+      
+      // เรียก API เพื่อดึงข้อมูล user ล่าสุด
       const resp = await fetch(`http://localhost:3000/users/${userId}`, {
         method: 'GET',
         headers: { Accept: 'application/json' },
       });
+      
       if (!resp.ok) throw new Error('Failed to fetch user data');
       const user = await resp.json();
       
@@ -85,32 +89,64 @@
   }
 
   /* ---------------------------------------------
-   * แสดง Favorites (ถ้ามี)
+   * แสดง Favorites (ดึงจาก API)
    * ------------------------------------------- */
-  function renderFavorites() {
+  async function renderFavorites() {
     const favList = document.getElementById('favList');
     const favoritesSection = document.querySelector('.favorites-section');
     if (!favList || !favoritesSection) return;
 
-    // ดึงข้อมูล favorites จาก localStorage (ตัวอย่าง)
-    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-
-    if (favorites.length === 0) {
-      favList.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No favorites yet</p>';
+    // ดึง user ID จาก localStorage
+    const userStr = localStorage.getItem('loggedInUser');
+    if (!userStr) {
+      favList.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">Please log in to see favorites</p>';
       return;
     }
 
-    // แสดง favorites
-    favList.innerHTML = favorites.map(fav => `
-      <a href="${fav.url || '#'}" class="fav-item">
-        <div class="fav-image-placeholder">
-          <img src="${fav.image || ''}" alt="${fav.name}" class="fav-img">
-        </div>
-        <div class="fav-details">
-          <span class="fav-name">${fav.name}</span>
-        </div>
-      </a>
-    `).join('');
+    try {
+      const userData = JSON.parse(userStr);
+      const userId = userData.user_id;
+
+      // เรียก API เพื่อดึง favorites
+      const response = await fetch(`http://localhost:3000/favorites/${userId}`);
+      const result = await response.json();
+
+      if (!result.success || !result.data || result.data.length === 0) {
+        favList.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No favorites yet</p>';
+        return;
+      }
+
+      // แสดง favorites (แสดงแค่ 3 รายการแรกในหน้า profile)
+      const favorites = result.data.slice(0, 3);
+      console.log('Rendering favorites:', favorites);
+      
+      favList.innerHTML = favorites.map(place => {
+        // แปลง path จาก 'project/img_place/xxx.jpg' เป็น '../../img_place/xxx.jpg'
+        let imagePath = '../../img_place/default.jpg';
+        if (place.image_path) {
+          imagePath = place.image_path.replace('project/', '../../');
+        }
+        
+        const placeUrl = `../place/place-detail.html?id=${place.place_id}`;
+        console.log('Creating link for place:', place.place_name, 'URL:', placeUrl);
+        
+        return `
+          <a href="${placeUrl}" class="fav-item">
+            <div class="fav-image-placeholder">
+              <img src="${imagePath}" alt="${place.place_name}" class="fav-img" onerror="this.src='../../img_place/default.jpg'">
+            </div>
+            <div class="fav-details">
+              <span class="fav-name">${place.place_name}</span>
+            </div>
+          </a>
+        `;
+      }).join('');
+      
+      console.log('Favorites rendered successfully');
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+      favList.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">Failed to load favorites</p>';
+    }
   }
 
   /* ---------------------------------------------
@@ -132,7 +168,7 @@
 
     // ปุ่ม home (mobile header)
     document.querySelector('.header .home-btn')?.addEventListener('click', () => {
-      window.location.href = '../deskmain.html';
+      window.location.href = '../home/home.html';
     });
 
     // ปุ่ม Edit Profile
@@ -146,8 +182,8 @@
     document.querySelector('.log-out-btn-link')?.addEventListener('click', (e) => {
       e.preventDefault();
       if (confirm('Are you sure you want to log out?')) {
-        localStorage.removeItem('currentUserId');
-        localStorage.removeItem('currentUserName');
+        localStorage.removeItem('loggedInUser');
+        localStorage.removeItem('userAvatar');
         window.location.href = '../login/login.html';
       }
     });
@@ -155,9 +191,12 @@
     // ปุ่ม Delete Account
     document.querySelector('.delete-account-btn-link')?.addEventListener('click', (e) => {
       e.preventDefault();
-      if (confirm('Are you sure you want to delete your account? .')) {
-        const userId = localStorage.getItem('currentUserId');
-        if (userId) {
+      if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        const userStr = localStorage.getItem('loggedInUser');
+        if (userStr) {
+          const userData = JSON.parse(userStr);
+          const userId = userData.user_id;
+          
           // เรียก API ลบ account
           fetch(`http://localhost:3000/users/${userId}`, {
             method: 'DELETE'
@@ -165,8 +204,8 @@
           .then(response => response.json())
           .then(data => {
             alert(data.message || 'Account deleted successfully');
-            localStorage.removeItem('currentUserId');
-            localStorage.removeItem('currentUserName');
+            localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('userAvatar');
             window.location.href = '../login/login.html';
           })
           .catch(err => {

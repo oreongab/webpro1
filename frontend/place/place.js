@@ -146,26 +146,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ปุ่มหัวใจ (จะเห็นก็ต่อเมื่อมีข้อมูลและตัว content โผล่)
   const favBtn = document.querySelector(".place-detail-fav");
-  if (favBtn) {
-    favBtn.addEventListener("click", () => {
-      favBtn.classList.toggle("is-active");
-
-      const icon = favBtn.querySelector(".material-icons");
-      if (icon) {
-        icon.textContent = favBtn.classList.contains("is-active")
-          ? "favorite"
-          : "favorite_border";
+  if (favBtn && placeId) {
+    // โหลดสถานะ favorite เริ่มต้น
+    if (window.favoriteHandler) {
+      const isFav = await window.favoriteHandler.checkIsFavorite(placeId);
+      if (isFav) {
+        favBtn.classList.add('is-active');
+        const icon = favBtn.querySelector('.material-icons');
+        if (icon) icon.textContent = 'favorite';
       }
-    });
-  }
+    }
 
-  // ปุ่มย้อนกลับ
-  const backBtn = document.querySelector(".place-detail-back");
-  if (backBtn) {
-    backBtn.addEventListener("click", () => {
-      window.history.back();
-      // หรือถ้าอยาก fix ให้กลับหน้า home:
-      // location.href = "../home/home.html";
+    favBtn.addEventListener("click", async () => {
+      if (window.favoriteHandler) {
+        await window.favoriteHandler.toggleFavorite(placeId, favBtn);
+      } else {
+        // fallback
+        favBtn.classList.toggle("is-active");
+        const icon = favBtn.querySelector(".material-icons");
+        if (icon) {
+          icon.textContent = favBtn.classList.contains("is-active")
+            ? "favorite"
+            : "favorite_border";
+        }
+      }
     });
   }
 });

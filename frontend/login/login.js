@@ -53,10 +53,17 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Response data:', data);
             
             if (response.ok) {
-                // บันทึก user_id และข้อมูล user ใน localStorage
-                localStorage.setItem('currentUserId', data.user_id);
-                localStorage.setItem('currentUserName', data.user_name);
-                localStorage.setItem('currentUserPassword', passwordValue);
+                // บันทึก user object ทั้งหมดใน localStorage
+                const userObject = {
+                    user_id: data.user_id,
+                    user_name: data.user_name,
+                    first_name: data.first_name,
+                    last_name: data.last_name,
+                    user_email: data.user_email
+                };
+                
+                localStorage.setItem('loggedInUser', JSON.stringify(userObject));
+                console.log('User saved to localStorage:', userObject);
                 
                 // บันทึกหรือลบ email ตามการติ๊ก checkbox
                 if (keepMeLoggedInCheckbox.checked) {
@@ -66,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 alert('เข้าสู่ระบบสำเร็จ');
-                window.location.href = '../deskmain.html';
+                window.location.href = '../home/home.html';
             } else {
                 alert(data.message || 'เข้าสู่ระบบไม่สำเร็จ');
             }

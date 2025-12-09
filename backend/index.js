@@ -369,6 +369,135 @@ app.get('/categories', async (req, res) => {
 //filter by opening days
 
 
+//get favorite
+app.get('/favorites/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        
+        
+        console.log('User ID:', userId);
+        
+        const sql = `
+            SELECT DISTINCT
+                p.place_id,
+                p.place_name,
+                p.place_province,
+                p.opening_hours,
+                p.place_score,
+                (SELECT image_path FROM place_images WHERE place_id = p.place_id LIMIT 1) as image_path,
+                f.favorite_id
+            FROM favorite f
+            INNER JOIN place p ON f.place_id = p.place_id
+            WHERE f.user_id = ?
+            ORDER BY f.favorite_id DESC
+        `;
+        
+        const [rows] = await db.execute(sql, [userId]);
+        
+        console.log('Favorites found:', rows.length);
+        console.log('Place IDs:', rows.map(r => r.place_id));
+        
+        res.json({ success: true, data: rows });
+        
+    } catch (error) {
+        console.error('Get favorites error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+
+
+// Check favorited
+app.get('/favorites/:userId/:placeId', async (req, res) => {
+    try {
+        const { userId, placeId } = req.params;
+        
+        const sql = 'SELECT * FROM favorite WHERE user_id = ? AND place_id = ?';
+        const [rows] = await db.execute(sql, [userId, placeId]);
+        
+        res.json({ 
+            success: true, 
+            isFavorite: rows.length > 0,
+            favoriteId: rows.length > 0 ? rows[0].favorite_id : null
+        });
+        
+    } catch (error) {
+        console.error('Check favorite error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// add favorite
+app.post('/favorites', async (req, res) => {
+    try {
+        const { user_id, place_id } = req.body;
+        
+        if (!user_id || !place_id) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'user_id and place_id are required' 
+            });
+        }
+
+        // Check if already favorited
+        const checkSQL = 'SELECT * FROM favorite WHERE user_id = ? AND place_id = ?';
+        const [existing] = await db.execute(checkSQL, [user_id, place_id]);
+        
+        if (existing.length > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Place already in favorites' 
+            });
+        }
+
+        // Insert favorite
+        const sql = 'INSERT INTO favorite (user_id, place_id) VALUES (?, ?)';
+        const [result] = await db.execute(sql, [user_id, place_id]);
+        
+        res.status(201).json({ 
+            success: true, 
+            message: 'Added to favorites', 
+            favoriteId: result.insertId 
+        });
+        
+    } catch (error) {
+        console.error('Add favorite error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+
+//remove favorite
+   app.delete('/favorites/:userId/:placeId', async (req, res) => {
+    try {
+        const { userId, placeId } = req.params;
+        
+        const sql = 'DELETE FROM favorite WHERE user_id = ? AND place_id = ?';
+        const [result] = await db.execute(sql, [userId, placeId]);
+        
+        if (result.affectedRows > 0) {
+            res.json({ 
+                success: true, 
+                message: 'Removed from favorites' 
+            });
+        } else {
+            res.status(404).json({ 
+                success: false, 
+                message: 'Favorite not found' 
+            });
+        }
+        
+    } catch (error) {
+        console.error('Remove favorite error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+
+
+//rank
+    
+
 
 
 app.listen(port, () => {
