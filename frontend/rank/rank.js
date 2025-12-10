@@ -170,96 +170,32 @@ function renderPlaceCards(places) {
   
   console.log('Places rendered:', places.length);
   
-  // โหลดสถานะ favorite
-  if (typeof loadFavoriteStates === 'function') {
-    console.log('Loading favorite states...');
-    loadFavoriteStates();
-  } else if (window.favoriteHandler && typeof window.favoriteHandler.loadFavoriteStates === 'function') {
-    console.log('Loading favorite states from handler...');
-    window.favoriteHandler.loadFavoriteStates();
-  } else {
-    console.warn('Favorite handler not found');
-  }
+  // โหลดสถานะ favorite หลังจาก render cards
+  setTimeout(() => {
+    if (window.favoriteHandler && typeof window.favoriteHandler.loadFavoriteStates === 'function') {
+      console.log('[Rank] Loading favorite states after render...');
+      window.favoriteHandler.loadFavoriteStates();
+    }
+  }, 50);
 }
 
-// ========== เปิด/ปิด Opening Days Filter Panel ==========
-function setupCategoryPanel() {
-  const filterBtn = document.getElementById('categoryBtn');
-  const panel = document.getElementById('openingDaysPanel');
-  
-  if (!filterBtn || !panel) {
-    console.warn('Filter button or panel not found');
-    return;
-  }
-
-  // เปิด panel
-  filterBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = panel.classList.contains('open');
-    
-    if (isOpen) {
-      panel.classList.remove('open');
-      panel.setAttribute('aria-hidden', 'true');
-    } else {
-      panel.classList.add('open');
-      panel.setAttribute('aria-hidden', 'false');
-    }
-  });
-
-  // ปิด panel เมื่อคลิกข้างนอก
-  document.addEventListener('click', (e) => {
-    if (!panel.contains(e.target) && e.target !== filterBtn) {
-      panel.classList.remove('open');
-      panel.setAttribute('aria-hidden', 'true');
-    }
-  });
-
-  // ปุ่ม Clear
-  const clearBtn = panel.querySelector('.filter-clear');
-  if (clearBtn) {
-    clearBtn.addEventListener('click', () => {
-      // ยกเลิก checkbox ทั้งหมด
-      panel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-      // ยกเลิก day chips
-      panel.querySelectorAll('.day-chip').forEach(chip => chip.classList.remove('active'));
-    });
-  }
-
-  // ปุ่ม Apply
-  const applyBtn = panel.querySelector('.filter-apply');
-  if (applyBtn) {
-    applyBtn.addEventListener('click', () => {
-      // ปิด panel
-      panel.classList.remove('open');
-      panel.setAttribute('aria-hidden', 'true');
-      
-      // TODO: ใช้ filter ที่เลือกมากรองข้อมูล
-      console.log('Apply filter clicked');
-    });
-  }
-
-  // Day chips toggle
-  const dayChips = panel.querySelectorAll('.day-chip');
-  dayChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      chip.classList.toggle('active');
-    });
-  });
-}
+// Export for combined-filter.js
+window.renderPlaceCards = renderPlaceCards;
 
 // ========== โหลดข้อมูล rank ทั้งหมด (เรียงตาม score) ==========
 async function fetchRankPlaces() {
   try {
     console.log('=== Loading rank places ===');
     
-    const response = await fetch('http://localhost:3000/places');
+    const response = await fetch('http://localhost:3000/places?page=rank');
     console.log('Response status:', response.status);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    const data = await response.json();
+    const result = await response.json();
+    const data = result.success ? result.data : [];
     console.log('Rank data received:', data.length, 'places');
     
     if (!data || data.length === 0) {
@@ -296,7 +232,7 @@ async function fetchRankPlaces() {
 async function fetchPlacesByCategory(category) {
   try {
     console.log('=== Fetching category:', category, '===');
-    const url = `http://localhost:3000/places/category/${category}`;
+    const url = `http://localhost:3000/places/category/${category}?page=rank`;
     console.log('URL:', url);
     
     const response = await fetch(url);
@@ -304,7 +240,8 @@ async function fetchPlacesByCategory(category) {
     
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     
-    const data = await response.json();
+    const result = await response.json();
+    const data = result.success ? result.data : [];
     console.log('Data received:', data.length, 'places');
     
     if (!data || data.length === 0) {
@@ -350,7 +287,8 @@ function setupSearch() {
     try {
       const response = await fetch('http://localhost:3000/places');
       if (response.ok) {
-        allPlaces = await response.json();
+        const result = await response.json();
+        allPlaces = result.success ? result.data : [];
       }
     } catch (error) {
       console.error('Error loading places for suggestions:', error);
@@ -441,7 +379,8 @@ async function searchPlaces(query) {
     console.log('=== Searching for:', query, '===');
     
     const params = new URLSearchParams({
-      query: query
+      query: query,
+      page: 'rank'
     });
     
     const url = `http://localhost:3000/places/search?${params.toString()}`;
@@ -455,19 +394,12 @@ async function searchPlaces(query) {
     }
     
     const result = await response.json();
-    console.log('Search results:', result);
+    const data = result.success ? result.data : [];
+    console.log('Search results:', data);
     
-    if (result.success && result.data) {
-      console.log('Found', result.data.length, 'places');
-      
-      // เรียงตาม place_score จากมากไปน้อย
-      const sortedData = result.data.sort((a, b) => {
-        const scoreA = parseFloat(a.place_score) || 0;
-        const scoreB = parseFloat(b.place_score) || 0;
-        return scoreB - scoreA;
-      });
-      
-      renderPlaceCards(sortedData);
+    if (data && Array.isArray(data)) {
+      console.log('Found', data.length, 'places');
+      renderPlaceCards(data);
     } else {
       console.log('No results found');
       renderPlaceCards([]);
@@ -597,53 +529,28 @@ async function applyFilters() {
   console.log('Provinces:', selectedProvinces);
 
   try {
-    // สร้าง query string
-    const params = new URLSearchParams();
-    
-    if (selectedTypes.length > 0) {
-      selectedTypes.forEach(type => params.append('types', type));
+    // ใช้ Combined Filter System
+    if (window.combinedFilter) {
+      window.combinedFilter.setCategoryFilters(selectedTypes, selectedProvinces);
+      window.combinedFilter.setChipFilter(null); // ล้าง chip filter
+      
+      // ล้าง chip bar active
+      document.querySelectorAll('.chip-bar .chip').forEach(chip => {
+        chip.classList.remove('active');
+      });
+      
+      await window.combinedFilter.applyCombinedFilters();
+    } else {
+      console.error('Combined filter system not available');
     }
-    
-    if (selectedProvinces.length > 0) {
-      selectedProvinces.forEach(province => params.append('provinces', province));
-    }
-
-    const url = `http://localhost:3000/categories?${params.toString()}`;
-    console.log('Fetching:', url);
-
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    console.log('Filtered result:', result);
-
-    if (!result.success || !result.data || result.data.length === 0) {
-      const grid = document.getElementById('placeGrid');
-      if (grid) {
-        grid.innerHTML = '<p style="text-align:center; padding:2rem; color:#666;">ไม่พบสถานที่ที่ตรงกับเงื่อนไข</p>';
-      }
-      return;
-    }
-
-    // เรียงตาม place_score จากมากไปน้อย
-    const sortedData = result.data.sort((a, b) => {
-      const scoreA = parseFloat(a.place_score) || 0;
-      const scoreB = parseFloat(b.place_score) || 0;
-      return scoreB - scoreA;
-    });
-
-    renderPlaceCards(sortedData);
 
   } catch (error) {
     console.error('Error applying filters:', error);
-    alert('เกิดข้อผิดพลาดในการกรองข้อมูล: ' + error.message);
   }
 }
 
 // ล้าง filter ทั้งหมด
-function clearFilters() {
+async function clearFilters() {
   selectedTypes = [];
   selectedProvinces = [];
 
@@ -664,8 +571,14 @@ function clearFilters() {
   // ล้าง chip selection ด้วย
   document.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
   
-  // แสดงข้อมูลทั้งหมด
-  fetchRankPlaces();
+  // ใช้ Combined Filter System
+  if (window.combinedFilter) {
+    window.combinedFilter.setCategoryFilters([], []);
+    await window.combinedFilter.applyCombinedFilters();
+  } else {
+    // Fallback
+    fetchRankPlaces();
+  }
 
   console.log('Filters cleared');
 }
@@ -715,20 +628,56 @@ function setupAuthButtons() {
 
 // ========== toggle หัวใจ ==========
 function setupFavoriteToggle() {
-  // ใช้ favorite-handler.js
+  document.addEventListener("click", async (e) => {
+    const btn = e.target.closest(".card-fav-btn");
+    if (!btn) return;
+
+    // หา place_id จาก card
+    const card = btn.closest('.place-card');
+    const placeId = card?.dataset.id;
+    
+    if (!placeId) {
+      console.warn('No place_id found');
+      return;
+    }
+
+    // ใช้ favorite handler
+    if (window.favoriteHandler) {
+      await window.favoriteHandler.toggleFavorite(placeId, btn);
+    } else {
+      // fallback ถ้ายังไม่โหลด handler
+      btn.classList.toggle("is-active");
+      const icon = btn.querySelector(".material-icons");
+      if (icon) {
+        icon.textContent = btn.classList.contains("is-active")
+          ? "favorite"
+          : "favorite_border";
+      }
+    }
+  });
 }
 
 // ========== INIT ==========
 document.addEventListener("DOMContentLoaded", () => {
   console.log('Rank page initialized');
   
+  // ตั้งค่า page สำหรับ combined filter
+  if (window.combinedFilter) {
+    window.combinedFilter.setCurrentPage('rank');
+  }
+  
   setupMobileMenu();
   setupChipActive();
+  setupCategoryPanel(); // Category filter panel
   setupSearch();
-  setupCategoryPanel();
   setupAuthButtons();
   setupFavoriteToggle();
   
-  // โหลดข้อมูล rank ครั้งแรก
+  // Setup opening filter
+  if (typeof setupOpeningDaysFilter === 'function') {
+    setupOpeningDaysFilter('rank');
+  }
+  
+  // โหลดข้อมูล rank ครั้งแรก (จะเรียก loadFavoriteStates ภายใน)
   fetchRankPlaces();
 });

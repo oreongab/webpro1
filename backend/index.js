@@ -170,9 +170,15 @@ app.post('/edituser', async (req, res) => {
     }
 });
 
-// 7.  ดึงสถานที่ทั้งหมด
+// 7. ดึงสถานที่ทั้งหมด 
 app.get('/places', async (req, res) => {
     try {
+        const { page } = req.query;
+        
+        const orderBy = page === 'rank' 
+            ? 'ORDER BY CAST(p.place_score AS DECIMAL(3,1)) DESC, p.place_id'
+            : 'ORDER BY p.place_id';
+        
         const sql = `
             SELECT 
                 p.place_id,
@@ -183,13 +189,61 @@ app.get('/places', async (req, res) => {
                 pi.image_path
             FROM place p
             LEFT JOIN place_images pi ON p.place_id = pi.place_id
-            ORDER BY p.place_id
+            ${orderBy}
         `;
         const [rows] = await db.execute(sql);
-        res.json(rows);
+        res.json({ success: true, data: rows });
     } catch (error) {
         console.error('Error fetching places:', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ success: false, message: 'Error fetching places', error: error.message });
+    }
+});
+
+// 7.1. Filter places by opening hours (ต้องอยู่ก่อน /places/:id)
+app.get('/places/filter/opening', async (req, res) => {
+    try {
+        const { everyday, opennow, weekday, hours24, days, page } = req.query;
+        
+        console.log('=== Opening Hours Filter API ===');
+        console.log('Filters:', { everyday, opennow, weekday, hours24, days });
+        console.log('Page:', page || 'home');
+        
+        const orderBy = page === 'rank' 
+            ? 'ORDER BY CAST(p.place_score AS DECIMAL(3,1)) DESC, p.place_id'
+            : 'ORDER BY p.place_id';
+        
+        const sql = `
+            SELECT DISTINCT 
+                p.place_id,
+                p.place_name,
+                p.place_province,
+                p.opening_hours,
+                CAST(p.place_score AS DECIMAL(3,1)) as place_score,
+                (SELECT image_path FROM place_images WHERE place_id = p.place_id LIMIT 1) as image_path
+            FROM place p
+            ${orderBy}
+        `;
+        
+        const [rows] = await db.execute(sql);
+        console.log('Total places:', rows.length);
+        
+        // ส่งข้อมูลทั้งหมดพร้อม filters ไปให้ Frontend กรองเอง
+        res.json({ 
+            success: true, 
+            data: rows, 
+            count: rows.length,
+            filters: {
+                everyday: everyday === 'true',
+                opennow: opennow === 'true',
+                weekday: weekday === 'true',
+                hours24: hours24 === 'true',
+                selectedDays: days ? (Array.isArray(days) ? days : [days]) : []
+            }
+        });
+        
+    } catch (error) {
+        console.error('Opening hours filter error:', error);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
@@ -233,14 +287,11 @@ app.get('/places/:id', async (req, res) => {
         
         place.images = images.map(img => img.image_path);
 
-        res.json({ 
-            success: true, 
-            data: place
-        });
+        res.json({ success: true, data: place });
         
     } catch (error) {
         console.error('Get place detail error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, message: 'Error fetching place detail', error: error.message });
     }
 });
 
@@ -262,13 +313,17 @@ const categoryMapping = {
 
 app.get('/places/category/:type', async (req, res) => {
     try {
-        const { type } = req.params; 
+        const { type } = req.params;
+        const { page } = req.query;
         const dbCategoryName = categoryMapping[type]; 
 
         if (!dbCategoryName) {
-            console.warn(`Invalid category requested: ${type}`);
-            return res.status(404).json({ error: 'Category not found or invalid' });
+            return res.status(404).json({ success: false, message: 'Category not found or invalid' });
         }
+
+        const orderBy = page === 'rank' 
+            ? 'ORDER BY CAST(p.place_score AS DECIMAL(3,1)) DESC, p.place_id'
+            : 'ORDER BY p.place_id';
 
         const sql = `
             SELECT DISTINCT p.place_id,
@@ -282,27 +337,26 @@ app.get('/places/category/:type', async (req, res) => {
             JOIN place_category USING (place_id)
             JOIN category USING (category_id) 
             WHERE category_name = ?
-            ORDER BY CAST(p.place_score AS DECIMAL(3,1)) DESC, p.place_id
+            ${orderBy}
         `;
 
         const [rows] = await db.execute(sql, [dbCategoryName]);
-        
-        res.json(rows);
+        res.json({ success: true, data: rows });
 
     } catch (error) {
         console.error(`Error fetching category ${req.params.type}:`, error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ success: false, message: 'Error fetching category', error: error.message });
     }
 });
 
-// 10. category&province
+// 10. category & province - รองรับทั้ง HOME และ RANK
 app.get('/categories', async (req, res) => {
     try {
-        const { types, provinces } = req.query;
+        const { types, provinces, page } = req.query;
         
-        console.log('=== /categories endpoint ===');
-        console.log('Types:', types);
-        console.log('Provinces:', provinces);
+        const orderBy = page === 'rank' 
+            ? 'ORDER BY CAST(p.place_score AS DECIMAL(3,1)) DESC, p.place_id'
+            : 'ORDER BY p.place_id';
         
         let sql = `
             SELECT DISTINCT 
@@ -326,7 +380,6 @@ app.get('/categories', async (req, res) => {
             const placeholders = typeList.map(() => '?').join(',');
             sql += ` AND c.category_name IN (${placeholders})`;
             params.push(...typeList);
-            console.log('Filtering by types:', typeList);
         }
 
         if (provinces) {
@@ -334,27 +387,16 @@ app.get('/categories', async (req, res) => {
             const placeholders = provinceList.map(() => '?').join(',');
             sql += ` AND p.place_eng_province IN (${placeholders})`;
             params.push(...provinceList);
-            console.log('Filtering by provinces:', provinceList);
         }
 
-        sql += ` ORDER BY p.place_id`;
-
-        console.log('SQL:', sql);
-        console.log('Params:', params);
+        sql += ` ${orderBy}`;
 
         const [rows] = await db.execute(sql, params);
-        console.log('Results count:', rows.length);
-        
-        res.json({ 
-            success: true, 
-            filters: { types, provinces }, 
-            count: rows.length, 
-            data: rows 
-        });
+        res.json({ success: true, data: rows });
 
     } catch (err) {
         console.error('Filter error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, message: 'Error filtering places', error: err.message });
     }
 });
 
@@ -362,8 +404,6 @@ app.get('/categories', async (req, res) => {
 app.get('/favorites/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
-        
-        console.log('User ID:', userId);
         
         const sql = `
             SELECT DISTINCT
@@ -381,15 +421,11 @@ app.get('/favorites/:userId', async (req, res) => {
         `;
         
         const [rows] = await db.execute(sql, [userId]);
-        
-        console.log('Favorites found:', rows.length);
-        console.log('Place IDs:', rows.map(r => r.place_id));
-        
         res.json({ success: true, data: rows });
         
     } catch (error) {
         console.error('Get favorites error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, message: 'Error fetching favorites', error: error.message });
     }
 });
 
@@ -402,14 +438,14 @@ app.get('/favorites/:userId/:placeId', async (req, res) => {
         const [rows] = await db.execute(sql, [userId, placeId]);
         
         res.json({ 
-            success: true, 
+            success: true,
             isFavorite: rows.length > 0,
             favoriteId: rows.length > 0 ? rows[0].favorite_id : null
         });
         
     } catch (error) {
         console.error('Check favorite error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, message: 'Error checking favorite', error: error.message });
     }
 });
 
@@ -420,35 +456,33 @@ app.post('/favorites', async (req, res) => {
         
         if (!user_id || !place_id) {
             return res.status(400).json({ 
-                success: false, 
+                success: false,
                 message: 'user_id and place_id are required' 
             });
         }
 
-        // Check if already favorited
         const checkSQL = 'SELECT * FROM favorite WHERE user_id = ? AND place_id = ?';
         const [existing] = await db.execute(checkSQL, [user_id, place_id]);
         
         if (existing.length > 0) {
             return res.status(400).json({ 
-                success: false, 
+                success: false,
                 message: 'Place already in favorites' 
             });
         }
 
-        // Insert favorite
         const sql = 'INSERT INTO favorite (user_id, place_id) VALUES (?, ?)';
         const [result] = await db.execute(sql, [user_id, place_id]);
         
         res.status(201).json({ 
-            success: true, 
+            success: true,
             message: 'Added to favorites', 
             favoriteId: result.insertId 
         });
         
     } catch (error) {
         console.error('Add favorite error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, message: 'Error adding favorite', error: error.message });
     }
 });
 
@@ -461,20 +495,14 @@ app.delete('/favorites/:userId/:placeId', async (req, res) => {
         const [result] = await db.execute(sql, [userId, placeId]);
         
         if (result.affectedRows > 0) {
-            res.json({ 
-                success: true, 
-                message: 'Removed from favorites' 
-            });
+            res.json({ success: true, message: 'Removed from favorites' });
         } else {
-            res.status(404).json({ 
-                success: false, 
-                message: 'Favorite not found' 
-            });
+            res.status(404).json({ success: false, message: 'Favorite not found' });
         }
         
     } catch (error) {
         console.error('Remove favorite error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, message: 'Error removing favorite', error: error.message });
     }
 });
 
@@ -517,20 +545,18 @@ app.get('/places/rank', async (req, res) => {
     }
 });
 
-// Search - ค้นหาสถานที่ตามชื่อหรือจังหวัด
+// 15. Search - ค้นหาสถานที่ตามชื่อหรือจังหวัด - รองรับทั้ง HOME และ RANK
 app.get('/places/search', async (req, res) => {
     try {
-        const { query } = req.query;
-        
-        console.log('=== Search API ===');
-        console.log('Search query:', query);
+        const { query, page } = req.query;
         
         if (!query || query.trim() === '') {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Search query is required' 
-            });
+            return res.status(400).json({ success: false, message: 'Search query is required' });
         }
+        
+        const orderBy = page === 'rank' 
+            ? 'ORDER BY CAST(p.place_score AS DECIMAL(3,1)) DESC, p.place_id'
+            : 'ORDER BY p.place_id';
         
         const sql = `
             SELECT DISTINCT 
@@ -542,29 +568,18 @@ app.get('/places/search', async (req, res) => {
                 (SELECT image_path FROM place_images WHERE place_id = p.place_id LIMIT 1) as image_path
             FROM place p
             WHERE p.place_name LIKE ? OR p.place_province LIKE ?
-            ORDER BY CAST(p.place_score AS DECIMAL(3,1)) DESC, p.place_id
+            ${orderBy}
         `;
         
         const searchTerm = `%${query}%`;
         const [rows] = await db.execute(sql, [searchTerm, searchTerm]);
-        
-        console.log('Search results:', rows.length, 'places found');
-        if (rows.length > 0) {
-            console.log('Top 3 results:', rows.slice(0, 3).map(r => ({
-                name: r.place_name,
-                score: r.place_score
-            })));
-        }
-        
-        res.json({ success: true, data: rows, count: rows.length });
+        res.json({ success: true, data: rows });
         
     } catch (error) {
         console.error('Search error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ success: false, message: 'Error searching places', error: error.message });
     }
 });
-
-//filter open hours
 
     
 
@@ -573,4 +588,3 @@ app.get('/places/search', async (req, res) => {
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
-

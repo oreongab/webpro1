@@ -62,14 +62,13 @@ async function fetchFavoritePlaces() {
     
     const result = await response.json();
     console.log('Result:', result);
-    console.log('Result.success:', result.success);
-    console.log('Result.data:', result.data);
-    console.log('Result.data length:', result.data?.length);
+    const data = result.success ? result.data : [];
+    console.log('Data length:', data?.length);
 
-    if (result.success && result.data) {
-      console.log('Raw data from API:', result.data);
+    if (data && Array.isArray(data)) {
+      console.log('Raw data from API:', data);
       
-      const places = result.data.map((item) => {
+      const places = data.map((item) => {
         console.log('Processing item:', item);
         return {
           id: item.place_id,

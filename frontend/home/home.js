@@ -45,7 +45,9 @@ function renderPlaceCards(places) {
   places.forEach((p, index) => {
     const node = tpl.content.firstElementChild.cloneNode(true);
 
-    node.dataset.id = p.id ?? index + 1;
+    // ใช้ place_id หรือ id
+    const placeId = p.place_id || p.id || (index + 1);
+    node.dataset.id = placeId;
 
     // คลิกการ์ดไปหน้า detail
     node.style.cursor = 'pointer';
@@ -93,10 +95,13 @@ function renderPlaceCards(places) {
     grid.appendChild(node);
   });
   
-  // โหลดสถานะ favorite หลังจาก render cards
-  if (window.favoriteHandler) {
-    window.favoriteHandler.loadFavoriteStates();
-  }
+  // โหลดสถานะ favorite หลังจาก render cards (ใช้ setTimeout เพื่อให้ DOM update เสร็จก่อน)
+  setTimeout(() => {
+    if (window.favoriteHandler) {
+      console.log('[Home] Loading favorite states after render...');
+      window.favoriteHandler.loadFavoriteStates();
+    }
+  }, 50);
 }
 
 // เปิดให้หลังบ้านใช้
@@ -130,48 +135,6 @@ function setupFavoriteToggle() {
           : "favorite_border";
       }
     }
-  });
-}
-
-// ========== Opening Days Panel (ปุ่ม tune icon) ==========
-function setupOpeningDaysPanel() {
-  const categoryBtn = document.getElementById('categoryBtn');
-  const openingDaysPanel = document.getElementById('openingDaysPanel');
-  
-  if (categoryBtn && openingDaysPanel) {
-    categoryBtn.addEventListener('click', () => {
-      const isHidden = openingDaysPanel.getAttribute('aria-hidden') === 'true';
-      openingDaysPanel.setAttribute('aria-hidden', isHidden ? 'false' : 'true');
-    });
-  }
-
-  // ปิดเมื่อคลิก Clear หรือ Apply
-  const clearBtn = openingDaysPanel?.querySelector('.filter-clear');
-  const applyBtn = openingDaysPanel?.querySelector('.filter-apply');
-  
-  if (clearBtn) {
-    clearBtn.addEventListener('click', () => {
-      // ล้าง checkbox ทั้งหมด
-      openingDaysPanel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-      // ล้าง active จาก day chips
-      openingDaysPanel.querySelectorAll('.day-chip').forEach(chip => chip.classList.remove('active'));
-    });
-  }
-  
-  if (applyBtn) {
-    applyBtn.addEventListener('click', () => {
-      openingDaysPanel?.setAttribute('aria-hidden', 'true');
-      // TODO: ใช้ filter กับข้อมูล
-      console.log('Apply opening days filter');
-    });
-  }
-
-  // Day chips toggle
-  const dayChips = openingDaysPanel?.querySelectorAll('.day-chip');
-  dayChips?.forEach(chip => {
-    chip.addEventListener('click', () => {
-      chip.classList.toggle('active');
-    });
   });
 }
 
@@ -330,67 +293,28 @@ async function applyFilters() {
   console.log('Provinces:', selectedProvinces);
 
   try {
-    // สร้าง query string
-    const params = new URLSearchParams();
-    
-    if (selectedTypes.length > 0) {
-      selectedTypes.forEach(type => params.append('types', type));
+    // ใช้ Combined Filter System
+    if (window.combinedFilter) {
+      window.combinedFilter.setCategoryFilters(selectedTypes, selectedProvinces);
+      window.combinedFilter.setChipFilter(null); // ล้าง chip filter
+      
+      // ล้าง chip bar active
+      document.querySelectorAll('.chip-bar .chip').forEach(chip => {
+        chip.classList.remove('active');
+      });
+      
+      await window.combinedFilter.applyCombinedFilters();
+    } else {
+      console.error('Combined filter system not available');
     }
-    
-    if (selectedProvinces.length > 0) {
-      selectedProvinces.forEach(province => params.append('provinces', province));
-    }
-
-    const url = `http://localhost:3000/categories?${params.toString()}`;
-    console.log('Fetching:', url);
-
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    console.log('Filtered result:', result);
-
-    if (!result.success || !result.data || result.data.length === 0) {
-      const grid = document.getElementById('placeGrid');
-      if (grid) {
-        grid.innerHTML = '<p style="text-align:center; padding:2rem; color:#666;">ไม่พบสถานที่ที่ตรงกับเงื่อนไข</p>';
-      }
-      return;
-    }
-
-    // แปลงข้อมูลและแสดงผล
-    const places = result.data.map((item, index) => {
-      let imagePath = 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
-      if (item.image_path) {
-        const fileName = item.image_path.includes('/') || item.image_path.includes('\\')
-          ? item.image_path.split(/[/\\]/).pop()
-          : item.image_path;
-        imagePath = `../../img_place/${fileName}`;
-      }
-
-      return {
-        id: item.place_id,
-        rank: index + 1,
-        title: item.place_name,
-        imageUrl: imagePath,
-        openDays: '',
-        openHours: item.opening_hours || '',
-        rating: item.place_score || 0
-      };
-    });
-
-    renderPlaceCards(places);
 
   } catch (error) {
     console.error('Error applying filters:', error);
-    alert('เกิดข้อผิดพลาดในการกรองข้อมูล: ' + error.message);
   }
 }
 
 // ล้าง filter ทั้งหมด
-function clearFilters() {
+async function clearFilters() {
   selectedTypes = [];
   selectedProvinces = [];
 
@@ -411,10 +335,16 @@ function clearFilters() {
   // ล้าง chip selection ด้วย
   document.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
   
-  // แสดงข้อมูลทั้งหมด
-  window.fetchPlaces();
-
   console.log('Filters cleared');
+  
+  // ใช้ Combined Filter System
+  if (window.combinedFilter) {
+    window.combinedFilter.setCategoryFilters([], []);
+    await window.combinedFilter.applyCombinedFilters();
+  } else {
+    // Fallback
+    window.fetchPlaces();
+  }
 }
 
 // ========== เช็ค Login Status และแสดงข้อมูล User ==========
@@ -451,15 +381,16 @@ function setupAuthButtons() {
 async function fetchPlaces() {
   console.log('Fetching places from backend...');
   try {
-    const response = await fetch('http://localhost:3000/places');
+    const response = await fetch('http://localhost:3000/places?page=home');
     console.log('Response status:', response.status);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    const data = await response.json();
-    console.log('Data received:', data);
+    const result = await response.json();
+    console.log('Result received:', result);
+    const data = result.success ? result.data : [];
     console.log('Number of places:', data.length);
     
     if (!data || data.length === 0) {
@@ -521,6 +452,12 @@ async function fetchPlaces() {
     
     console.log('Transformed places:', places);
     renderPlaceCards(places);
+    
+    // โหลดสถานะ favorite หลัง render
+    if (window.favoriteHandler && typeof window.favoriteHandler.loadFavoriteStates === 'function') {
+      window.favoriteHandler.loadFavoriteStates();
+    }
+    
   } catch (error) {
     console.error('Error fetching places:', error);
     console.error('Error details:', error.message);
@@ -549,9 +486,11 @@ function setupHomeSearch() {
   // โหลดข้อมูลสถานที่ทั้งหมดสำหรับ suggestions
   async function loadAllPlaces() {
     try {
-      const response = await fetch('http://localhost:3000/places');
+      const response = await fetch('http://localhost:3000/places?page=home');
       if (response.ok) {
-        allPlaces = await response.json();
+        const result = await response.json();
+        allPlaces = result.success ? result.data : [];
+        console.log('Loaded', allPlaces.length, 'places for suggestions');
       }
     } catch (error) {
       console.error('Error loading places for suggestions:', error);
@@ -635,7 +574,8 @@ async function searchPlaces(query) {
     console.log('Searching in home page for:', query);
     
     const params = new URLSearchParams({
-      query: query
+      q: query,
+      page: 'home'
     });
     
     const url = `http://localhost:3000/places/search?${params.toString()}`;
@@ -643,11 +583,12 @@ async function searchPlaces(query) {
     
     const response = await fetch(url);
     const result = await response.json();
+    const data = result.success ? result.data : [];
     
-    console.log('Search results:', result);
+    console.log('Search results:', data);
     
-    if (result.success && result.data) {
-      const places = result.data.map((item, index) => {
+    if (data && Array.isArray(data)) {
+      const places = data.map((item, index) => {
         let imagePath = 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
         if (item.image_path) {
           const fileName = item.image_path.includes('/') || item.image_path.includes('\\') 
@@ -657,6 +598,7 @@ async function searchPlaces(query) {
         }
         
         return {
+          place_id: item.place_id,
           id: item.place_id,
           rank: index + 1,
           title: item.place_name,
@@ -668,6 +610,11 @@ async function searchPlaces(query) {
       });
       
       renderPlaceCards(places);
+      
+      // โหลดสถานะ favorite
+      if (window.favoriteHandler && typeof window.favoriteHandler.loadFavoriteStates === 'function') {
+        window.favoriteHandler.loadFavoriteStates();
+      }
     } else {
       renderPlaceCards([]);
     }
@@ -684,14 +631,24 @@ async function searchPlaces(query) {
 
 // ========== INIT ==========
 document.addEventListener("DOMContentLoaded", () => {
+  // ตั้งค่า page สำหรับ combined filter
+  if (window.combinedFilter) {
+    window.combinedFilter.setCurrentPage('home');
+  }
+  
   setupMobileMenu();
   if (typeof setupChipActive === 'function') {
     setupChipActive(); // จาก chip-filter.js
   }
-  setupOpeningDaysPanel(); // Opening days filter (tune icon button)
   setupCategoryPanel(); // Category filter panel (nav link)
   setupFavoriteToggle();
   setupAuthButtons();
   setupHomeSearch();     // เพิ่มฟังก์ชัน search
-  fetchPlaces();         // ดึงข้อมูลสถานที่
+  
+  // Setup opening filter
+  if (typeof setupOpeningDaysFilter === 'function') {
+    setupOpeningDaysFilter('home');
+  }
+  
+  fetchPlaces();         // ดึงข้อมูลสถานที่ (จะเรียก loadFavoriteStates ภายใน)
 });

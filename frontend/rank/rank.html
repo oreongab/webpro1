@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="style.css" />
   <script defer src="../nav.js"></script>
   <script defer src="../favorite-handler.js"></script>
+  <script defer src="../combined-filter.js"></script>
+  <script defer src="../opening-filter.js"></script>
   <script defer src="rank.js"></script>
 </head>
 
@@ -89,16 +91,15 @@
           <div class="search-suggestions" id="rankSearchSuggestions" style="display:none;"></div>
         </div>
 
-        <button class="filter-icon-btn"
-                id="categoryBtn"
-                aria-label="Open category filter">
-          <span class="material-icons">tune</span>
-        </button>
-      </div>
-    </section>
+        <div class="filter-btn-wrapper" style="position: relative;">
+          <button class="filter-icon-btn"
+                  id="categoryBtn"
+                  aria-label="Open category filter">
+            <span class="material-icons">tune</span>
+          </button>
 
-    <!-- ====== FILTER PANEL: Opening days (เด้งจากปุ่มฟิลเตอร์) ====== -->
-    <div class="filter-panel" id="openingDaysPanel" aria-hidden="true">
+          <!-- ====== FILTER PANEL: Opening days (เด้งจากปุ่มฟิลเตอร์) ====== -->
+          <div class="filter-panel" id="openingDaysPanel" aria-hidden="true">
       <div class="filter-panel-inner">
         <h2 class="filter-title">Opening days</h2>
         <div class="filter-divider"></div>
@@ -142,9 +143,12 @@
           <button type="button" class="filter-btn filter-clear">Clear</button>
           <button type="button" class="filter-btn filter-apply">Apply</button>
         </div>
+          </div>
+        </div>
+        <!-- ====== END FILTER PANEL ====== -->
+        </div>
       </div>
-    </div>
-    <!-- ====== END FILTER PANEL ====== -->
+    </section>
 
     <!-- ====== NEW: CATEGORY OVERLAY (Place Type + Province) ====== -->
     <div class="category-overlay" id="categoryOverlay" aria-hidden="true">

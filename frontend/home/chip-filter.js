@@ -28,8 +28,13 @@ function setupChipActive() {
     bar.querySelectorAll(".chip").forEach((c) => c.classList.remove("active"));
     
     if (isCurrentlyActive) {
-      // ถ้าเดิมเป็น active อยู่แล้ว ให้แสดงทั้งหมด
-      await window.fetchPlaces();
+      // ถ้าเดิมเป็น active อยู่แล้ว ให้ล้าง chip filter
+      if (window.combinedFilter) {
+        window.combinedFilter.setChipFilter(null);
+        await window.combinedFilter.applyCombinedFilters();
+      } else {
+        await window.fetchPlaces();
+      }
     } else {
       // ถ้ายังไม่ active ให้เปิด active และกรอง
       chip.classList.add("active");
@@ -43,7 +48,14 @@ function setupChipActive() {
       const endpoint = chipCategoryMap[category];
       
       if (endpoint) {
-        await fetchPlacesByCategory(endpoint);
+        // ใช้ Combined Filter System
+        if (window.combinedFilter) {
+          window.combinedFilter.setChipFilter(endpoint);
+          window.combinedFilter.setCategoryFilters([], []); // ล้าง category overlay
+          await window.combinedFilter.applyCombinedFilters();
+        } else {
+          await fetchPlacesByCategory(endpoint);
+        }
       } else {
         await window.fetchPlaces();
       }
@@ -54,7 +66,7 @@ function setupChipActive() {
 async function fetchPlacesByCategory(category) {
   try {
     console.log('Fetching category:', category);
-    const url = `http://localhost:3000/places/category/${category}`;
+    const url = `http://localhost:3000/places/category/${category}?page=home`;
     console.log('URL:', url);
     
     const response = await fetch(url);
@@ -62,8 +74,9 @@ async function fetchPlacesByCategory(category) {
     
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     
-    const data = await response.json();
-    console.log('Data received:', data);
+    const result = await response.json();
+    const data = result.success ? result.data : [];
+    console.log('Data received:', data.length, 'places');
     
     if (!data || data.length === 0) {
       const grid = document.getElementById("placeGrid");
@@ -84,6 +97,7 @@ async function fetchPlacesByCategory(category) {
       }
       
       return {
+        place_id: item.place_id,
         id: item.place_id,
         rank: index + 1,
         title: item.place_name,
@@ -95,6 +109,12 @@ async function fetchPlacesByCategory(category) {
     });
     
     renderPlaceCards(places);
+    
+    // โหลดสถานะ favorite
+    if (window.favoriteHandler && typeof window.favoriteHandler.loadFavoriteStates === 'function') {
+      window.favoriteHandler.loadFavoriteStates();
+    }
+    
   } catch (error) {
     console.error(`Error fetching ${category}:`, error);
     const grid = document.getElementById("placeGrid");

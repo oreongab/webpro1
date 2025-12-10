@@ -7,8 +7,8 @@ async function fetchPlaceDetail(placeId) {
     }
     const result = await response.json();
     
-    // ตรวจสอบว่า API ส่ง success: true และมี data
-    if (result.success && result.data) {
+    // Backend คืนค่า {success, data}
+    if (result.success && result.data && result.data.place_id) {
       return result.data;
     }
     return null;

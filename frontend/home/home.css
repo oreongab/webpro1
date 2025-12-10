@@ -817,7 +817,8 @@ body {
   color: #ff6b6b;
 }
 
-.card-fav-btn.is-fav .material-icons {
+.card-fav-btn.is-fav .material-icons,
+.card-fav-btn.is-active .material-icons {
   color: #ff1744;
 }
 

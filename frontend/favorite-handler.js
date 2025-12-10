@@ -36,7 +36,7 @@ async function addToFavorites(placeId) {
       return true;
     } else {
       console.warn('Add favorite failed:', result.message);
-      if (result.message === 'Already in favorites') {
+      if (result.message === 'Place already in favorites') {
         return true; // ถือว่าสำเร็จเพราะมีอยู่แล้ว
       }
       return false;
@@ -84,7 +84,7 @@ async function checkIsFavorite(placeId) {
     const response = await fetch(`http://localhost:3000/favorites/${userId}`);
     const result = await response.json();
     
-    if (result.success && result.data) {
+    if (result.success && Array.isArray(result.data)) {
       return result.data.some(fav => fav.place_id == placeId);
     }
     return false;
@@ -120,21 +120,33 @@ async function toggleFavorite(placeId, heartButton) {
 // โหลดสถานะ favorite ทั้งหมดของ user (เรียกตอน page load)
 async function loadFavoriteStates() {
   const userId = getCurrentUserId();
-  if (!userId) return;
+  if (!userId) {
+    console.log('No user logged in, skipping favorite state loading');
+    return;
+  }
 
+  console.log('Loading favorite states for user:', userId);
+  
   try {
     const response = await fetch(`http://localhost:3000/favorites/${userId}`);
     const result = await response.json();
     
-    if (result.success && result.data) {
+    console.log('Favorites API response:', result);
+    
+    if (result.success && result.data && Array.isArray(result.data)) {
       // เก็บ place_id ทั้งหมดที่เป็น favorite
       window.userFavorites = result.data.map(fav => fav.place_id);
+      console.log('Loaded favorites:', window.userFavorites);
       
       // อัปเดต UI ปุ่มหัวใจทั้งหมดในหน้า
       updateAllHeartButtons();
+    } else {
+      console.warn('No favorites data or API error:', result);
+      window.userFavorites = [];
     }
   } catch (error) {
     console.error('Load favorite states error:', error);
+    window.userFavorites = [];
   }
 }
 
@@ -142,12 +154,21 @@ async function loadFavoriteStates() {
 function updateAllHeartButtons() {
   const cards = document.querySelectorAll('.place-card');
   
+  console.log('=== Updating Heart Buttons ===');
+  console.log('Total cards found:', cards.length);
+  console.log('User favorites:', window.userFavorites);
+  
   cards.forEach(card => {
     const placeId = card.dataset.id;
     const heartBtn = card.querySelector('.card-fav-btn');
     
     if (heartBtn && placeId && window.userFavorites) {
-      const isFavorite = window.userFavorites.includes(parseInt(placeId));
+      // แปลงทั้ง 2 ฝั่งเป็น number เพื่อเปรียบเทียบ
+      const placeIdNum = parseInt(placeId);
+      const isFavorite = window.userFavorites.some(favId => parseInt(favId) === placeIdNum);
+      
+      console.log(`Card ${placeId}: isFavorite=${isFavorite}`);
+      
       const icon = heartBtn.querySelector('.material-icons');
       
       if (isFavorite) {
@@ -157,8 +178,14 @@ function updateAllHeartButtons() {
         heartBtn.classList.remove('is-active');
         if (icon) icon.textContent = 'favorite_border';
       }
+    } else {
+      if (!heartBtn) console.warn('No heart button found for card:', placeId);
+      if (!placeId) console.warn('No placeId found for card');
+      if (!window.userFavorites) console.warn('No userFavorites array');
     }
   });
+  
+  console.log('=== Finished Updating Hearts ===');
 }
 
 // Export functions
