@@ -1,3 +1,17 @@
+// ฟังก์ชันดึง user_id จาก localStorage
+function getCurrentUserId() {
+  const userStr = localStorage.getItem('loggedInUser');
+  if (!userStr) return null;
+  
+  try {
+    const user = JSON.parse(userStr);
+    return user.user_id;
+  } catch (e) {
+    console.error('Parse user error:', e);
+    return null;
+  }
+}
+
 // -----------------------------
 // 1. ปุ่มย้อนกลับ
 // -----------------------------
@@ -78,7 +92,7 @@ if (form) {
   form.addEventListener('submit', async function(event) {
     event.preventDefault();
     
-    const userId = localStorage.getItem('currentUserId');
+    const userId = getCurrentUserId();
     
     if (!userId) {
       alert('Please login first');
@@ -131,13 +145,22 @@ async function saveProfile(updateData, userName) {
 
     if (response.ok) {
       alert('Profile updated successfully!');
-      // อัปเดต localStorage ถ้ามีการเปลี่ยน
-      if (userName) {
-        localStorage.setItem('currentUserName', userName);
+      
+      // อัปเดต loggedInUser object ใน localStorage
+      const userStr = localStorage.getItem('loggedInUser');
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          if (updateData.user_name) user.user_name = updateData.user_name;
+          if (updateData.first_name) user.first_name = updateData.first_name;
+          if (updateData.last_name) user.last_name = updateData.last_name;
+          if (updateData.user_email) user.user_email = updateData.user_email;
+          localStorage.setItem('loggedInUser', JSON.stringify(user));
+        } catch (e) {
+          console.error('Update localStorage error:', e);
+        }
       }
-      if (updateData.user_password) {
-        localStorage.setItem('currentUserPassword', updateData.user_password);
-      }
+      
       window.location.href = '../user1/user-profile.html';
     } else {
       alert(data.message || 'Failed to update profile');
@@ -153,7 +176,7 @@ async function saveProfile(updateData, userName) {
 // 4. โหลดข้อมูล User ปัจจุบัน
 // -----------------------------
 async function loadCurrentUserData() {
-  const userId = localStorage.getItem('currentUserId');
+  const userId = getCurrentUserId();
   console.log('Loading user data for userId:', userId);
   
   if (!userId) {
@@ -169,8 +192,11 @@ async function loadCurrentUserData() {
     
     if (!response.ok) throw new Error('Failed to fetch user data');
     
-    const user = await response.json();
-    console.log('User data received:', user);
+    const result = await response.json();
+    console.log('Response received:', result);
+    
+    const user = result.data || result;
+    console.log('User data:', user);
     
     // กรอกข้อมูลลงในฟอร์ม
     document.getElementById('firstName').value = user.first_name || '';

@@ -64,17 +64,18 @@
       });
       
       if (!resp.ok) throw new Error('Failed to fetch user data');
-      const user = await resp.json();
+      const result = await resp.json();
+      const user = result.data || result;
       
       // ดึงรูป avatar จาก localStorage เท่านั้น
       const savedAvatar = localStorage.getItem('userAvatar') || '';
       
       // แสดงข้อมูล user
       renderUserFromObject({
-        displayName: user.user_name,
-        username: user.user_name,
-        name: `${user.first_name} ${user.last_name}`,
-        email: user.user_email,
+        displayName: user.user_name || userData.user_name,
+        username: user.user_name || userData.user_name,
+        name: `${user.first_name || userData.first_name || ''} ${user.last_name || userData.last_name || ''}`.trim(),
+        email: user.user_email || userData.user_email,
         avatarUrl: savedAvatar
       });
     } catch (err) {
