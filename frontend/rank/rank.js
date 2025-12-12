@@ -20,7 +20,7 @@ const chipCategoryMap = {
   'Cafés & Restaurants': 'cafes',
   'Temple': 'temples',
   'Natural': 'natural',
-  'View': 'view',
+  'Sports': 'sport',
   'Art': 'art',
   'Museums': 'museums',
   'Markets': 'markets',
@@ -52,21 +52,35 @@ function setupChipActive() {
     const searchInput = document.getElementById('rankSearchInput');
     if (searchInput) searchInput.value = '';
     
-    // ล้าง category filter selections
-    clearCategorySelections();
-    
     if (isCurrentlyActive) {
       // ถ้าเดิมเป็น active อยู่แล้ว ให้แสดงทั้งหมด
-      await fetchRankPlaces();
+      if (window.combinedFilter) {
+        window.combinedFilter.setChipFilter(null);
+        await window.combinedFilter.applyCombinedFilters();
+      } else {
+        await fetchRankPlaces();
+      }
     } else {
       // ถ้ายังไม่ active ให้เปิด active และกรอง
       chip.classList.add("active");
+      
+      // ล้าง category panel selection เพราะใช้ chip filter แทน
+      if (window.clearCategorySelections) {
+        window.clearCategorySelections();
+      }
       
       const category = chip.textContent.trim();
       const endpoint = chipCategoryMap[category];
       
       if (endpoint) {
-        await fetchPlacesByCategory(endpoint);
+        // ใช้ Combined Filter System
+        if (window.combinedFilter) {
+          window.combinedFilter.setChipFilter(endpoint);
+          window.combinedFilter.setCategoryFilters([], []); // ล้าง category overlay
+          await window.combinedFilter.applyCombinedFilters();
+        } else {
+          await fetchRankPlaces();
+        }
       } else {
         await fetchRankPlaces();
       }
