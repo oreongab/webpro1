@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
         const { types, provinces, page } = req.query;
         
         const orderBy = page === 'rank' 
-            ? 'ORDER BY CAST(p.place_score AS DECIMAL(3,1)) DESC, p.place_id'
+            ? 'ORDER BY p.place_score DESC, p.place_id'
             : 'ORDER BY p.place_id';
         
         let sql = `
@@ -18,11 +18,11 @@ router.get('/', async (req, res) => {
                 p.place_province,
                 p.place_eng_province,
                 p.opening_hours,
-                CAST(p.place_score AS DECIMAL(3,1)) as place_score,
+                p.place_score,
                 (SELECT image_path FROM place_images WHERE place_id = p.place_id LIMIT 1) as image_path
             FROM place p
-            LEFT JOIN place_category pc ON p.place_id = pc.place_id
-            LEFT JOIN category c ON pc.category_id = c.category_id
+            LEFT JOIN place_category pc USING (place_id)
+            LEFT JOIN category c USING (category_id)
             WHERE 1=1
         `;
         

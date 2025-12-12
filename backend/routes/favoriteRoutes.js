@@ -7,7 +7,7 @@ router.get('/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
         
-        // First, get all favorite places
+        //get all favorite places
         const sql = `
             SELECT DISTINCT
                 p.place_id,
@@ -15,10 +15,10 @@ router.get('/:userId', async (req, res) => {
                 p.place_province,
                 p.place_eng_province,
                 p.opening_hours,
-                CAST(p.place_score AS DECIMAL(3,1)) as place_score,
+                p.place_score,
                 f.favorite_id
             FROM favorite f
-            INNER JOIN place p ON f.place_id = p.place_id
+            JOIN place p USING (place_id)
             WHERE f.user_id = ?
             ORDER BY f.favorite_id DESC
         `;
@@ -37,7 +37,7 @@ router.get('/:userId', async (req, res) => {
             const [categories] = await db.execute(`
                 SELECT c.category_name 
                 FROM place_category pc 
-                JOIN category c ON pc.category_id = c.category_id 
+                JOIN category c USING (category_id)
                 WHERE pc.place_id = ?
             `, [place.place_id]);
             

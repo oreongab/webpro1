@@ -20,7 +20,7 @@ router.get('/place', async (req, res) => {
                 p.place_score,
                 pi.image_path
             FROM place p
-            LEFT JOIN place_images pi ON p.place_id = pi.place_id
+            LEFT JOIN place_images pi USING (place_id)
             ${orderBy}
         `;
         
@@ -41,11 +41,11 @@ router.get('/rank', async (req, res) => {
                 p.place_name,
                 p.place_province,
                 p.opening_hours,
-                CAST(p.place_score AS DECIMAL(3,1)) as place_score,
+                p.place_score,
                 image_path 
             FROM place p
             LEFT JOIN place_images USING (place_id)
-            ORDER BY CAST(p.place_score AS DECIMAL(3,1)) DESC, p.place_id
+            ORDER BY place_score DESC, p.place_id
         `;
         
         const [rows] = await db.execute(sql);
@@ -66,7 +66,7 @@ router.get('/search', async (req, res) => {
         }
         
         const orderBy = page === 'rank' 
-            ? 'ORDER BY CAST(p.place_score AS DECIMAL(3,1)) DESC, p.place_id'
+            ? 'ORDER BY place_score DESC, p.place_id'
             : 'ORDER BY p.place_id';
         
         const sql = `
@@ -75,7 +75,7 @@ router.get('/search', async (req, res) => {
                 p.place_name,
                 p.place_province,
                 p.opening_hours,
-                CAST(p.place_score AS DECIMAL(3,1)) as place_score,
+                p.place_score,
                 (SELECT image_path FROM place_images WHERE place_id = p.place_id LIMIT 1) as image_path
             FROM place p
             WHERE p.place_name LIKE ? OR p.place_province LIKE ?
@@ -97,7 +97,7 @@ router.get('/filter/opening', async (req, res) => {
         const { everyday, opennow, weekday, hours24, days, page } = req.query;
         
         const orderBy = page === 'rank' 
-            ? 'ORDER BY CAST(p.place_score AS DECIMAL(3,1)) DESC, p.place_id'
+            ? 'ORDER BY place_score DESC, p.place_id'
             : 'ORDER BY p.place_id';
         
         const sql = `
@@ -106,7 +106,7 @@ router.get('/filter/opening', async (req, res) => {
                 p.place_name,
                 p.place_province,
                 p.opening_hours,
-                CAST(p.place_score AS DECIMAL(3,1)) as place_score,
+                p.place_score,
                 (SELECT image_path FROM place_images WHERE place_id = p.place_id LIMIT 1) as image_path
             FROM place p
             ${orderBy}
@@ -159,7 +159,7 @@ router.get('/category/:type', async (req, res) => {
         }
 
         const orderBy = page === 'rank' 
-            ? 'ORDER BY CAST(p.place_score AS DECIMAL(3,1)) DESC, p.place_id'
+            ? 'ORDER BY place_score DESC, p.place_id'
             : 'ORDER BY p.place_id';
 
         const sql = `
@@ -167,7 +167,7 @@ router.get('/category/:type', async (req, res) => {
                 p.place_name,
                 p.place_province,
                 p.opening_hours,
-                CAST(p.place_score AS DECIMAL(3,1)) as place_score,
+                p.place_score,
                 image_path 
             FROM place p
             LEFT JOIN place_images USING (place_id)
@@ -201,8 +201,8 @@ router.get('/:id', async (req, res) => {
                 p.place_province,
                 p.place_address,
                 p.opening_hours,
-                CAST(p.place_score AS DECIMAL(10,1)) as place_score,
-                CAST(p.starting_price AS DECIMAL(10,0)) as starting_price,
+                p.place_score,
+                p.starting_price,
                 p.place_event,
                 GROUP_CONCAT(DISTINCT c.category_name SEPARATOR ', ') as categories
             FROM place p
