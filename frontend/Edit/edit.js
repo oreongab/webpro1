@@ -119,7 +119,7 @@ if (form) {
 // ฟังก์ชันบันทึกข้อมูล
 async function saveProfile(updateData, userName) {
   try {
-    const response = await fetch('http://localhost:3000/edituser', {
+    const response = await fetch('http://localhost:3000/users/edit', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
