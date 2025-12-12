@@ -121,6 +121,12 @@ if (form) {
       reader.onloadend = async function() {
         // บันทึกรูปใน localStorage เท่านั้น
         localStorage.setItem('userAvatar', reader.result);
+        
+        // อัปเดต avatar display ทันที
+        if (typeof window.navigation?.updateAvatarDisplay === 'function') {
+          window.navigation.updateAvatarDisplay();
+        }
+        
         await saveProfile(updateData, userName);
       };
       reader.readAsDataURL(selectedAvatarFile);

@@ -140,11 +140,57 @@ function setActiveNavLink() {
   });
 }
 
+// ========== Avatar Display Functions ==========
+function updateAvatarDisplay() {
+  const userStr = localStorage.getItem('loggedInUser');
+  const savedAvatar = localStorage.getItem('userAvatar');
+  
+  // ดึง avatar circles ทั้งหมดในหน้า
+  const avatarCircles = document.querySelectorAll('.avatar-circle');
+  
+  avatarCircles.forEach(circle => {
+    // ลบรูปเก่าออกก่อน (ถ้ามี)
+    const existingImg = circle.querySelector('img.avatar-img');
+    if (existingImg) {
+      existingImg.remove();
+    }
+    
+    const icon = circle.querySelector('.material-icons');
+    
+    if (savedAvatar && userStr) {
+      // มีรูป avatar -> แสดงรูป
+      if (icon) icon.style.display = 'none';
+      
+      const img = document.createElement('img');
+      img.src = savedAvatar;
+      img.alt = 'User Avatar';
+      img.className = 'avatar-img';
+      img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; border-radius: 50%;';
+      circle.appendChild(img);
+    } else {
+      // ไม่มีรูป -> แสดง icon
+      if (icon) icon.style.display = 'block';
+    }
+  });
+  
+  // อัปเดตชื่อผู้ใช้ใน mobile menu (ถ้ามี)
+  const usernameEl = document.querySelector('.mobile-menu .username');
+  if (usernameEl && userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      usernameEl.textContent = user.user_name || 'Guest';
+    } catch (e) {
+      usernameEl.textContent = 'Guest';
+    }
+  }
+}
+
 // Export functions
 window.navigation = {
   navigateTo,
   setupNavigation,
   setActiveNavLink,
+  updateAvatarDisplay,
   NAV_PATHS
 };
 
@@ -152,4 +198,12 @@ window.navigation = {
 document.addEventListener('DOMContentLoaded', () => {
   setupNavigation();
   setActiveNavLink();
+  updateAvatarDisplay();
+});
+
+// อัปเดต avatar เมื่อมีการเปลี่ยนแปลง localStorage
+window.addEventListener('storage', (e) => {
+  if (e.key === 'userAvatar' || e.key === 'loggedInUser') {
+    updateAvatarDisplay();
+  }
 });
