@@ -7,14 +7,15 @@ router.get('/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
         
+        // First, get all favorite places
         const sql = `
             SELECT DISTINCT
                 p.place_id,
                 p.place_name,
                 p.place_province,
+                p.place_eng_province,
                 p.opening_hours,
                 CAST(p.place_score AS DECIMAL(3,1)) as place_score,
-                (SELECT image_path FROM place_images WHERE place_id = p.place_id LIMIT 1) as image_path,
                 f.favorite_id
             FROM favorite f
             INNER JOIN place p ON f.place_id = p.place_id
@@ -23,7 +24,38 @@ router.get('/:userId', async (req, res) => {
         `;
         
         const [rows] = await db.execute(sql, [userId]);
-        res.json({ success: true, data: rows });
+        
+        // For each place, get images and categories
+        const placesWithDetails = await Promise.all(rows.map(async (place) => {
+            // Get first image
+            const [images] = await db.execute(
+                'SELECT image_path FROM place_images WHERE place_id = ? LIMIT 1',
+                [place.place_id]
+            );
+            
+            // Get all categories for this place
+            const [categories] = await db.execute(`
+                SELECT c.category_name 
+                FROM place_category pc 
+                JOIN category c ON pc.category_id = c.category_id 
+                WHERE pc.place_id = ?
+            `, [place.place_id]);
+            
+            const categoryString = categories.map(cat => cat.category_name).join(',');
+            console.log(`Place ${place.place_id} (${place.place_name}):`);
+            console.log('  Categories from DB:', categories);
+            console.log('  Category string:', categoryString);
+            
+            return {
+                ...place,
+                image_path: images[0]?.image_path || null,
+                categories: categoryString
+            };
+        }));
+        
+        console.log('Favorites with categories:', placesWithDetails);
+        
+        res.json({ success: true, data: placesWithDetails });
     } catch (error) {
         console.error('Get favorites error:', error);
         res.status(500).json({ success: false, error: error.message });

@@ -13,13 +13,13 @@ const placeRoutes = require('./routes/placeRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const favoriteRoutes = require('./routes/favoriteRoutes');
 
-// Use routes (without /api prefix to match frontend calls)
+
 app.use('/users', userRoutes);
 app.use('/places', placeRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/favorites', favoriteRoutes);
 
-// Health check
+
 app.get('/', (req, res) => {
     res.json({ message: 'Aow Ngai Dee Wa API is running!' });
 });

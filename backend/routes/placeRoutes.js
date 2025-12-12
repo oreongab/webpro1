@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../db');
 
 // Get all places (with optional rank ordering)
-router.get('/', async (req, res) => {
+router.get('/place', async (req, res) => {
     try {
         const { page } = req.query;
         

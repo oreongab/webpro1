@@ -115,12 +115,12 @@ if (form) {
     if (email) updateData.user_email = email;
     if (password) updateData.user_password = password;
 
-    // แปลงรูปเป็น Base64 และเก็บใน localStorage เท่านั้น (ไม่ส่ง server)
+    // แปลงรูปเป็น Base64 และเก็บใน localStorage แยกตาม user_id
     if (selectedAvatarFile) {
       const reader = new FileReader();
       reader.onloadend = async function() {
-        // บันทึกรูปใน localStorage เท่านั้น
-        localStorage.setItem('userAvatar', reader.result);
+        // บันทึกรูปใน localStorage แยกตาม user_id
+        localStorage.setItem(`userAvatar_${userId}`, reader.result);
         
         // อัปเดต avatar display ทันที
         if (typeof window.navigation?.updateAvatarDisplay === 'function') {

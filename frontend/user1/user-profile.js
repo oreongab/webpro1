@@ -67,8 +67,8 @@
       const result = await resp.json();
       const user = result.data || result;
       
-      // ดึงรูป avatar จาก localStorage เท่านั้น
-      const savedAvatar = localStorage.getItem('userAvatar') || '';
+      // ดึงรูบ avatar จาก localStorage ตาม user_id
+      const savedAvatar = localStorage.getItem(`userAvatar_${userId}`) || '';
       
       // แสดงข้อมูล user
       renderUserFromObject({
@@ -182,10 +182,15 @@
     // ปุ่ม Log Out
     document.querySelector('.log-out-btn-link')?.addEventListener('click', (e) => {
       e.preventDefault();
-      if (confirm('Are you sure you want to log out?')) {
-        localStorage.removeItem('loggedInUser');
-        localStorage.removeItem('userAvatar');
-        window.location.href = '../login/login.html';
+      // ใช้ฟังก์ชัน logout จาก nav.js
+      if (window.navigation?.handleLogout) {
+        window.navigation.handleLogout();
+      } else {
+        // Fallback ถ้า nav.js ยังไม่โหลด
+        if (confirm('Are you sure you want to log out?')) {
+          localStorage.removeItem('loggedInUser');
+          window.location.href = '../login/login.html';
+        }
       }
     });
 

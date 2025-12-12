@@ -143,7 +143,18 @@ function setActiveNavLink() {
 // ========== Avatar Display Functions ==========
 function updateAvatarDisplay() {
   const userStr = localStorage.getItem('loggedInUser');
-  const savedAvatar = localStorage.getItem('userAvatar');
+  
+  // ดึงรูป avatar ตาม user_id ของ user ที่ login อยู่
+  let savedAvatar = null;
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      const userId = user.user_id;
+      savedAvatar = localStorage.getItem(`userAvatar_${userId}`);
+    } catch (e) {
+      console.error('Error parsing user data:', e);
+    }
+  }
   
   // ดึง avatar circles ทั้งหมดในหน้า
   const avatarCircles = document.querySelectorAll('.avatar-circle');
@@ -185,12 +196,25 @@ function updateAvatarDisplay() {
   }
 }
 
+// ========== Logout Function ==========
+function handleLogout() {
+  const confirmed = confirm('Are you sure you want to log out?');
+  if (!confirmed) return;
+  
+  // ลบเฉพาะ loggedInUser (ไม่ลบรูป avatar เพื่อให้ login กลับมาใช้ได้)
+  localStorage.removeItem('loggedInUser');
+  
+  // ไปหน้า login
+  window.location.href = '../login/login.html';
+}
+
 // Export functions
 window.navigation = {
   navigateTo,
   setupNavigation,
   setActiveNavLink,
   updateAvatarDisplay,
+  handleLogout,
   NAV_PATHS
 };
 

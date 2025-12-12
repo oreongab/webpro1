@@ -40,6 +40,31 @@ function buildStars(rating) {
   return html;
 }
 
+// ========== Parse Categories from String ==========
+function parseCategories(categoriesString) {
+  console.log('parseCategories input:', categoriesString, 'type:', typeof categoriesString);
+  
+  if (!categoriesString) {
+    console.log('  → Empty/null, returning []');
+    return [];
+  }
+  
+  // ถ้าเป็น array อยู่แล้ว
+  if (Array.isArray(categoriesString)) {
+    console.log('  → Already array:', categoriesString);
+    return categoriesString;
+  }
+  
+  // แปลง string เป็น array
+  const result = categoriesString
+    .split(',')
+    .map(c => c.trim())
+    .filter(c => c.length > 0);
+  
+  console.log('  → Parsed to array:', result);
+  return result;
+}
+
 // ========== Fetch Favorite Places ==========
 async function fetchFavoritePlaces() {
   const userId = window.favoriteHandler?.getCurrentUserId();
@@ -61,35 +86,73 @@ async function fetchFavoritePlaces() {
     console.log('Response status:', response.status);
     
     const result = await response.json();
-    console.log('Result:', result);
+    console.log('=== API Response ===');
+    console.log('Success:', result.success);
+    console.log('Data count:', result.data?.length);
+    console.log('Full response:', result);
+    
     const data = result.success ? result.data : [];
-    console.log('Data length:', data?.length);
 
-    if (data && Array.isArray(data)) {
-      console.log('Raw data from API:', data);
+    if (data && Array.isArray(data) && data.length > 0) {
+      console.log('=== Processing Places ===');
+      console.log('Raw data sample:', data[0]);
       
-      const places = data.map((item) => {
-        console.log('Processing item:', item);
-        return {
+      const places = data.map((item, index) => {
+        console.log(`\n--- Place ${index + 1} ---`);
+        console.log('  ID:', item.place_id);
+        console.log('  Name:', item.place_name);
+        console.log('  Raw categories:', item.categories);
+        console.log('  Categories type:', typeof item.categories);
+        
+        // Parse categories properly
+        const categoriesArray = parseCategories(item.categories);
+        console.log('  Parsed categories:', categoriesArray);
+        
+        const place = {
           id: item.place_id,
           title: item.place_name,
           rating: item.place_score,
           imageUrl: item.image_path ? `../../img_place/${item.image_path.split(/[\/\\]/).pop()}` : null,
           openDays: '',
           openHours: item.opening_hours || '',
-          province: item.place_province || ''
+          province: item.place_eng_province || item.place_province || '',
+          categories: categoriesArray
         };
+        
+        console.log('  Final place object:', place);
+        return place;
       });
 
-      console.log('Mapped places:', places);
-      console.log('Number of places to render:', places.length);
+      console.log('\n=== Final Mapped Places Summary ===');
+      console.log('Total places:', places.length);
+      console.log('All places:', places);
+      
+      // เก็บข้อมูลทั้งหมดไว้สำหรับ filter
+      window.allFavoritePlaces = places; // เก็บไว้ที่ global
+      
+      // Initialize CategoryFilter with actual data
+      if (window.CategoryFilter) {
+        console.log('\n=== Initializing CategoryFilter ===');
+        console.log('Sending places count:', places.length);
+        window.CategoryFilter.updatePlaces(places);
+        window.CategoryFilter.init('favorite', places, (filteredPlaces) => {
+          console.log('\n=== Category Filter Callback ===');
+          console.log('Received filtered places:', filteredPlaces?.length);
+          console.log('Filtered places:', filteredPlaces);
+          renderPlaceCards(filteredPlaces, true);
+        });
+      } else {
+        console.warn('⚠️ CategoryFilter not available!');
+      }
+      
+      // Render all places initially
       renderPlaceCards(places);
     } else {
-      console.warn('No data or success false');
+      console.warn('No data or empty array');
       showEmptyMessage('ไม่มีรายการโปรด');
     }
   } catch (error) {
-    console.error('Fetch favorites error:', error);
+    console.error('❌ Fetch favorites error:', error);
     showEmptyMessage('ไม่สามารถโหลดข้อมูลได้');
   }
 }
@@ -104,36 +167,36 @@ function showEmptyMessage(message) {
 }
 
 // ========== renderPlaceCards (ให้หลังบ้านเรียกใช้) ==========
-function renderPlaceCards(places) {
-  console.log('=== renderPlaceCards called ===');
-  console.log('Places to render:', places);
-  console.log('Number of places:', places?.length);
+function renderPlaceCards(places, isFiltered = false) {
+  console.log('\n=== renderPlaceCards ===');
+  console.log('Places:', places);
+  console.log('Count:', places?.length);
+  console.log('Is filtered:', isFiltered);
   
   const grid = document.getElementById("placeGrid");
   const tpl = document.getElementById("placeCardTemplate");
 
-  console.log('Grid element found:', !!grid);
-  console.log('Template element found:', !!tpl);
-
   if (!grid || !tpl) {
-    console.error('Grid or template not found!');
+    console.error('❌ Grid or template not found!');
     return;
   }
 
   grid.innerHTML = "";
 
   if (!Array.isArray(places) || places.length === 0) {
-    console.warn('No places to render');
-    showEmptyMessage('ไม่มีรายการโปรด');
+    console.warn('⚠️ No places to render');
+    const message = isFiltered ? 'ไม่พบสถานที่ที่ตรงกับเงื่อนไข' : 'ไม่มีรายการโปรด';
+    showEmptyMessage(message);
     return;
   }
 
   grid.style.display = "grid";
-  console.log('Grid display set to grid, starting render...');
+  console.log('✓ Rendering', places.length, 'cards...');
 
   places.forEach((p, index) => {
+    console.log(`Rendering card ${index + 1}:`, p.title);
+    
     const node = tpl.content.firstElementChild.cloneNode(true);
-
     node.dataset.id = p.id ?? index + 1;
 
     // คลิกการ์ดไปหน้า detail
@@ -176,7 +239,7 @@ function renderPlaceCards(places) {
     const titleEl = node.querySelector(".card-title");
     if (titleEl) titleEl.textContent = p.title || "";
 
-    // ตั้งปุ่ศหัวใจเป็น active (เพราะอยู่ในหน้า favorites แล้ว)
+    // ตั้งปุ่มหัวใจเป็น active
     const favBtn = node.querySelector('.card-fav-btn');
     if (favBtn) {
       favBtn.classList.add('is-active');
@@ -186,6 +249,8 @@ function renderPlaceCards(places) {
 
     grid.appendChild(node);
   });
+  
+  console.log('✓ Finished rendering', places.length, 'cards');
 }
 
 // ========== toggle หัวใจ ==========
@@ -210,6 +275,14 @@ function setupFavoriteToggle() {
       if (!btn.classList.contains('is-active')) {
         card.remove();
         
+        // อัพเดท allFavoritePlaces
+        if (window.allFavoritePlaces) {
+          window.allFavoritePlaces = window.allFavoritePlaces.filter(p => p.id != placeId);
+          if (window.CategoryFilter) {
+            window.CategoryFilter.updatePlaces(window.allFavoritePlaces);
+          }
+        }
+        
         // ถ้าไม่เหลือ card แล้วแสดงข้อความ
         const grid = document.getElementById('placeGrid');
         const remainingCards = grid?.querySelectorAll('.place-card');
@@ -227,7 +300,10 @@ function setupCategoryButton() {
   if (!btn) return;
 
   btn.addEventListener("click", () => {
-    console.log("Category button clicked (ไว้เปิด popup filter)");
+    console.log("Category button clicked");
+    if (window.CategoryFilter) {
+      window.CategoryFilter.openOverlay();
+    }
   });
 }
 
@@ -241,7 +317,6 @@ function setupAuthButtons() {
       const user = JSON.parse(userStr);
       console.log('User logged in:', user);
       
-      // แสดงชื่อ user ใน mobile menu
       if (usernameDisplay) {
         usernameDisplay.textContent = user.user_name || user.first_name || 'User';
       }
@@ -251,14 +326,11 @@ function setupAuthButtons() {
     }
   } else {
     console.log('No user logged in');
-    
-    // ถ้าไม่ได้ login ให้แสดง "Guest"
     if (usernameDisplay) {
       usernameDisplay.textContent = 'Guest';
     }
   }
   
-  // ลบ Sign in/Sign up buttons
   const authButtons = document.querySelectorAll(".mobile-auth");
   authButtons.forEach((btn) => {
     btn.remove();
@@ -267,6 +339,7 @@ function setupAuthButtons() {
 
 // ========== INIT ==========
 document.addEventListener("DOMContentLoaded", () => {
+  console.log('=== Page Loaded ===');
   setupMobileMenu();
   setupChipActive();
   setupFavoriteToggle();

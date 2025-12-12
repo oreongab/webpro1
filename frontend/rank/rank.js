@@ -187,7 +187,7 @@ async function fetchRankPlaces() {
   try {
     console.log('=== Loading rank places ===');
     
-    const response = await fetch('http://localhost:3000/places?page=rank');
+    const response = await fetch('http://localhost:3000/places/place?page=rank');
     console.log('Response status:', response.status);
     
     if (!response.ok) {
@@ -285,7 +285,7 @@ function setupSearch() {
   // โหลดข้อมูลสถานที่ทั้งหมดสำหรับ suggestions
   async function loadAllPlaces() {
     try {
-      const response = await fetch('http://localhost:3000/places');
+      const response = await fetch('http://localhost:3000/places/place');
       if (response.ok) {
         const result = await response.json();
         allPlaces = result.success ? result.data : [];
@@ -416,6 +416,7 @@ async function searchPlaces(query) {
 }
 
 // ========== Category Filter Panel ==========
+/* ========== OLD CATEGORY FUNCTIONS - COMMENTED OUT (NOW USING category-filter MODULE) ==========
 function setupCategoryPanel() {
   let categoryOverlay = document.getElementById('categoryOverlay');
   
@@ -599,6 +600,7 @@ function clearCategorySelections() {
     item.style.display = '';
   });
 }
+========== END OLD CATEGORY FUNCTIONS ==========*/
 
 // ========== เช็ค Login Status ==========
 function setupAuthButtons() {
@@ -668,7 +670,14 @@ document.addEventListener("DOMContentLoaded", () => {
   
   setupMobileMenu();
   setupChipActive();
-  setupCategoryPanel(); // Category filter panel
+  
+  // Initialize Category Filter Module
+  if (window.CategoryFilter) {
+    window.CategoryFilter.init('rank', [], async (filteredPlaces) => {
+      renderPlaceCards(filteredPlaces);
+    });
+  }
+  
   setupSearch();
   setupAuthButtons();
   setupFavoriteToggle();

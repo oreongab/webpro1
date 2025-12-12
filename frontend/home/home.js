@@ -162,6 +162,8 @@ function clearCategorySelections() {
 // Export เพื่อให้ chip-filter.js เรียกใช้ได้
 window.clearCategorySelections = clearCategorySelections;
 
+// Comment out old setupCategoryPanel function - now using CategoryFilter module
+/*
 function setupCategoryPanel() {
   const categoryOverlay = document.getElementById('categoryOverlay');
   const categoryClose = document.querySelector('.category-close');
@@ -346,6 +348,7 @@ async function clearFilters() {
     window.fetchPlaces();
   }
 }
+*/
 
 // ========== เช็ค Login Status และแสดงข้อมูล User ==========
 function setupAuthButtons() {
@@ -381,7 +384,7 @@ function setupAuthButtons() {
 async function fetchPlaces() {
   console.log('Fetching places from backend...');
   try {
-    const response = await fetch('http://localhost:3000/places?page=home');
+    const response = await fetch('http://localhost:3000/places/place?page=home');
     console.log('Response status:', response.status);
     
     if (!response.ok) {
@@ -429,6 +432,7 @@ async function fetchPlaces() {
       return;
     }
     
+    //รูป
     const places = data.map((item, index) => {
       // ถ้า image_path มี path เต็มให้ตัดเอาแค่ชื่อไฟล์
       let imagePath = 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
@@ -486,7 +490,7 @@ function setupHomeSearch() {
   // โหลดข้อมูลสถานที่ทั้งหมดสำหรับ suggestions
   async function loadAllPlaces() {
     try {
-      const response = await fetch('http://localhost:3000/places?page=home');
+      const response = await fetch('http://localhost:3000/places/place?page=home');
       if (response.ok) {
         const result = await response.json();
         allPlaces = result.success ? result.data : [];
@@ -640,7 +644,14 @@ document.addEventListener("DOMContentLoaded", () => {
   if (typeof setupChipActive === 'function') {
     setupChipActive(); // จาก chip-filter.js
   }
-  setupCategoryPanel(); // Category filter panel (nav link)
+  
+  // Initialize Category Filter Module
+  if (window.CategoryFilter) {
+    window.CategoryFilter.init('home', [], async (filteredPlaces) => {
+      renderPlaceCards(filteredPlaces);
+    });
+  }
+  
   setupFavoriteToggle();
   setupAuthButtons();
   setupHomeSearch();     // เพิ่มฟังก์ชัน search

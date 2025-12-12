@@ -29,14 +29,14 @@ router.get('/', async (req, res) => {
         let params = [];
 
         if (types) {
-            const typeList = Array.isArray(types) ? types : [types];
+            const typeList = Array.isArray(types) ? types : types.split(',');
             const placeholders = typeList.map(() => '?').join(',');
             sql += ` AND c.category_name IN (${placeholders})`;
             params.push(...typeList);
         }
 
         if (provinces) {
-            const provinceList = Array.isArray(provinces) ? provinces : [provinces];
+            const provinceList = Array.isArray(provinces) ? provinces : provinces.split(',');
             const placeholders = provinceList.map(() => '?').join(',');
             sql += ` AND p.place_eng_province IN (${placeholders})`;
             params.push(...provinceList);

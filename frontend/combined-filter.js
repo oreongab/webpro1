@@ -94,7 +94,7 @@ async function applyCombinedFilters() {
     // Priority 3: All places
     else {
       console.log('Loading all places');
-      const url = `http://localhost:3000/places?page=${currentFilters.page}`;
+      const url = `http://localhost:3000/places/place?page=${currentFilters.page}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const result = await response.json();
