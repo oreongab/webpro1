@@ -5,39 +5,39 @@
   <title>Aow Ngai Dee Wa – About</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Material Icons -->
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="about.css" />
+  <link rel="stylesheet" href="./about.css" />
 
-  <!-- JS -->
-  <script src="about.js" defer></script>
+  <!-- shared nav (ไว้ให้ปุ่มย้อนกลับใช้ NAV ได้ด้วย) -->
+  <script src="../shared/nav.js" defer></script>
+  <script src="./about.js" defer></script>
 </head>
 
 <body class="about-body">
   <main class="about-page">
-    <!-- ปุ่มย้อนกลับมุมซ้ายบน -->
+    <!-- back -->
     <button class="about-back-btn" id="aboutBackBtn" aria-label="Go back">
-  <span class="arrow-icon" aria-hidden="true"></span>
-</button>
-    <!-- เนื้อหา -->
+      <span class="arrow-icon" aria-hidden="true"></span>
+    </button>
+
     <section class="about-main">
       <div class="about-text">
         <h1 class="about-title">
-          Aow Ngai<br>
+          Aow Ngai<br />
           Dee Wa
         </h1>
 
         <p class="about-subtitle">
-          ค้นหาสถานที่ท่องเที่ยวสวยงาม<br>
+          ค้นหาสถานที่ท่องเที่ยวสวยงาม<br />
           ทั่วไทยได้ง่ายๆกับเรา
         </p>
 
         <p class="about-body-text">
-          Aow Ngai Dee Wa helps users discover beautiful travel destinations
-          across Thailand easily.
+          Aow Ngai Dee Wa helps users discover beautiful travel destinations across Thailand easily.
         </p>
         <p class="about-body-text">
           Our goal is to inspire travel and make exploration simple and fun.
@@ -53,11 +53,10 @@
       </div>
     </section>
 
-    <!-- footer ล่าง -->
     <footer class="about-footer">
       <span>
         © 2025 Aow Ngai Dee Wa
-        <br class="mobile-only">
+        <br class="mobile-only" />
         All rights reserved
       </span>
       <span class="about-version">v1.0.0</span>
