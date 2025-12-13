@@ -1,4 +1,3 @@
-/* ========== CATEGORY OVERLAY ========== */
 .category-overlay {
   position: fixed;
   inset: 0;
@@ -17,6 +16,8 @@
 .category-panel {
   width: 100%;
   max-width: 980px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
   background: #fdfdfd;
   border-radius: 18px;
   box-shadow: 0 16px 40px rgba(0,0,0,0.35);
@@ -168,4 +169,33 @@
 
 .category-btn:active {
   transform: scale(0.97);
+}
+
+@media (max-width: 768px) {
+  .category-overlay {
+    padding: 64px 1rem 20px;
+  }
+
+  .category-columns {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .category-footer {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-overlay {
+    padding: 56px 0.85rem 18px;
+  }
+
+  .category-panel {
+    padding: 16px 16px 14px;
+  }
+
+  .category-header h2 {
+    font-size: 1.15rem;
+  }
 }

@@ -1,184 +1,139 @@
-:root {
-  /* พื้นหลังให้เข้มขึ้นหน่อย */
-  --bg-gradient: linear-gradient(135deg, #00636e, #009688);
-  --about-text-main: #ffffff;
-  --about-text-muted: rgba(255, 255, 255, 0.8);
-  --about-font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --arrow-color: #ffffff; /* สีหัวลูกศร (ขาว แต่ตัดกับพื้นเข้มขึ้น) */
+:root{
+  --bg1:#00636e;
+  --bg2:#009688;
+
+  --ink:#ffffff;
+  --muted:rgba(255,255,255,.82);
+
+  --paper:rgba(255,255,255,.10);
+  --paper2:rgba(255,255,255,.06);
+  --stroke:rgba(255,255,255,.22);
+
+  --shadow:0 18px 50px rgba(0,0,0,.22);
+  --radius:20px;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+*{ box-sizing:border-box; }
+html,body{ height:100%; margin:0; }
+body{
+  font-family:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color:var(--ink);
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  overflow-x:hidden;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
+.page{
+  min-height:100vh;
+  padding:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
 }
 
-.about-body {
-  font-family: var(--about-font);
-  background: var(--bg-gradient);
-  color: var(--about-text-main);
+.back-btn{
+  position:absolute;
+  top:12px;
+  left:12px;
+  border:none;
+  background:transparent;
+  color:#fff;
+  padding:6px;
+  cursor:pointer;
+  border-radius:12px;
+  transition:transform .15s ease, background .15s ease, opacity .15s ease;
+}
+.back-btn:hover{ background:rgba(0,0,0,.12); }
+.back-btn:active{ transform:scale(.96); opacity:.92; }
+.paper{
+  width:min(920px, 100%);
+  background:linear-gradient(180deg, var(--paper), var(--paper2));
+  border:1px solid var(--stroke);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  animation:fadeUp .45s ease both;
+}
+.paper-inner{
+  padding:34px 34px 24px;
+  animation:softIn .55s ease both;
 }
 
-/* ========== DESKTOP ========== */
-
-.about-page {
-  min-height: 100vh;
-  padding: 32px 80px 32px 80px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
+.title{
+  margin:0 0 10px;
+  font-size:clamp(34px, 4.2vw, 64px);
+  line-height:1.05;
+  letter-spacing:-.02em;
+  font-weight:800;
 }
 
-/* ปุ่ม back มุมซ้ายบน (มีแต่หัวลูกศร) */
-.about-back-btn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-
-  position: absolute;
-  top: 24px;
-  left: 24px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.subtitle{
+  margin:0 0 22px;
+  font-size:clamp(14px, 1.6vw, 20px);
+  line-height:1.65;
+  color:var(--muted);
+  font-weight:600;
 }
 
-.about-back-btn:hover {
-  background: rgba(0, 0, 0, 0.14);
+.text{
+  margin:0 0 14px;
+  font-size:clamp(14px, 1.35vw, 18px);
+  line-height:1.85;
+  color:rgba(255,255,255,.92);
 }
 
-/* วาดหัวลูกศรด้วย border */
-.arrow-icon {
-  width: 14px;
-  height: 14px;
-  border-top: 2.5px solid var(--arrow-color);
-  border-left: 2.5px solid var(--arrow-color);
-  transform: rotate(-45deg); /* ชี้ไปทางซ้าย */
+.dev{
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.18);
+}
+.dev-label{
+  font-weight:700;
+  margin-bottom:8px;
+  color:rgba(255,255,255,.92);
+}
+.dev-list{
+  margin:0;
+  padding-left:18px;
+  color:rgba(255,255,255,.92);
+}
+.dev-list li{ margin:4px 0; }
+
+.foot{
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.18);
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  color:rgba(255,255,255,.78);
+  font-size:12.5px;
+}
+.ver{ font-weight:700; }
+
+@keyframes fadeUp{
+  from{ opacity:0; transform:translateY(10px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+@keyframes softIn{
+  from{ opacity:0; transform:translateY(6px); }
+  to{ opacity:1; transform:translateY(0); }
 }
 
-/* ส่วนเนื้อหา – ดันมาอยู่กลางจอมากขึ้น */
-.about-main {
-  flex: 1;
-  display: flex;
-  align-items: center;      /* กึ่งกลางแนวตั้ง */
-  justify-content: center;  /* กึ่งกลางแนวนอน */
+@media (max-width:768px){
+  .page{ padding:18px; }
+  .paper-inner{ padding:28px 22px 20px; }
 }
 
-.about-text {
-  max-width: 640px;
+@media (max-width:480px){
+  .page{ padding:16px; }
+  .paper-inner{ padding:26px 18px 18px; }
+  .foot{ flex-direction:column; align-items:flex-start; }
 }
 
-/* ฟอนต์ใหญ่ขึ้นสำหรับเดสก์ท็อป */
-.about-title {
-  margin: 24px 0 10px;
-  font-size: 64px;
-  line-height: 1.05;
-  font-weight: 700;
-}
-
-.about-subtitle {
-  margin: 0 0 26px;
-  font-size: 20px;
-  line-height: 1.6;
-  color: var(--about-text-muted);
-}
-
-.about-body-text {
-  margin: 0 0 14px;
-  font-size: 18px;
-  line-height: 1.7;
-}
-
-.about-dev {
-  margin-top: 28px;
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-.about-dev-label {
-  margin: 0 0 6px;
-}
-
-.about-dev ul {
-  margin: 0;
-  padding-left: 20px;
-}
-
-/* footer ล่าง */
-.about-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  font-size: 13px;
-  color: var(--about-text-muted);
-}
-
-.about-version {
-  text-align: right;
-}
-
-.mobile-only {
-  display: none;
-}
-
-/* ========== MOBILE / TABLET ========== */
-
-@media (max-width: 768px) {
-  .about-page {
-    padding: 20px 20px 24px;
-  }
-
-  .about-back-btn {
-    top: 16px;
-    left: 16px;
-  }
-
-  .about-main {
-    align-items: flex-start;
-    justify-content: flex-start; /* มือถือให้เริ่มจากซ้ายเหมือนเดิม */
-    margin-top: 32px;
-  }
-
-  .about-text {
-    max-width: 100%;
-  }
-
-  .about-title {
-    font-size: 32px;
-    margin-top: 24px;
-  }
-
-  .about-subtitle {
-    font-size: 14px;
-    margin-bottom: 18px;
-  }
-
-  .about-body-text {
-    font-size: 14px;
-  }
-
-  .about-dev {
-    font-size: 14px;
-  }
-
-  .about-footer {
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-  }
-
-  .mobile-only {
-    display: inline;
-  }
+@media (prefers-reduced-motion: reduce){
+  .paper, .paper-inner{ animation:none; }
+  .back-btn{ transition:none; }
 }

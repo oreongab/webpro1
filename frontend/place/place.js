@@ -1,4 +1,3 @@
-// ดึงข้อมูลสถานที่จาก backend
 async function fetchPlaceDetail(placeId) {
   try {
     const response = await fetch(`http://localhost:3000/places/${placeId}`);
@@ -6,8 +5,7 @@ async function fetchPlaceDetail(placeId) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result = await response.json();
-    
-    // Backend คืนค่า {success, data}
+
     if (result.success && result.data && result.data.place_id) {
       return result.data;
     }
@@ -18,10 +16,16 @@ async function fetchPlaceDetail(placeId) {
   }
 }
 
-// สร้างดาว
+function getFileName(path) {
+  return String(path || '').split(/[/\\]/).pop();
+}
+
+function getDefaultImageUrl() {
+  return 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
+}
+
 function buildStars(rating) {
   if (!rating) return '';
-  // แปลงเป็น number ก่อน
   const ratingNum = typeof rating === 'number' ? rating : parseFloat(rating);
   const fullStars = Math.round(ratingNum);
   let html = '';
@@ -35,19 +39,14 @@ function buildStars(rating) {
   return html;
 }
 
-// แสดงข้อมูลบนหน้า
 function displayPlaceDetail(place) {
-  // รูป - ใช้รูปแรกจาก images array
   const detailImage = document.getElementById('detail-image');
   if (detailImage) {
-    let imagePath = 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
-    
-    // ตรวจสอบ images ให้ดี
+    let imagePath = getDefaultImageUrl();
+
     if (place.images && Array.isArray(place.images) && place.images.length > 0) {
       const firstImage = place.images[0];
-      const fileName = firstImage.includes('/') || firstImage.includes('\\')
-        ? firstImage.split(/[/\\]/).pop()
-        : firstImage;
+      const fileName = getFileName(firstImage);
       imagePath = `../../img_place/${fileName}`;
     }
     
@@ -55,23 +54,20 @@ function displayPlaceDetail(place) {
     detailImage.alt = place.place_name || '';
     detailImage.onerror = function() {
       this.onerror = null;
-      this.src = 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
+      this.src = getDefaultImageUrl();
     };
   }
 
-  // ชื่อสถานที่
   const detailTitle = document.getElementById('detail-title');
   if (detailTitle) {
     detailTitle.textContent = place.place_name || 'ไม่ระบุชื่อ';
   }
 
-  // เวลาเปิด
   const detailOpening = document.getElementById('detail-opening');
   if (detailOpening) {
     detailOpening.textContent = place.opening_hours || 'ไม่ระบุเวลา';
   }
 
-  // ที่ตั้ง
   const detailAddress = document.getElementById('detail-address');
   const detailProvince = document.getElementById('detail-province');
   
@@ -82,12 +78,10 @@ function displayPlaceDetail(place) {
     detailProvince.textContent = place.place_province || '';
   }
 
-  // คะแนน - แปลงเป็น number ก่อน
   const detailRatingLabel = document.getElementById('detail-rating-label');
   const detailStars = document.getElementById('detail-stars');
   const detailRatingScore = document.getElementById('detail-rating-score');
-  
-  // แปลง place_score เป็น number
+
   const rating = place.place_score ? parseFloat(place.place_score) : 0;
   
   if (rating > 0) {
@@ -100,26 +94,22 @@ function displayPlaceDetail(place) {
     if (detailRatingScore) detailRatingScore.textContent = '';
   }
 
-  // ค่าเข้าชม
   const detailPrice = document.getElementById('detail-price');
   if (detailPrice) {
     const price = place.starting_price ? parseFloat(place.starting_price) : 0;
     detailPrice.textContent = price > 0 ? `${price} บาท` : 'ฟรี';
   }
 
-  // หมวด
   const detailCategory = document.getElementById('detail-category');
   if (detailCategory) {
     detailCategory.textContent = place.categories || 'ไม่ระบุหมวด';
   }
 
-  // อีเวนท์
   const detailEvent = document.getElementById('detail-event');
   if (detailEvent) {
     detailEvent.textContent = place.place_event || 'ไม่มีอีเวนท์';
   }
 
-  // แสดง content
   const content = document.querySelector('.place-detail-content');
   if (content) {
     content.style.display = 'block';
@@ -127,7 +117,6 @@ function displayPlaceDetail(place) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // ดึง place_id จาก URL parameter
   const urlParams = new URLSearchParams(window.location.search);
   const placeId = urlParams.get('id');
 
@@ -144,10 +133,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.history.back();
   }
 
-  // ปุ่มหัวใจ (จะเห็นก็ต่อเมื่อมีข้อมูลและตัว content โผล่)
   const favBtn = document.querySelector(".place-detail-fav");
   if (favBtn && placeId) {
-    // โหลดสถานะ favorite เริ่มต้น
     if (window.favoriteHandler) {
       const isFav = await window.favoriteHandler.checkIsFavorite(placeId);
       if (isFav) {
@@ -161,7 +148,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (window.favoriteHandler) {
         await window.favoriteHandler.toggleFavorite(placeId, favBtn);
       } else {
-        // fallback
         favBtn.classList.toggle("is-active");
         const icon = favBtn.querySelector(".material-icons");
         if (icon) {

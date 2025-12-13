@@ -1,233 +1,166 @@
-// ========== Navigation Handler (ใช้ร่วมกันทุกหน้า) ==========
-
-// กำหนด path ของแต่ละหน้า
-const NAV_PATHS = {
-  home: '../home/home.html',
-  rank: '../rank/rank.html',
-  category: '../home/home.html', // เปิด category overlay ในหน้า home
-  favorites: '../favorite/favorite.html',
-  profile: '../user1/user-profile.html',
-  login: '../login/login.html',
-  signup: '../signup/signup.html',
-  place: '../place/place-detail.html'
+const NAV = {
+  home: "../home/home.html",
+  rank: "../rank/rank.html",
+  category: "../home/home.html",
+  favorites: "../favorite/favorite.html",
+  profile: "../user1/user-profile.html",
+  login: "../login/login.html",
+  signup: "../signup/signup.html",
+  place: "../place/place-detail.html",
+  about: "../about/about.html",
+  terms: "../Terms/terms.html",
+  privacy: "../Privacy/privacy.html"
 };
 
-// ฟังก์ชันสำหรับนำทาง
-function navigateTo(page, options = {}) {
-  let path = NAV_PATHS[page];
-  
-  if (!path) {
-    console.warn(`Page "${page}" not found in navigation paths`);
-    return;
-  }
-  
-  // เพิ่ม query parameters ถ้ามี
-  if (options.id) {
-    path += `?id=${options.id}`;
-  }
-  
-  // ถ้าเป็น category ให้เปิด overlay แทน
-  if (page === 'category') {
-    const categoryOverlay = document.getElementById('categoryOverlay');
-    if (categoryOverlay) {
-      categoryOverlay.classList.add('open');
+const getPageKey = () => {
+  const p = window.location.pathname.toLowerCase();
+  if (p.includes("/home/")) return "home";
+  if (p.includes("/rank/")) return "rank";
+  if (p.includes("/favorite/")) return "favorites";
+  if (p.includes("/user1/")) return "profile";
+  if (p.includes("/about/")) return "about";
+  if (p.includes("/terms/")) return "terms";
+  if (p.includes("/privacy/")) return "privacy";
+  return "home";
+};
+
+const go = (page, opts = {}) => {
+  let path = NAV[page];
+  if (!path) return;
+
+  if (page === "category") {
+    const overlay = document.getElementById("categoryOverlay");
+    if (overlay) {
+      const isOpen = overlay.classList.contains("open");
+      if (isOpen) {
+        overlay.classList.remove("open");
+        overlay.setAttribute("aria-hidden", "true");
+      } else {
+        overlay.classList.add("open");
+        overlay.setAttribute("aria-hidden", "false");
+      }
       return;
     }
   }
-  
+
+  const params = new URLSearchParams();
+  if (opts.id != null) params.set("id", String(opts.id));
+  if (opts.from) params.set("from", String(opts.from));
+
+  const query = params.toString();
+  if (query) path += (path.includes("?") ? "&" : "?") + query;
+
   window.location.href = path;
-}
-
-// Setup navigation links ในหน้า
-function setupNavigation() {
-  // Desktop nav links
-  const navLinks = document.querySelectorAll('.nav-link');
-  navLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      
-      const text = link.textContent.trim().toLowerCase();
-      let page = text;
-      
-      // แปลงข้อความเป็น key
-      if (text === 'home' || text === 'หน้าแรก') page = 'home';
-      else if (text === 'rank' || text === 'อันดับ') page = 'rank';
-      else if (text === 'category' || text === 'หมวดหมู่') page = 'category';
-      else if (text === 'favorites' || text === 'รายการโปรด') page = 'favorites';
-      
-      navigateTo(page);
-    });
-  });
-  
-  // Mobile menu links
-  const mobileLinks = document.querySelectorAll('.mobile-link');
-  mobileLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      
-      const text = link.textContent.trim().toLowerCase();
-      let page = text;
-      
-      // แปลงข้อความเป็น key
-      if (text === 'home' || text === 'หน้าแรก') page = 'home';
-      else if (text === 'rank' || text === 'อันดับ') page = 'rank';
-      else if (text === 'category' || text === 'หมวดหมู่') page = 'category';
-      else if (text === 'favorites' || text === 'รายการโปรด') page = 'favorites';
-      
-      // ปิด mobile menu
-      const mobileMenu = document.getElementById('mobileMenu');
-      if (mobileMenu) {
-        mobileMenu.classList.remove('open');
-      }
-      
-      navigateTo(page);
-    });
-  });
-  
-  // Avatar buttons -> Profile
-  const avatarBtns = document.querySelectorAll('.avatar-btn');
-  avatarBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      
-      // เช็คว่า login หรือยัง
-      const userStr = localStorage.getItem('loggedInUser');
-      if (userStr) {
-        navigateTo('profile');
-      } else {
-        navigateTo('login');
-      }
-    });
-  });
-  
-  // Back buttons
-  const backBtns = document.querySelectorAll('.place-detail-back, .fav-back');
-  backBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      
-      // ลองใช้ history.back() ก่อน ถ้าไม่มี history ให้กลับ home
-      if (window.history.length > 1) {
-        window.history.back();
-      } else {
-        navigateTo('home');
-      }
-    });
-  });
-}
-
-// ตั้งค่า active state ให้ nav link ตามหน้าปัจจุบัน
-function setActiveNavLink() {
-  const currentPage = window.location.pathname;
-  
-  // หา nav link ที่ตรงกับหน้าปัจจุบัน
-  const navLinks = document.querySelectorAll('.nav-link, .mobile-link');
-  navLinks.forEach(link => {
-    link.classList.remove('active');
-    
-    const href = link.getAttribute('href');
-    if (!href || href === '#') {
-      const text = link.textContent.trim().toLowerCase();
-      
-      if ((text === 'home' || text === 'หน้าแรก') && currentPage.includes('/home/')) {
-        link.classList.add('active');
-      } else if ((text === 'rank' || text === 'อันดับ') && currentPage.includes('/rank/')) {
-        link.classList.add('active');
-      } else if ((text === 'favorites' || text === 'รายการโปรด') && currentPage.includes('/favorite/')) {
-        link.classList.add('active');
-      }
-    }
-  });
-}
-
-// ========== Avatar Display Functions ==========
-function updateAvatarDisplay() {
-  const userStr = localStorage.getItem('loggedInUser');
-  
-  // ดึงรูป avatar ตาม user_id ของ user ที่ login อยู่
-  let savedAvatar = null;
-  if (userStr) {
-    try {
-      const user = JSON.parse(userStr);
-      const userId = user.user_id;
-      savedAvatar = localStorage.getItem(`userAvatar_${userId}`);
-    } catch (e) {
-      console.error('Error parsing user data:', e);
-    }
-  }
-  
-  // ดึง avatar circles ทั้งหมดในหน้า
-  const avatarCircles = document.querySelectorAll('.avatar-circle');
-  
-  avatarCircles.forEach(circle => {
-    // ลบรูปเก่าออกก่อน (ถ้ามี)
-    const existingImg = circle.querySelector('img.avatar-img');
-    if (existingImg) {
-      existingImg.remove();
-    }
-    
-    const icon = circle.querySelector('.material-icons');
-    
-    if (savedAvatar && userStr) {
-      // มีรูป avatar -> แสดงรูป
-      if (icon) icon.style.display = 'none';
-      
-      const img = document.createElement('img');
-      img.src = savedAvatar;
-      img.alt = 'User Avatar';
-      img.className = 'avatar-img';
-      img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; border-radius: 50%;';
-      circle.appendChild(img);
-    } else {
-      // ไม่มีรูป -> แสดง icon
-      if (icon) icon.style.display = 'block';
-    }
-  });
-  
-  // อัปเดตชื่อผู้ใช้ใน mobile menu (ถ้ามี)
-  const usernameEl = document.querySelector('.mobile-menu .username');
-  if (usernameEl && userStr) {
-    try {
-      const user = JSON.parse(userStr);
-      usernameEl.textContent = user.user_name || 'Guest';
-    } catch (e) {
-      usernameEl.textContent = 'Guest';
-    }
-  }
-}
-
-// ========== Logout Function ==========
-function handleLogout() {
-  const confirmed = confirm('Are you sure you want to log out?');
-  if (!confirmed) return;
-  
-  // ลบเฉพาะ loggedInUser (ไม่ลบรูป avatar เพื่อให้ login กลับมาใช้ได้)
-  localStorage.removeItem('loggedInUser');
-  
-  // ไปหน้า login
-  window.location.href = '../login/login.html';
-}
-
-// Export functions
-window.navigation = {
-  navigateTo,
-  setupNavigation,
-  setActiveNavLink,
-  updateAvatarDisplay,
-  handleLogout,
-  NAV_PATHS
 };
 
-// Auto-setup เมื่อโหลดหน้า
-document.addEventListener('DOMContentLoaded', () => {
-  setupNavigation();
-  setActiveNavLink();
-  updateAvatarDisplay();
-});
+const setupNavLinks = () => {
+  document.querySelectorAll(".nav-link").forEach(a => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const text = a.textContent.trim().toLowerCase();
+      if (text === "home" || text === "หน้าแรก") go("home");
+      else if (text === "rank" || text === "อันดับ") go("rank");
+      else if (text === "category" || text === "หมวดหมู่") go("category");
+      else if (text === "favorites" || text === "รายการโปรด") go("favorites");
+    });
+  });
 
-// อัปเดต avatar เมื่อมีการเปลี่ยนแปลง localStorage
-window.addEventListener('storage', (e) => {
-  if (e.key === 'userAvatar' || e.key === 'loggedInUser') {
-    updateAvatarDisplay();
+  document.querySelectorAll(".mobile-link").forEach(a => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const text = a.textContent.trim().toLowerCase();
+      const menu = document.getElementById("mobileMenu");
+      if (menu) menu.classList.remove("open");
+
+      if (text === "home" || text === "หน้าแรก") go("home");
+      else if (text === "rank" || text === "อันดับ") go("rank");
+      else if (text === "category" || text === "หมวดหมู่") go("category");
+      else if (text === "favorites" || text === "รายการโปรด") go("favorites");
+    });
+  });
+
+  document.querySelectorAll(".avatar-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const user = localStorage.getItem("loggedInUser");
+      go(user ? "profile" : "login");
+    });
+  });
+
+  document.querySelectorAll(".place-detail-back, .fav-back, .rank-back").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.history.length > 1 ? window.history.back() : go("home");
+    });
+  });
+};
+
+const setupFooterLinks = () => {
+  const from = getPageKey();
+  document.querySelectorAll('a[href="#about"], a[href="#terms"], a[href="#privacy"]').forEach(a => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const href = a.getAttribute("href").toLowerCase();
+      if (href === "#about") go("about", { from });
+      else if (href === "#terms") go("terms", { from });
+      else if (href === "#privacy") go("privacy", { from });
+    });
+  });
+};
+
+const setActiveNav = () => {
+  const p = window.location.pathname.toLowerCase();
+  document.querySelectorAll(".nav-link, .mobile-link").forEach(a => {
+    a.classList.remove("active");
+    const text = a.textContent.trim().toLowerCase();
+    if ((text === "home" || text === "หน้าแรก") && p.includes("/home/")) a.classList.add("active");
+    if ((text === "rank" || text === "อันดับ") && p.includes("/rank/")) a.classList.add("active");
+    if ((text === "favorites" || text === "รายการโปรด") && p.includes("/favorite/")) a.classList.add("active");
+  });
+};
+
+const updateAvatarDisplay = () => {
+  const userStr = localStorage.getItem("loggedInUser");
+  if (!userStr) {
+    return;
   }
+
+  try {
+    const user = JSON.parse(userStr);
+    const avatarUrl = localStorage.getItem(`userAvatar_${user.user_id}`);
+
+    if (avatarUrl) {
+      document.querySelectorAll(".avatar-circle").forEach(circle => {
+        const icon = circle.querySelector(".material-icons");
+        let img = circle.querySelector("img.avatar-img");
+        
+        if (!img) {
+          img = document.createElement("img");
+          img.className = "avatar-img";
+          img.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;";
+          circle.style.position = "relative";
+          circle.appendChild(img);
+        }
+        
+        img.src = avatarUrl;
+        if (icon) icon.style.display = "none";
+      });
+    } else {
+      document.querySelectorAll(".avatar-circle").forEach(circle => {
+        const icon = circle.querySelector(".material-icons");
+        if (icon) icon.style.display = "";
+      });
+    }
+  } catch (e) {
+    console.error("Avatar display error:", e);
+  }
+};
+
+window.navigation = { go, NAV, getPageKey, updateAvatarDisplay };
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupNavLinks();
+  setupFooterLinks();
+  setActiveNav();
+  updateAvatarDisplay();
 });

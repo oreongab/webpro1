@@ -1,67 +1,62 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>Aow Ngai Dee Wa – About</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aow Ngai Dee Wa â€“ About</title>
 
-  <!-- Material Icons -->
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="about.css" />
-
-  <!-- JS -->
-  <script src="about.js" defer></script>
+  <link rel="stylesheet" href="./about.css" />
+  <script src="./about.js" defer></script>
 </head>
 
 <body class="about-body">
-  <main class="about-page">
-    <!-- ปุ่มย้อนกลับมุมซ้ายบน -->
-    <button class="about-back-btn" id="aboutBackBtn" aria-label="Go back">
-  <span class="arrow-icon" aria-hidden="true"></span>
-</button>
-    <!-- เนื้อหา -->
-    <section class="about-main">
-      <div class="about-text">
-        <h1 class="about-title">
-          Aow Ngai<br>
-          Dee Wa
-        </h1>
+  <main class="page">
 
-        <p class="about-subtitle">
-          ค้นหาสถานที่ท่องเที่ยวสวยงาม<br>
-          ทั่วไทยได้ง่ายๆกับเรา
+    <button class="back-btn" id="backBtn" aria-label="Go back">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+           stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+
+    <section class="paper">
+      <div class="paper-inner">
+        <h1 class="title">Aow Ngai Dee Wa</h1>
+
+        <br />
+        <p class="subtitle">
+          à¸„à¹‰à¸™à¸«à¸²à¸ªà¸–à¸²à¸™à¸—à¸µà¹ˆà¸—à¹ˆà¸­à¸‡à¹€à¸—à¸µà¹ˆà¸¢à¸§à¸ªà¸§à¸¢à¸‡à¸²à¸¡à¸—à¸±à¹ˆà¸§à¹„à¸—à¸¢à¹„à¸”à¹‰à¸‡à¹ˆà¸²à¸¢ à¹† à¸à¸±à¸šà¹€à¸£à¸²
         </p>
 
-        <p class="about-body-text">
-          Aow Ngai Dee Wa helps users discover beautiful travel destinations
-          across Thailand easily.
-        </p>
-        <p class="about-body-text">
-          Our goal is to inspire travel and make exploration simple and fun.
+        <p class="text">
+          Aow Ngai Dee Wa à¸Šà¹ˆà¸§à¸¢à¹ƒà¸«à¹‰à¸„à¸¸à¸“à¸„à¹‰à¸™à¸žà¸šà¸ªà¸–à¸²à¸™à¸—à¸µà¹ˆà¸—à¹ˆà¸­à¸‡à¹€à¸—à¸µà¹ˆà¸¢à¸§à¸—à¸µà¹ˆà¸™à¹ˆà¸²à¸ªà¸™à¹ƒà¸ˆà¸—à¸±à¹ˆà¸§à¸›à¸£à¸°à¹€à¸—à¸¨à¹„à¸—à¸¢
+          à¹à¸šà¸šà¹ƒà¸Šà¹‰à¸‡à¸²à¸™à¸‡à¹ˆà¸²à¸¢ à¸”à¸¹à¸ªà¸šà¸²à¸¢à¸•à¸² à¹à¸¥à¸°à¹€à¸‹à¸Ÿà¹„à¸§à¹‰à¸à¸¥à¸±à¸šà¸¡à¸²à¸”à¸¹à¹„à¸”à¹‰à¹€à¸£à¹‡à¸§
         </p>
 
-        <div class="about-dev">
-          <p class="about-dev-label">Developed by:</p>
-          <ul>
+        <p class="text">
+          à¹€à¸›à¹‰à¸²à¸«à¸¡à¸²à¸¢à¸‚à¸­à¸‡à¹€à¸£à¸²à¸„à¸·à¸­à¸—à¸³à¹ƒà¸«à¹‰à¸à¸²à¸£à¹€à¸¥à¸·à¸­à¸à¸—à¸µà¹ˆà¹€à¸—à¸µà¹ˆà¸¢à¸§ â€œà¹„à¸¡à¹ˆà¸¢à¸²à¸â€ à¹à¸¥à¸°à¸ªà¸™à¸¸à¸à¸‚à¸¶à¹‰à¸™
+          à¸”à¹‰à¸§à¸¢à¸«à¸™à¹‰à¸²à¸•à¸²à¸—à¸µà¹ˆà¹€à¸›à¹‡à¸™à¸¡à¸´à¸•à¸£à¹à¸¥à¸°à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸—à¸µà¹ˆà¸­à¹ˆà¸²à¸™à¸‡à¹ˆà¸²à¸¢
+        </p>
+
+        <div class="dev">
+          <div class="dev-label">Developed by</div>
+          <ul class="dev-list">
             <li>Yada Intra</li>
             <li>Pattamapon Thongplew</li>
           </ul>
         </div>
+
+        <footer class="foot">
+          <span>Â© 2025 Aow Ngai Dee Wa</span>
+          <span class="ver">v1.0.0</span>
+        </footer>
       </div>
     </section>
-
-    <!-- footer ล่าง -->
-    <footer class="about-footer">
-      <span>
-        © 2025 Aow Ngai Dee Wa
-        <br class="mobile-only">
-        All rights reserved
-      </span>
-      <span class="about-version">v1.0.0</span>
-    </footer>
   </main>
 </body>
 </html>
+

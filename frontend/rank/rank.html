@@ -1,17 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <title>Aow Ngai Dee Wa – Rank</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Material Icons -->
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-
-  <!-- CSS & JS -->
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="../category-filter/category-filter.css" />
+  <meta charset="UTF-8">
+  <title>Aow Ngai Dee Wa â€“ Rank</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="rank.css">
+  <link rel="stylesheet" href="../category-filter/category-filter.css">
   <script defer src="../nav.js"></script>
   <script defer src="../favorite-handler.js"></script>
   <script defer src="../category-filter/category-filter.js"></script>
@@ -21,42 +16,42 @@
 </head>
 
 <body class="rank-page">
-  <!-- ========== TOP NAV (แถบเขียว) ========== -->
+
   <header class="top-nav rank-nav">
     <div class="top-nav-inner">
-      <!-- ซ้าย -->
+
       <div class="nav-left">
-        <!-- desktop: avatar -->
+
         <button class="avatar-btn desktop-only" aria-label="Open profile">
           <div class="avatar-circle">
             <span class="material-icons">person</span>
           </div>
         </button>
 
-        <!-- mobile: < rank -->
+
         <button class="rank-back mobile-only" type="button" onclick="history.back()">
           <span class="material-icons">chevron_left</span>
-          <span>rank</span>
+          <span>Rank</span>
         </button>
       </div>
 
-      <!-- กลาง: เมนู desktop -->
+
       <nav class="nav-links">
-        <a href="home.html" class="nav-link">Home</a>
-        <a href="rank.html" class="nav-link active">Rank</a>
-        <a href="category.html" class="nav-link" id="navCategoryLink">Category</a>
-        <a href="favorites.html" class="nav-link">Favorites</a>
+        <a href="../home/home.html" class="nav-link">Home</a>
+        <a href="../rank/rank.html" class="nav-link active">Rank</a>
+        <a href="../home/home.html" class="nav-link">Category</a>
+        <a href="../favorite/favorite.html" class="nav-link">Favorites</a>
       </nav>
 
-      <!-- ขวา: hamburger (มือถือ) -->
+
       <button class="nav-toggle" aria-label="Open menu">
         <span class="material-icons">menu</span>
       </button>
     </div>
   </header>
 
-  <!-- ========== MOBILE MENU ========== -->
-  <div class="mobile-menu" id="mobileMenu">
+
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
     <div class="mobile-menu-header">
       <button class="avatar-btn" aria-label="Open profile from menu">
         <div class="avatar-circle big">
@@ -74,34 +69,31 @@
     </div>
 
     <nav class="mobile-menu-links">
-      <a href="home.html" class="mobile-link">Home</a>
-      <a href="rank.html" class="mobile-link active">Rank</a>
-      <a href="category.html" class="mobile-link" id="mobileCategoryLink">Category</a>
-      <a href="favorites.html" class="mobile-link">Favorites</a>
+      <a href="../home/home.html" class="mobile-link">Home</a>
+      <a href="../rank/rank.html" class="mobile-link active">Rank</a>
+      <a href="../home/home.html" class="mobile-link">Category</a>
+      <a href="../favorite/favorite.html" class="mobile-link">Favorites</a>
     </nav>
   </div>
 
-  <!-- ========== MAIN ========== -->
+
   <main class="page-main rank-main">
-    <!-- แถว search + filter -->
+
     <section class="rank-search-section">
       <div class="rank-search-row">
-        <div class="search-box" style="position:relative;">
+        <div class="search-box">
           <span class="material-icons">search</span>
-          <input type="text" id="rankSearchInput" placeholder="Search for places" autocomplete="off" />
-          <!-- Dropdown suggestions -->
-          <div class="search-suggestions" id="rankSearchSuggestions" style="display:none;"></div>
+          <input type="text" id="rankSearchInput" placeholder="Search for places" />
         </div>
 
-        <div class="filter-btn-wrapper" style="position: relative;">
-          <button class="filter-icon-btn"
-                  id="categoryBtn"
-                  aria-label="Open category filter">
-            <span class="material-icons">tune</span>
-          </button>
+        <button class="filter-icon-btn" id="openingFilterBtn" aria-label="Open opening-days filter">
+          <span class="material-icons">tune</span>
+        </button>
+      </div>
+    </section>
 
-          <!-- ====== FILTER PANEL: Opening days (เด้งจากปุ่มฟิลเตอร์) ====== -->
-          <div class="filter-panel" id="openingDaysPanel" aria-hidden="true">
+
+    <div class="filter-panel" id="openingDaysPanel" aria-hidden="true">
       <div class="filter-panel-inner">
         <h2 class="filter-title">Opening days</h2>
         <div class="filter-divider"></div>
@@ -145,148 +137,16 @@
           <button type="button" class="filter-btn filter-clear">Clear</button>
           <button type="button" class="filter-btn filter-apply">Apply</button>
         </div>
-          </div>
-        </div>
-        <!-- ====== END FILTER PANEL ====== -->
-        </div>
-      </div>
-    </section>
-
-    <!-- ========== CATEGORY OVERLAY ========== -->
-    <div class="category-overlay" id="categoryOverlay" aria-hidden="true">
-      <div class="category-panel">
-        <div class="category-header">
-          <h2>Category</h2>
-          <button class="category-close" aria-label="Close category panel">
-            <span class="material-icons">close</span>
-          </button>
-        </div>
-
-        <div class="category-columns">
-          <!-- LEFT: PLACE TYPE -->
-          <div class="category-col">
-            <div class="category-pill">Place Type</div>
-            <ul class="category-list category-place-list">
-              <li><label><input type="checkbox" value="Art" /> <span>Art</span></label></li>
-              <li><label><input type="checkbox" value="Beaches" /> <span>Beaches</span></label></li>
-              <li><label><input type="checkbox" value="Cafe & Restaurants" /> <span>Cafés &amp; Restaurants</span></label></li>
-              <li><label><input type="checkbox" value="Historical Attractions" /> <span>Historical Attractions</span></label></li>
-              <li><label><input type="checkbox" value="Markets" /> <span>Markets</span></label></li>
-              <li><label><input type="checkbox" value="Museums" /> <span>Museums</span></label></li>
-              <li><label><input type="checkbox" value="Mall" /> <span>Mall</span></label></li>
-              <li><label><input type="checkbox" value="Natural" /> <span>Natural</span></label></li>
-              <li><label><input type="checkbox" value="Parks & Gardens" /> <span>Parks &amp; Gardens</span></label></li>
-              <li><label><input type="checkbox" value="Temple" /> <span>Temple</span></label></li>
-              <li><label><input type="checkbox" value="Sports" /> <span>Sports</span></label></li>
-              <li><label><input type="checkbox" value="Other" /> <span>Other</span></label></li>
-            </ul>
-          </div>
-
-          <!-- RIGHT: PROVINCE -->
-          <div class="category-col">
-            <div class="category-pill">Province</div>
-            <div class="province-search-box">
-              <span class="material-icons">search</span>
-              <input type="text" placeholder="Search province" id="provinceSearch" />
-            </div>
-            <div class="province-list-scroll">
-              <ul class="category-list category-province-list">
-                <li><label><input type="checkbox" value="Amnat Charoen" /> <span>Amnat Charoen</span></label></li>
-                <li><label><input type="checkbox" value="Ang Thong" /> <span>Ang Thong</span></label></li>
-                <li><label><input type="checkbox" value="Bangkok" /> <span>Bangkok</span></label></li>
-                <li><label><input type="checkbox" value="Bueng Kan" /> <span>Bueng Kan</span></label></li>
-                <li><label><input type="checkbox" value="Buri Ram" /> <span>Buri Ram</span></label></li>
-                <li><label><input type="checkbox" value="Chachoengsao" /> <span>Chachoengsao</span></label></li>
-                <li><label><input type="checkbox" value="Chai Nat" /> <span>Chai Nat</span></label></li>
-                <li><label><input type="checkbox" value="Chaiyaphum" /> <span>Chaiyaphum</span></label></li>
-                <li><label><input type="checkbox" value="Chanthaburi" /> <span>Chanthaburi</span></label></li>
-                <li><label><input type="checkbox" value="Chiang Mai" /> <span>Chiang Mai</span></label></li>
-                <li><label><input type="checkbox" value="Chiang Rai" /> <span>Chiang Rai</span></label></li>
-                <li><label><input type="checkbox" value="Chon Buri" /> <span>Chon Buri</span></label></li>
-                <li><label><input type="checkbox" value="Chumphon" /> <span>Chumphon</span></label></li>
-                <li><label><input type="checkbox" value="Kalasin" /> <span>Kalasin</span></label></li>
-                <li><label><input type="checkbox" value="Kamphaeng Phet" /> <span>Kamphaeng Phet</span></label></li>
-                <li><label><input type="checkbox" value="Kanchanaburi" /> <span>Kanchanaburi</span></label></li>
-                <li><label><input type="checkbox" value="Khon Kaen" /> <span>Khon Kaen</span></label></li>
-                <li><label><input type="checkbox" value="Krabi" /> <span>Krabi</span></label></li>
-                <li><label><input type="checkbox" value="Lampang" /> <span>Lampang</span></label></li>
-                <li><label><input type="checkbox" value="Lamphun" /> <span>Lamphun</span></label></li>
-                <li><label><input type="checkbox" value="Loei" /> <span>Loei</span></label></li>
-                <li><label><input type="checkbox" value="Lop Buri" /> <span>Lop Buri</span></label></li>
-                <li><label><input type="checkbox" value="Mae Hong Son" /> <span>Mae Hong Son</span></label></li>
-                <li><label><input type="checkbox" value="Maha Sarakham" /> <span>Maha Sarakham</span></label></li>
-                <li><label><input type="checkbox" value="Mukdahan" /> <span>Mukdahan</span></label></li>
-                <li><label><input type="checkbox" value="Nakhon Nayok" /> <span>Nakhon Nayok</span></label></li>
-                <li><label><input type="checkbox" value="Nakhon Pathom" /> <span>Nakhon Pathom</span></label></li>
-                <li><label><input type="checkbox" value="Nakhon Phanom" /> <span>Nakhon Phanom</span></label></li>
-                <li><label><input type="checkbox" value="Nakhon Ratchasima" /> <span>Nakhon Ratchasima</span></label></li>
-                <li><label><input type="checkbox" value="Nakhon Sawan" /> <span>Nakhon Sawan</span></label></li>
-                <li><label><input type="checkbox" value="Nakhon Si Thammarat" /> <span>Nakhon Si Thammarat</span></label></li>
-                <li><label><input type="checkbox" value="Nan" /> <span>Nan</span></label></li>
-                <li><label><input type="checkbox" value="Narathiwat" /> <span>Narathiwat</span></label></li>
-                <li><label><input type="checkbox" value="Nong Bua Lam Phu" /> <span>Nong Bua Lam Phu</span></label></li>
-                <li><label><input type="checkbox" value="Nong Khai" /> <span>Nong Khai</span></label></li>
-                <li><label><input type="checkbox" value="Nonthaburi" /> <span>Nonthaburi</span></label></li>
-                <li><label><input type="checkbox" value="Pathum Thani" /> <span>Pathum Thani</span></label></li>
-                <li><label><input type="checkbox" value="Pattani" /> <span>Pattani</span></label></li>
-                <li><label><input type="checkbox" value="Phang Nga" /> <span>Phang Nga</span></label></li>
-                <li><label><input type="checkbox" value="Phatthalung" /> <span>Phatthalung</span></label></li>
-                <li><label><input type="checkbox" value="Phayao" /> <span>Phayao</span></label></li>
-                <li><label><input type="checkbox" value="Phetchabun" /> <span>Phetchabun</span></label></li>
-                <li><label><input type="checkbox" value="Phetchaburi" /> <span>Phetchaburi</span></label></li>
-                <li><label><input type="checkbox" value="Phichit" /> <span>Phichit</span></label></li>
-                <li><label><input type="checkbox" value="Phitsanulok" /> <span>Phitsanulok</span></label></li>
-                <li><label><input type="checkbox" value="Phra Nakhon Si Ayutthaya" /> <span>Phra Nakhon Si Ayutthaya</span></label></li>
-                <li><label><input type="checkbox" value="Phrae" /> <span>Phrae</span></label></li>
-                <li><label><input type="checkbox" value="Phuket" /> <span>Phuket</span></label></li>
-                <li><label><input type="checkbox" value="Prachin Buri" /> <span>Prachin Buri</span></label></li>
-                <li><label><input type="checkbox" value="Prachuap Khiri Khan" /> <span>Prachuap Khiri Khan</span></label></li>
-                <li><label><input type="checkbox" value="Ranong" /> <span>Ranong</span></label></li>
-                <li><label><input type="checkbox" value="Ratchaburi" /> <span>Ratchaburi</span></label></li>
-                <li><label><input type="checkbox" value="Rayong" /> <span>Rayong</span></label></li>
-                <li><label><input type="checkbox" value="Roi Et" /> <span>Roi Et</span></label></li>
-                <li><label><input type="checkbox" value="Sa Kaeo" /> <span>Sa Kaeo</span></label></li>
-                <li><label><input type="checkbox" value="Sakon Nakhon" /> <span>Sakon Nakhon</span></label></li>
-                <li><label><input type="checkbox" value="Samut Prakan" /> <span>Samut Prakan</span></label></li>
-                <li><label><input type="checkbox" value="Samut Sakhon" /> <span>Samut Sakhon</span></label></li>
-                <li><label><input type="checkbox" value="Samut Songkhram" /> <span>Samut Songkhram</span></label></li>
-                <li><label><input type="checkbox" value="Saraburi" /> <span>Saraburi</span></label></li>
-                <li><label><input type="checkbox" value="Satun" /> <span>Satun</span></label></li>
-                <li><label><input type="checkbox" value="Sing Buri" /> <span>Sing Buri</span></label></li>
-                <li><label><input type="checkbox" value="Si Sa Ket" /> <span>Si Sa Ket</span></label></li>
-                <li><label><input type="checkbox" value="Songkhla" /> <span>Songkhla</span></label></li>
-                <li><label><input type="checkbox" value="Sukhothai" /> <span>Sukhothai</span></label></li>
-                <li><label><input type="checkbox" value="Suphan Buri" /> <span>Suphan Buri</span></label></li>
-                <li><label><input type="checkbox" value="Surat Thani" /> <span>Surat Thani</span></label></li>
-                <li><label><input type="checkbox" value="Surin" /> <span>Surin</span></label></li>
-                <li><label><input type="checkbox" value="Tak" /> <span>Tak</span></label></li>
-                <li><label><input type="checkbox" value="Trang" /> <span>Trang</span></label></li>
-                <li><label><input type="checkbox" value="Trat" /> <span>Trat</span></label></li>
-                <li><label><input type="checkbox" value="Ubon Ratchathani" /> <span>Ubon Ratchathani</span></label></li>
-                <li><label><input type="checkbox" value="Udon Thani" /> <span>Udon Thani</span></label></li>
-                <li><label><input type="checkbox" value="Uthai Thani" /> <span>Uthai Thani</span></label></li>
-                <li><label><input type="checkbox" value="Uttaradit" /> <span>Uttaradit</span></label></li>
-                <li><label><input type="checkbox" value="Yala" /> <span>Yala</span></label></li>
-                <li><label><input type="checkbox" value="Yasothon" /> <span>Yasothon</span></label></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="category-footer">
-          <button class="category-btn category-clear">Clear All</button>
-          <button class="category-btn category-apply">Apply</button>
-        </div>
       </div>
     </div>
-    <!-- ====== END CATEGORY OVERLAY ====== -->
 
-    <!-- Chips -->
+
+
     <section class="chip-bar">
-      <button class="chip">Cafés &amp; Restaurants</button>
+      <button class="chip active">CafÃ©s &amp; Restaurants</button>
       <button class="chip">Temple</button>
       <button class="chip">Natural</button>
-      <button class="chip">Sports</button>
+      <button class="chip">View</button>
       <button class="chip">Art</button>
       <button class="chip">Museums</button>
       <button class="chip">Markets</button>
@@ -297,7 +157,7 @@
       <button class="chip">Other</button>
     </section>
 
-    <!-- GRID การ์ดสถานที่ (template รอข้อมูลหลังบ้าน) -->
+
     <section class="card-grid-section">
       <template id="placeCardTemplate">
         <article class="place-card">
@@ -328,13 +188,141 @@
     </section>
   </main>
 
-  <!-- ========== FOOTER ========== -->
+
+  <div class="category-overlay" id="categoryOverlay" aria-hidden="true">
+    <div class="category-panel">
+      <div class="category-header">
+        <h2>Category</h2>
+        <button class="category-close" aria-label="Close category panel">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div class="category-columns">
+
+        <div class="category-col">
+          <div class="category-pill">Place Type</div>
+          <ul class="category-list category-place-list">
+            <li><label><input type="checkbox" value="Art" /> <span>Art</span></label></li>
+            <li><label><input type="checkbox" value="Beaches" /> <span>Beaches</span></label></li>
+            <li><label><input type="checkbox" value="Cafe & Restaurants" /> <span>CafÃ©s &amp; Restaurants</span></label></li>
+            <li><label><input type="checkbox" value="History" /> <span>Historical Attractions</span></label></li>
+            <li><label><input type="checkbox" value="Markets" /> <span>Markets</span></label></li>
+            <li><label><input type="checkbox" value="Museums" /> <span>Museums</span></label></li>
+            <li><label><input type="checkbox" value="Mall" /> <span>Mall</span></label></li>
+            <li><label><input type="checkbox" value="Natural" /> <span>Natural</span></label></li>
+            <li><label><input type="checkbox" value="Parks & Garden" /> <span>Parks &amp; Gardens</span></label></li>
+            <li><label><input type="checkbox" value="Temple" /> <span>Temple</span></label></li>
+            <li><label><input type="checkbox" value="Sports" /> <span>Sports</span></label></li>
+            <li><label><input type="checkbox" value="Other" /> <span>Other</span></label></li>
+          </ul>
+        </div>
+
+
+        <div class="category-col">
+          <div class="category-pill">Province</div>
+
+          <div class="province-search-box">
+            <span class="material-icons">search</span>
+            <input type="text" id="provinceSearch" placeholder="Search province" />
+          </div>
+
+          <div class="province-list-scroll">
+            <ul class="category-list category-province-list">
+              <li><label><input type="checkbox" value="Amnat Charoen" /> <span>Amnat Charoen</span></label></li>
+              <li><label><input type="checkbox" value="Ang Thong" /> <span>Ang Thong</span></label></li>
+              <li><label><input type="checkbox" value="Bangkok" /> <span>Bangkok</span></label></li>
+              <li><label><input type="checkbox" value="Bueng Kan" /> <span>Bueng Kan</span></label></li>
+              <li><label><input type="checkbox" value="Buri Ram" /> <span>Buri Ram</span></label></li>
+              <li><label><input type="checkbox" value="Chachoengsao" /> <span>Chachoengsao</span></label></li>
+              <li><label><input type="checkbox" value="Chai Nat" /> <span>Chai Nat</span></label></li>
+              <li><label><input type="checkbox" value="Chaiyaphum" /> <span>Chaiyaphum</span></label></li>
+              <li><label><input type="checkbox" value="Chanthaburi" /> <span>Chanthaburi</span></label></li>
+              <li><label><input type="checkbox" value="Chiang Mai" /> <span>Chiang Mai</span></label></li>
+              <li><label><input type="checkbox" value="Chiang Rai" /> <span>Chiang Rai</span></label></li>
+              <li><label><input type="checkbox" value="Chonburi" /> <span>Chonburi</span></label></li>
+              <li><label><input type="checkbox" value="Chumphon" /> <span>Chumphon</span></label></li>
+              <li><label><input type="checkbox" value="Kalasin" /> <span>Kalasin</span></label></li>
+              <li><label><input type="checkbox" value="Kamphaeng Phet" /> <span>Kamphaeng Phet</span></label></li>
+              <li><label><input type="checkbox" value="Kanchanaburi" /> <span>Kanchanaburi</span></label></li>
+              <li><label><input type="checkbox" value="Khon Kaen" /> <span>Khon Kaen</span></label></li>
+              <li><label><input type="checkbox" value="Krabi" /> <span>Krabi</span></label></li>
+              <li><label><input type="checkbox" value="Lampang" /> <span>Lampang</span></label></li>
+              <li><label><input type="checkbox" value="Lamphun" /> <span>Lamphun</span></label></li>
+              <li><label><input type="checkbox" value="Loei" /> <span>Loei</span></label></li>
+              <li><label><input type="checkbox" value="Lopburi" /> <span>Lopburi</span></label></li>
+              <li><label><input type="checkbox" value="Mae Hong Son" /> <span>Mae Hong Son</span></label></li>
+              <li><label><input type="checkbox" value="Maha Sarakham" /> <span>Maha Sarakham</span></label></li>
+              <li><label><input type="checkbox" value="Mukdahan" /> <span>Mukdahan</span></label></li>
+              <li><label><input type="checkbox" value="Nakhon Nayok" /> <span>Nakhon Nayok</span></label></li>
+              <li><label><input type="checkbox" value="Nakhon Pathom" /> <span>Nakhon Pathom</span></label></li>
+              <li><label><input type="checkbox" value="Nakhon Phanom" /> <span>Nakhon Phanom</span></label></li>
+              <li><label><input type="checkbox" value="Nakhon Ratchasima" /> <span>Nakhon Ratchasima</span></label></li>
+              <li><label><input type="checkbox" value="Nakhon Sawan" /> <span>Nakhon Sawan</span></label></li>
+              <li><label><input type="checkbox" value="Nakhon Si Thammarat" /> <span>Nakhon Si Thammarat</span></label></li>
+              <li><label><input type="checkbox" value="Nan" /> <span>Nan</span></label></li>
+              <li><label><input type="checkbox" value="Narathiwat" /> <span>Narathiwat</span></label></li>
+              <li><label><input type="checkbox" value="Nong Bua Lam Phu" /> <span>Nong Bua Lam Phu</span></label></li>
+              <li><label><input type="checkbox" value="Nong Khai" /> <span>Nong Khai</span></label></li>
+              <li><label><input type="checkbox" value="Nonthaburi" /> <span>Nonthaburi</span></label></li>
+              <li><label><input type="checkbox" value="Pathum Thani" /> <span>Pathum Thani</span></label></li>
+              <li><label><input type="checkbox" value="Pattani" /> <span>Pattani</span></label></li>
+              <li><label><input type="checkbox" value="Phangnga" /> <span>Phangnga</span></label></li>
+              <li><label><input type="checkbox" value="Phatthalung" /> <span>Phatthalung</span></label></li>
+              <li><label><input type="checkbox" value="Phayao" /> <span>Phayao</span></label></li>
+              <li><label><input type="checkbox" value="Phetchabun" /> <span>Phetchabun</span></label></li>
+              <li><label><input type="checkbox" value="Phetchaburi" /> <span>Phetchaburi</span></label></li>
+              <li><label><input type="checkbox" value="Phichit" /> <span>Phichit</span></label></li>
+              <li><label><input type="checkbox" value="Phitsanulok" /> <span>Phitsanulok</span></label></li>
+              <li><label><input type="checkbox" value="Phra Nakhon Si Ayutthaya" /> <span>Phra Nakhon Si Ayutthaya</span></label></li>
+              <li><label><input type="checkbox" value="Phrae" /> <span>Phrae</span></label></li>
+              <li><label><input type="checkbox" value="Phuket" /> <span>Phuket</span></label></li>
+              <li><label><input type="checkbox" value="Prachinburi" /> <span>Prachinburi</span></label></li>
+              <li><label><input type="checkbox" value="Prachuap Khiri Khan" /> <span>Prachuap Khiri Khan</span></label></li>
+              <li><label><input type="checkbox" value="Ranong" /> <span>Ranong</span></label></li>
+              <li><label><input type="checkbox" value="Ratchaburi" /> <span>Ratchaburi</span></label></li>
+              <li><label><input type="checkbox" value="Rayong" /> <span>Rayong</span></label></li>
+              <li><label><input type="checkbox" value="Roi Et" /> <span>Roi Et</span></label></li>
+              <li><label><input type="checkbox" value="Sa Kaeo" /> <span>Sa Kaeo</span></label></li>
+              <li><label><input type="checkbox" value="Sakon Nakhon" /> <span>Sakon Nakhon</span></label></li>
+              <li><label><input type="checkbox" value="Samut Prakan" /> <span>Samut Prakan</span></label></li>
+              <li><label><input type="checkbox" value="Samut Sakhon" /> <span>Samut Sakhon</span></label></li>
+              <li><label><input type="checkbox" value="Samut Songkhram" /> <span>Samut Songkhram</span></label></li>
+              <li><label><input type="checkbox" value="Saraburi" /> <span>Saraburi</span></label></li>
+              <li><label><input type="checkbox" value="Satun" /> <span>Satun</span></label></li>
+              <li><label><input type="checkbox" value="Sing Buri" /> <span>Sing Buri</span></label></li>
+              <li><label><input type="checkbox" value="Sisaket" /> <span>Sisaket</span></label></li>
+              <li><label><input type="checkbox" value="Songkhla" /> <span>Songkhla</span></label></li>
+              <li><label><input type="checkbox" value="Sukhothai" /> <span>Sukhothai</span></label></li>
+              <li><label><input type="checkbox" value="Suphan Buri" /> <span>Suphan Buri</span></label></li>
+              <li><label><input type="checkbox" value="Surat Thani" /> <span>Surat Thani</span></label></li>
+              <li><label><input type="checkbox" value="Surin" /> <span>Surin</span></label></li>
+              <li><label><input type="checkbox" value="Tak" /> <span>Tak</span></label></li>
+              <li><label><input type="checkbox" value="Trang" /> <span>Trang</span></label></li>
+              <li><label><input type="checkbox" value="Trat" /> <span>Trat</span></label></li>
+              <li><label><input type="checkbox" value="Ubon Ratchathani" /> <span>Ubon Ratchathani</span></label></li>
+              <li><label><input type="checkbox" value="Udon Thani" /> <span>Udon Thani</span></label></li>
+              <li><label><input type="checkbox" value="Uthai Thani" /> <span>Uthai Thani</span></label></li>
+              <li><label><input type="checkbox" value="Uttaradit" /> <span>Uttaradit</span></label></li>
+              <li><label><input type="checkbox" value="Yala" /> <span>Yala</span></label></li>
+              <li><label><input type="checkbox" value="Yasothon" /> <span>Yasothon</span></label></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="category-footer">
+        <button type="button" class="category-btn category-clear">Clear</button>
+        <button type="button" class="category-btn category-apply">Apply</button>
+      </div>
+    </div>
+  </div>
+
+
   <footer class="site-footer" id="about">
     <div class="footer-main">
       <div class="footer-title">Aow Ngai Dee Wa</div>
-      <div class="footer-subtitle">
-        Website for finding places to visit
-      </div>
+      <div class="footer-subtitle">Website for finding places to visit</div>
 
       <div class="footer-links">
         <a href="#about">About</a>
@@ -345,18 +333,12 @@
       <div class="footer-madeby">Make by / Contact us</div>
 
       <div class="footer-ig-list">
-        <a href="https://www.instagram.com/8y_punch?igsh=bXB3NnI2MmN4Mjls"
-           target="_blank"
-           rel="noopener"
-           class="footer-ig">
+        <a href="https://www.instagram.com/8y_punch?igsh=bXB3NnI2MmN4Mjls" target="_blank" rel="noopener" class="footer-ig">
           <span class="ig-icon"></span>
           <span>Yada Intra</span>
         </a>
 
-        <a href="https://www.instagram.com/pmyoyu_?igsh=NGwyNGpxN2Y0MXEx"
-           target="_blank"
-           rel="noopener"
-           class="footer-ig">
+        <a href="https://www.instagram.com/pmyoyu_?igsh=NGwyNGpxN2Y0MXEx" target="_blank" rel="noopener" class="footer-ig">
           <span class="ig-icon"></span>
           <span>Pattamapon Thongplew</span>
         </a>
@@ -371,31 +353,6 @@
       <span>v1.0.0</span>
     </div>
   </footer>
-
-  <script>
-    // เปิด Category Overlay เมื่อคลิก Category link
-    document.addEventListener('DOMContentLoaded', () => {
-      const navCategoryLink = document.getElementById('navCategoryLink');
-      const mobileCategoryLink = document.getElementById('mobileCategoryLink');
-      const categoryOverlay = document.getElementById('categoryOverlay');
-      
-      if (navCategoryLink && categoryOverlay) {
-        navCategoryLink.addEventListener('click', (e) => {
-          e.preventDefault();
-          categoryOverlay.classList.add('open');
-        });
-      }
-      
-      if (mobileCategoryLink && categoryOverlay) {
-        mobileCategoryLink.addEventListener('click', (e) => {
-          e.preventDefault();
-          categoryOverlay.classList.add('open');
-          // ปิด mobile menu
-          const mobileMenu = document.getElementById('mobileMenu');
-          if (mobileMenu) mobileMenu.classList.remove('open');
-        });
-      }
-    });
-  </script>
 </body>
 </html>
+

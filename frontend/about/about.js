@@ -1,29 +1,26 @@
-// about.js
 document.addEventListener('DOMContentLoaded', () => {
-  const backBtn = document.getElementById('aboutBackBtn');
+  const backBtn = document.getElementById('backBtn');
   if (!backBtn) return;
 
-  // อ่าน query string ?from=index / ?from=favorites / ?from=rank
   const params = new URLSearchParams(window.location.search);
   const from = params.get('from');
 
-  // map from -> ไฟล์ปลายทาง (แก้ชื่อไฟล์ตามโปรเจคจริงได้)
   const fromMap = {
-    index: 'index.html',
-    favorites: 'favorites.html',
-    rank: 'rank.html'
+    home: '../home/home.html',
+    favorites: '../favorite/favorite.html',
+    rank: '../rank/rank.html',
+    profile: '../user1/user-profile.html',
+    terms: '../Terms/terms.html',
+    privacy: '../Privacy/privacy.html',
+    about: '../about/about.html'
   };
 
   backBtn.addEventListener('click', () => {
     if (from && fromMap[from]) {
-      // ถ้ารู้ว่ามาจากไหน ให้กลับไปหน้านั้น
       window.location.href = fromMap[from];
-    } else if (window.history.length > 1) {
-      // เผื่อกรณีเปิดจากที่อื่น ใช้ history ปกติ
-      window.history.back();
-    } else {
-      // กันพลาด กลับไปหน้า index
-      window.location.href = 'index.html';
+      return;
     }
+    if (window.history.length > 1) window.history.back();
+    else window.location.href = '../home/home.html';
   });
 });

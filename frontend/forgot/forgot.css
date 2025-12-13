@@ -1,0 +1,100 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: linear-gradient(135deg, #00a8a8 0%, #00727a 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: 480px;
+}
+
+.card {
+  background:white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.title {
+  margin: 0 0 1rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: gray;
+}
+
+.subtitle {
+  margin: 0 0 2rem;
+  color:darkgrey;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.contact-box {
+  background: #f5f7f9;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.contact-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.contact-email {
+  color: #00a8a8;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.contact-email:hover {
+  text-decoration: underline;
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  padding: 0.9rem;
+  background: #00a8a8;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.btn:hover {
+  background: #00727a;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 2rem 1.5rem;
+  }
+  .title {
+    font-size: 1.5rem;
+  }
+  .subtitle {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card { padding: 1.65rem 1.1rem; }
+  .title { font-size: 1.35rem; }
+}

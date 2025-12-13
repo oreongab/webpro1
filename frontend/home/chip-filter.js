@@ -1,4 +1,3 @@
-// แมปชื่อหมวดหมู่จาก chip กับ API endpoint (แบบเก่า - เขียนแยกทีละตัว)
 const chipCategoryMap = {
   'Cafés & Restaurants': 'cafes',
   'Temple': 'temples',
@@ -22,13 +21,11 @@ function setupChipActive() {
     const chip = e.target.closest(".chip");
     if (!chip) return;
 
-    // Toggle: ถ้าคลิก chip ที่ active อยู่แล้ว ให้ deselect และแสดงทั้งหมด
     const isCurrentlyActive = chip.classList.contains("active");
     
     bar.querySelectorAll(".chip").forEach((c) => c.classList.remove("active"));
     
     if (isCurrentlyActive) {
-      // ถ้าเดิมเป็น active อยู่แล้ว ให้ล้าง chip filter
       if (window.combinedFilter) {
         window.combinedFilter.setChipFilter(null);
         await window.combinedFilter.applyCombinedFilters();
@@ -36,22 +33,14 @@ function setupChipActive() {
         await window.fetchPlaces();
       }
     } else {
-      // ถ้ายังไม่ active ให้เปิด active และกรอง
       chip.classList.add("active");
-      
-      // ล้าง category panel selection เพราะใช้ chip filter แทน
-      if (window.clearCategorySelections) {
-        window.clearCategorySelections();
-      }
       
       const category = chip.textContent.trim();
       const endpoint = chipCategoryMap[category];
       
       if (endpoint) {
-        // ใช้ Combined Filter System
         if (window.combinedFilter) {
           window.combinedFilter.setChipFilter(endpoint);
-          window.combinedFilter.setCategoryFilters([], []); // ล้าง category overlay
           await window.combinedFilter.applyCombinedFilters();
         } else {
           await fetchPlacesByCategory(endpoint);
@@ -65,18 +54,14 @@ function setupChipActive() {
 
 async function fetchPlacesByCategory(category) {
   try {
-    console.log('Fetching category:', category);
     const url = `http://localhost:3000/places/category/${category}?page=home`;
-    console.log('URL:', url);
     
     const response = await fetch(url);
-    console.log('Response status:', response.status);
     
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     
     const result = await response.json();
     const data = result.success ? result.data : [];
-    console.log('Data received:', data.length, 'places');
     
     if (!data || data.length === 0) {
       const grid = document.getElementById("placeGrid");
@@ -110,7 +95,6 @@ async function fetchPlacesByCategory(category) {
     
     renderPlaceCards(places);
     
-    // โหลดสถานะ favorite
     if (window.favoriteHandler && typeof window.favoriteHandler.loadFavoriteStates === 'function') {
       window.favoriteHandler.loadFavoriteStates();
     }
@@ -125,5 +109,4 @@ async function fetchPlacesByCategory(category) {
   }
 }
 
-// Export function เพื่อให้ main file เรียกใช้
 window.setupChipActive = setupChipActive;

@@ -1,8 +1,4 @@
-// user-profile.js
 (function () {
-  /* ---------------------------------------------
-   * Avatar helper – สลับ icon / รูปจริง
-   * ------------------------------------------- */
   function setAvatar(url) {
     const container = document.getElementById('userAvatarContainer');
     const img = document.getElementById('profileAvatarImg');
@@ -17,39 +13,21 @@
     }
   }
 
-  /* ---------------------------------------------
-   * Render user info (ชื่อ + email + avatar)
-   * ------------------------------------------- */
-  function renderUserFromObject(u) {
-    const usernameEl = document.getElementById('username');
+  function showUserInfo(user) {
+    const nameEl = document.getElementById('username');
     const emailEl = document.getElementById('email');
-    if (!usernameEl || !emailEl) return;
+    if (!nameEl || !emailEl) return;
 
-    const display = u.displayName || u.username || u.name || 'Guest';
-    usernameEl.textContent = display;
-    emailEl.textContent = u.email || '';
-
-    if (u.avatarUrl) {
-      setAvatar(u.avatarUrl);
-    } else {
-      setAvatar('');
-    }
+    nameEl.textContent = user.displayName || user.username || 'Guest';
+    emailEl.textContent = user.email || '';
+    setAvatar(user.avatarUrl || '');
   }
 
-  /* ---------------------------------------------
-   * โหลด user จาก localStorage และ API
-   * ------------------------------------------- */
-  async function tryLoadCurrentUser() {
-    // ดึง user object จาก localStorage
+  async function loadUser() {
     const userStr = localStorage.getItem('loggedInUser');
     
     if (!userStr) {
-      console.warn('No user logged in');
-      renderUserFromObject({
-        displayName: 'Guest',
-        username: 'guest',
-        email: 'Not logged in'
-      });
+      showUserInfo({ displayName: 'Guest', email: 'Not logged in' });
       return;
     }
 
@@ -57,167 +35,132 @@
       const userData = JSON.parse(userStr);
       const userId = userData.user_id;
       
-      // เรียก API เพื่อดึงข้อมูล user ล่าสุด
-      const resp = await fetch(`http://localhost:3000/users/${userId}`, {
-        method: 'GET',
-        headers: { Accept: 'application/json' },
-      });
-      
-      if (!resp.ok) throw new Error('Failed to fetch user data');
-      const result = await resp.json();
+      const response = await fetch(`http://localhost:3000/users/${userId}`);
+      const result = await response.json();
       const user = result.data || result;
       
-      // ดึงรูบ avatar จาก localStorage ตาม user_id
-      const savedAvatar = localStorage.getItem(`userAvatar_${userId}`) || '';
+      const avatar = localStorage.getItem(`userAvatar_${userId}`) || '';
       
-      // แสดงข้อมูล user
-      renderUserFromObject({
+      showUserInfo({
         displayName: user.user_name || userData.user_name,
-        username: user.user_name || userData.user_name,
-        name: `${user.first_name || userData.first_name || ''} ${user.last_name || userData.last_name || ''}`.trim(),
         email: user.user_email || userData.user_email,
-        avatarUrl: savedAvatar
+        avatarUrl: avatar
       });
     } catch (err) {
-      console.error('Error loading user info:', err);
-      renderUserFromObject({
-        displayName: 'Guest',
-        username: 'guest',
-        email: 'Not logged in'
-      });
-      setAvatar('');
+      console.error('Load user error:', err);
+      showUserInfo({ displayName: 'Guest', email: 'Not logged in' });
     }
   }
 
-  /* ---------------------------------------------
-   * แสดง Favorites (ดึงจาก API)
-   * ------------------------------------------- */
-  async function renderFavorites() {
-    const favList = document.getElementById('favList');
-    const favoritesSection = document.querySelector('.favorites-section');
-    if (!favList || !favoritesSection) return;
+  async function loadFavorites() {
+    const favSection = document.querySelector('.favorites-section');
+    const favList = document.getElementById('favoriteList');
+    const viewAllBtn = document.getElementById('viewAllBtn');
+    
+    if (!favList) return;
 
-    // ดึง user ID จาก localStorage
     const userStr = localStorage.getItem('loggedInUser');
     if (!userStr) {
-      favList.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">Please log in to see favorites</p>';
+      if (favSection) favSection.style.display = 'none';
       return;
     }
 
     try {
       const userData = JSON.parse(userStr);
-      const userId = userData.user_id;
-
-      // เรียก API เพื่อดึง favorites
-      const response = await fetch(`http://localhost:3000/favorites/${userId}`);
+      const response = await fetch(`http://localhost:3000/favorites/${userData.user_id}`);
       const result = await response.json();
 
       if (!result.success || !result.data || result.data.length === 0) {
-        favList.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No favorites yet</p>';
+        if (favSection) favSection.style.display = 'none';
         return;
       }
 
-      // แสดง favorites (แสดงแค่ 3 รายการแรกในหน้า profile)
-      const favorites = result.data.slice(0, 3);
-      console.log('Rendering favorites:', favorites);
+      const favorites = result.data;
+
+      if (favSection) favSection.style.display = 'block';
+
+      if (viewAllBtn && favorites.length > 3) {
+        viewAllBtn.style.display = 'flex';
+        viewAllBtn.href = '../favorite/favorite.html';
+      }
+
+      const displayFavorites = favorites.slice(0, 3);
       
-      favList.innerHTML = favorites.map(place => {
-        // แปลง path จาก 'project/img_place/xxx.jpg' เป็น '../../img_place/xxx.jpg'
+      favList.innerHTML = displayFavorites.map(place => {
         let imagePath = '../../img_place/default.jpg';
         if (place.image_path) {
-          imagePath = place.image_path.replace('project/', '../../');
+          const fileName = String(place.image_path).split(/[/\\]/).pop();
+          imagePath = `../../img_place/${fileName}`;
         }
-        
-        const placeUrl = `../place/place-detail.html?id=${place.place_id}`;
-        console.log('Creating link for place:', place.place_name, 'URL:', placeUrl);
+
+        const rawScore = place.place_score ?? place.rating ?? place.place_rating ?? place.score ?? 0;
+        const score = typeof rawScore === 'number' ? rawScore : parseFloat(rawScore) || 0;
+        const fullStars = Math.round(score);
+        const emptyStars = 5 - fullStars;
+        const stars = '★'.repeat(fullStars) + '☆'.repeat(emptyStars);
         
         return `
-          <a href="${placeUrl}" class="fav-item">
-            <div class="fav-image-placeholder">
-              <img src="${imagePath}" alt="${place.place_name}" class="fav-img" onerror="this.src='../../img_place/default.jpg'">
+          <article class="place-card" onclick="window.location.href='../place/place-detail.html?id=${place.place_id}'">
+            <button class="card-fav-btn active" type="button" aria-label="Favorite">
+              <span class="material-icons">favorite</span>
+            </button>
+            <img class="card-image" src="${imagePath}" alt="${place.place_name}" onerror="this.src='../../img_place/default.jpg'">
+            <div class="card-bottom">
+              <div class="card-stars">${stars}</div>
+              <div class="card-rating">${score.toFixed(1)}</div>
+              <div class="card-title">${place.place_name}</div>
             </div>
-            <div class="fav-details">
-              <span class="fav-name">${place.place_name}</span>
-            </div>
-          </a>
+          </article>
         `;
       }).join('');
-      
-      console.log('Favorites rendered successfully');
     } catch (error) {
-      console.error('Error loading favorites:', error);
-      favList.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">Failed to load favorites</p>';
+      console.error('Load favorites error:', error);
+      if (favSection) favSection.style.display = 'none';
     }
   }
 
-  /* ---------------------------------------------
-   * Init
-   * ------------------------------------------- */
   document.addEventListener('DOMContentLoaded', function () {
-    tryLoadCurrentUser();
-    renderFavorites();
+    loadUser();
+    loadFavorites();
 
-    // ปุ่ม back (mobile header)
-    document.querySelector('.header .back-btn')?.addEventListener('click', () => {
-      window.history.back();
+    document.getElementById('btnBack')?.addEventListener('click', () => window.history.back());
+    document.getElementById('btnHome')?.addEventListener('click', () => window.location.href = '../home/home.html');
+
+    document.querySelector('.edit-btn')?.addEventListener('click', () => {
+      window.location.href = '../Edit/edit.html';
     });
 
-    // ปุ่ม back (desktop)
-    document.querySelector('.desktop-back-button .back-icon')?.addEventListener('click', () => {
-      window.history.back();
-    });
-
-    // ปุ่ม home (mobile header)
-    document.querySelector('.header .home-btn')?.addEventListener('click', () => {
-      window.location.href = '../home/home.html';
-    });
-
-    // ปุ่ม Edit Profile
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        window.location.href = '../Edit/edit.html';
-      });
-    });
-
-    // ปุ่ม Log Out
     document.querySelector('.log-out-btn-link')?.addEventListener('click', (e) => {
       e.preventDefault();
-      // ใช้ฟังก์ชัน logout จาก nav.js
       if (window.navigation?.handleLogout) {
         window.navigation.handleLogout();
       } else {
-        // Fallback ถ้า nav.js ยังไม่โหลด
-        if (confirm('Are you sure you want to log out?')) {
+        if (confirm('Log out?')) {
           localStorage.removeItem('loggedInUser');
           window.location.href = '../login/login.html';
         }
       }
     });
 
-    // ปุ่ม Delete Account
     document.querySelector('.delete-account-btn-link')?.addEventListener('click', (e) => {
       e.preventDefault();
-      if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      if (confirm('Delete account? This cannot be undone.')) {
         const userStr = localStorage.getItem('loggedInUser');
         if (userStr) {
           const userData = JSON.parse(userStr);
-          const userId = userData.user_id;
           
-          // เรียก API ลบ account
-          fetch(`http://localhost:3000/users/${userId}`, {
-            method: 'DELETE'
-          })
-          .then(response => response.json())
-          .then(data => {
-            alert(data.message || 'Account deleted successfully');
-            localStorage.removeItem('loggedInUser');
-            localStorage.removeItem('userAvatar');
-            window.location.href = '../login/login.html';
-          })
-          .catch(err => {
-            console.error('Error deleting account:', err);
-            alert('Failed to delete account');
-          });
+          fetch(`http://localhost:3000/users/${userData.user_id}`, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(data => {
+              alert(data.message || 'Account deleted');
+              localStorage.removeItem('loggedInUser');
+              localStorage.removeItem(`userAvatar_${userData.user_id}`);
+              window.location.href = '../login/login.html';
+            })
+            .catch(err => {
+              console.error('Delete error:', err);
+              alert('Failed to delete');
+            });
         }
       }
     });

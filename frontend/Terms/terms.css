@@ -1,156 +1,120 @@
-:root {
-  /* ให้เหมือนหน้า about */
-  --bg-gradient: linear-gradient(135deg, #00636e, #009688);
-  --terms-text-main: #ffffff;
-  --terms-text-muted: rgba(255, 255, 255, 0.86);
-  --terms-font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --arrow-color: #ffffff;
+:root{
+  --bg1:#00636e;
+  --bg2:#009688;
+
+  --ink:#ffffff;
+  --muted:rgba(255,255,255,.82);
+
+  --paper:rgba(255,255,255,.10);
+  --paper2:rgba(255,255,255,.06);
+  --stroke:rgba(255,255,255,.22);
+
+  --shadow:0 18px 50px rgba(0,0,0,.22);
+  --radius:20px;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+*{ box-sizing:border-box; }
+html,body{ height:100%; margin:0; }
+body{
+  font-family:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color:var(--ink);
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
+.page{
+  min-height:100vh;
+  padding:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
 }
 
-.terms-body {
-  font-family: var(--terms-font);
-  background: var(--bg-gradient);
-  color: var(--terms-text-main);
+.back-btn{
+  position:absolute;
+  top:12px;
+  left:12px;
+  border:none;
+  background:transparent;
+  color:#fff;
+  padding:6px;
+  cursor:pointer;
+  border-radius:12px;
+  transition:transform .15s ease, background .15s ease, opacity .15s ease;
+}
+.back-btn:hover{ background:rgba(0,0,0,.12); }
+.back-btn:active{ transform:scale(.96); opacity:.92; }
+
+.paper{
+  width:min(920px, 100%);
+  background:linear-gradient(180deg, var(--paper), var(--paper2));
+  border:1px solid var(--stroke);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  animation:fadeUp .45s ease both;
 }
 
-/* ====== DESKTOP LAYOUT ====== */
-
-.terms-page {
-  min-height: 100vh;
-  padding: 32px 80px 40px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
+.paper-inner{
+  padding:30px 34px;
 }
 
-/* ปุ่ม back มุมซ้ายบน แบบหัวลูกศร */
-.terms-back-btn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-
-  position: absolute;
-  top: 24px;
-  left: 24px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.title{
+  margin:0 0 18px;
+  text-align:center;
+  font-size:clamp(22px, 2.6vw, 34px);
+  font-weight:800;
+  letter-spacing:-.02em;
+  animation:softIn .55s ease both;
 }
 
-.terms-back-btn:hover {
-  background: rgba(0, 0, 0, 0.16);
+.block{
+  animation:softIn .55s ease both;
 }
 
-/* วาดหัวลูกศร */
-.arrow-icon {
-  width: 14px;
-  height: 14px;
-  border-top: 2.5px solid var(--arrow-color);
-  border-left: 2.5px solid var(--arrow-color);
-  transform: rotate(-45deg);  /* ชี้ไปทางซ้าย */
+.block h2{
+  margin:0 0 8px;
+  font-size:clamp(16px, 1.7vw, 20px);
+  font-weight:800;
+}
+.block p{
+  margin:0;
+  font-size:clamp(14px, 1.35vw, 17px);
+  line-height:1.9;
+  color:rgba(255,255,255,.92);
 }
 
-/* หัวเรื่องกลางจอ */
-.terms-header {
-  margin-top: 40px;
-  text-align: center;
+.sep{
+  width:52px;
+  height:2px;
+  background:rgba(255,255,255,.60);
+  margin:18px 0;
+  border-radius:999px;
+  animation:softIn .55s ease both;
 }
 
-.terms-header h1 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 600;
+@keyframes fadeUp{
+  from{ opacity:0; transform:translateY(10px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+@keyframes softIn{
+  from{ opacity:0; transform:translateY(6px); }
+  to{ opacity:1; transform:translateY(0); }
 }
 
-/* เนื้อหากลางหน้าจอ */
-.terms-main {
-  flex: 1;
-  display: flex;
-  justify-content: center;   /* กึ่งกลางแนวนอน */
-  align-items: flex-start;   /* ด้านบนหน่อย ไม่ให้กลางเป๊ะจนดูโล่งเกิน */
-  margin-top: 32px;
+@media (max-width:768px){
+  .page{ padding:18px; }
+  .paper-inner{ padding:26px 22px; }
 }
 
-.terms-content {
-  max-width: 720px;
-  text-align: left;
+@media (max-width:480px){
+  .page{ padding:16px; }
+  .paper-inner{ padding:24px 18px; }
 }
 
-.terms-content h2 {
-  margin: 0 0 8px;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.terms-content p {
-  margin: 0 0 20px;
-  font-size: 15px;
-  line-height: 1.7;
-  color: var(--terms-text-main);
-}
-
-/* เส้นคั่นสั้น ๆ ตามรูป */
-.terms-separator {
-  width: 40px;
-  height: 2px;
-  background: var(--terms-text-muted);
-  margin: 10px 0 24px;
-}
-
-/* ====== MOBILE / TABLET ====== */
-
-@media (max-width: 768px) {
-  .terms-page {
-    padding: 20px 20px 24px;
-  }
-
-  .terms-back-btn {
-    top: 16px;
-    left: 16px;
-  }
-
-  .terms-header {
-    margin-top: 32px;
-  }
-
-  .terms-header h1 {
-    font-size: 22px;
-  }
-
-  .terms-main {
-    margin-top: 24px;
-    justify-content: flex-start;
-  }
-
-  .terms-content {
-    max-width: 100%;
-  }
-
-  .terms-content h2 {
-    font-size: 16px;
-  }
-
-  .terms-content p {
-    font-size: 14px;
-  }
-
-  .terms-separator {
-    margin: 10px 0 20px;
-  }
+@media (prefers-reduced-motion: reduce){
+  .paper, .title, .block, .sep{ animation:none; }
+  .back-btn{ transition:none; }
 }

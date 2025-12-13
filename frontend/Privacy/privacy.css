@@ -1,132 +1,105 @@
-:root {
-  /* ใช้โทนเดียวกับ about / terms */
-  --bg-gradient: linear-gradient(135deg, #00636e, #009688);
-  --privacy-text-main: #ffffff;
-  --privacy-font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --arrow-color: #ffffff;
+:root{
+  --bg1:#00636e;
+  --bg2:#009688;
+
+  --ink:#ffffff;
+  --muted:rgba(255,255,255,.82);
+
+  --paper:rgba(255,255,255,.10);
+  --paper2:rgba(255,255,255,.06);
+  --stroke:rgba(255,255,255,.22);
+
+  --shadow:0 18px 50px rgba(0,0,0,.22);
+  --radius:20px;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+*{ box-sizing:border-box; }
+html,body{ height:100%; margin:0; }
+body{
+  font-family:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color:var(--ink);
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
+.page{
+  min-height:100vh;
+  padding:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
 }
 
-.privacy-body {
-  font-family: var(--privacy-font);
-  background: var(--bg-gradient);
-  color: var(--privacy-text-main);
+.back-btn{
+  position:absolute;
+  top:12px;
+  left:12px;
+  border:none;
+  background:transparent;
+  color:#fff;
+  padding:6px;
+  cursor:pointer;
+  border-radius:12px;
+  transition:transform .15s ease, background .15s ease, opacity .15s ease;
+}
+.back-btn:hover{ background:rgba(0,0,0,.12); }
+.back-btn:active{ transform:scale(.96); opacity:.92; }
+
+.paper{
+  width:min(920px, 100%);
+  background:linear-gradient(180deg, var(--paper), var(--paper2));
+  border:1px solid var(--stroke);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  animation:fadeUp .45s ease both;
 }
 
-/* ===== DESKTOP LAYOUT ===== */
-
-.privacy-page {
-  min-height: 100vh;
-  padding: 32px 80px 40px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
+.paper-inner{
+  padding:30px 34px;
 }
 
-/* ปุ่ม back มุมซ้ายบน (หัวลูกศร) */
-.privacy-back-btn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-
-  position: absolute;
-  top: 24px;
-  left: 24px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.title{
+  margin:0 0 18px;
+  text-align:center;
+  font-size:clamp(22px, 2.6vw, 34px);
+  font-weight:800;
+  letter-spacing:-.02em;
+  animation:softIn .55s ease both;
 }
 
-.privacy-back-btn:hover {
-  background: rgba(0, 0, 0, 0.16);
+.para p{
+  margin:0 0 14px;
+  font-size:clamp(14px, 1.35vw, 17px);
+  line-height:1.95;
+  color:rgba(255,255,255,.92);
+  animation:softIn .55s ease both;
 }
 
-.arrow-icon {
-  width: 14px;
-  height: 14px;
-  border-top: 2.5px solid var(--arrow-color);
-  border-left: 2.5px solid var(--arrow-color);
-  transform: rotate(-45deg);  /* ชี้ซ้าย */
+.para .last{ margin-bottom:0; }
+
+@keyframes fadeUp{
+  from{ opacity:0; transform:translateY(10px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+@keyframes softIn{
+  from{ opacity:0; transform:translateY(6px); }
+  to{ opacity:1; transform:translateY(0); }
 }
 
-/* หัวข้อกลางด้านบน */
-.privacy-header {
-  margin-top: 40px;
-  text-align: center;
+@media (max-width:768px){
+  .page{ padding:18px; }
+  .paper-inner{ padding:26px 22px; }
 }
 
-.privacy-header h1 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 600;
+@media (max-width:480px){
+  .page{ padding:16px; }
+  .paper-inner{ padding:24px 18px; }
 }
 
-/* เนื้อหากลางหน้าแบบในรูป */
-.privacy-main {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  margin-top: 32px;
-}
-
-.privacy-content {
-  max-width: 720px;
-  text-align: left;
-}
-
-.privacy-content p {
-  margin: 0 0 24px;
-  font-size: 15px;
-  line-height: 1.8;
-}
-
-/* ===== MOBILE / TABLET ===== */
-
-@media (max-width: 768px) {
-  .privacy-page {
-    padding: 20px 20px 24px;
-  }
-
-  .privacy-back-btn {
-    top: 16px;
-    left: 16px;
-  }
-
-  .privacy-header {
-    margin-top: 32px;
-  }
-
-  .privacy-header h1 {
-    font-size: 22px;
-  }
-
-  .privacy-main {
-    margin-top: 24px;
-    justify-content: flex-start;
-  }
-
-  .privacy-content {
-    max-width: 100%;
-  }
-
-  .privacy-content p {
-    font-size: 14px;
-    margin-bottom: 20px;
-  }
+@media (prefers-reduced-motion: reduce){
+  .paper, .title, .para p{ animation:none; }
+  .back-btn{ transition:none; }
 }

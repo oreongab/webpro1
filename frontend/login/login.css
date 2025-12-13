@@ -1,147 +1,193 @@
-:root{
-  /* ไล่เฉด 3 สี */
-  --g1:#0070A0; --g2:#099393; --g3:#00293A;
-
-  --btn:#2EC4B6; --ink:#0B0F10; --white:#FFF;
-  --pill-bg:#E9EEF0; --pill-ph:#96A3AB;
-  --safe-top: env(safe-area-inset-top);
-  --safe-bottom: env(safe-area-inset-bottom);
+:root {
+  --gradient-start: #0070A0;
+  --gradient-middle: #099393;
+  --gradient-end: #00293A;
+  --button-color: #2EC4B6;
+  --text-dark: #0B0F10;
+  --text-white: #FFF;
+  --input-bg: #E9EEF0;
+  --input-placeholder: #96A3AB;
 }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0; font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
-  background:#0F172A; color:var(--ink);
-  min-height:100dvh; display:flex; flex-direction:column; overflow-x:hidden;
+* {
+  box-sizing: border-box;
 }
 
-/* รูปด้านบน */
-.hero{
-  height:55svh; padding-top:var(--safe-top);
-  background:url("./view.png") center/cover no-repeat;
-  flex-shrink:0;
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  background: #0F172A;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  height: 100%;
 }
 
-/* แผ่นฟอร์ม: ไล่เฉด 3 สี */
-.sheet{
-  flex:1;
-  background:linear-gradient(180deg, var(--g1) 0%, var(--g2) 2%, var(--g3) 100%);
-  margin-top:-22px; border-top-left-radius:28px; border-top-right-radius:28px;
-  color:var(--white); padding:18px 20px calc(24px + var(--safe-bottom));
-  display:flex; flex-direction:column;
+
+
+.hero {
+  height: 55svh;
+  background-image: url("./view.png");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
 }
 
-/* หัวเรื่อง */
-.title{ margin:6px 0 14px; text-align:center; font-weight:800; font-size:22px; text-shadow:0 1px 2px rgba(0,0,0,.35) }
 
-/* ฟอร์ม */
-.form{display:flex; flex-direction:column}
-.field-wrap{ position:relative; }
-.field{
-  width:100%; height:46px; border:none; outline:none; border-radius:999px;
-  padding:0 16px; background:var(--pill-bg); color:var(--ink); font-size:16px;
-  margin-bottom:12px; box-shadow:0 0 0 1px rgba(0,0,0,.05) inset;
+.sheet {
+  flex: 1;
+  background: linear-gradient(180deg, var(--gradient-start) 0%, var(--gradient-middle) 2%, var(--gradient-end) 100%);
+  margin-top: -22px;
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  color: white;
+  padding: 22px 22px 30px;
+  display: flex;
+  flex-direction: column;
 }
-.field::placeholder{ color:var(--pill-ph); }
-.field.invalid{ color:#e74c3c; }
-.field:valid{ color:var(--ink); }
 
-/* แถวล่าง/ปุ่ม/เส้นคั่น */
-.row{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:2px 4px 8px }
-.check{ display:flex; align-items:center; gap:8px; font-size:13px; color:#EAFFFF; opacity:.9 }
-.link{ color:#E7FFFF; font-size:13px; text-decoration:none }
-.link:hover{ text-decoration:underline }
-.btn{
-  width:66%; align-self:center; height:46px; border:none; border-radius:999px;
-  background:var(--btn); color:#073B4C; font-weight:700; font-size:16px; cursor:pointer;
-  box-shadow:0 6px 16px rgba(0,0,0,.25), inset 0 2px 0 rgba(255,255,255,.35);
-  margin:14px 0 6px;
+ h1 {
+  margin: 12px 0 18px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 30px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: -8px;
+}
+
+.form input{
+  width: 100%;
+  height: 46px;
+  border: none;
+  outline: none;
+  border-radius: 999px;
+  padding: 0 16px;
+  background: var(--input-bg);
+  color: var(--text-dark);
+  font-size: 16px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05) ;
+}
+
+.form input {
+  color:black;
+}
+
+.form input[type="email"].invalid {
+  color: red;
+}
+
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 10px 4px 16px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: white;
+  cursor: pointer;
+}
+
+.check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.link {
+  color: #E7FFFF;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+
+button {
+  width: 100%;
+  height: 46px;
+  border: none;
+  border-radius: 999px;
+  background: var(--button-color);
+  color: #073B4C;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25),0 2px 0 rgba(255, 255, 255, 0.35);
+  margin: 16px 0 12px;
   transition: all 0.2s ease-out;
 }
-.btn:hover {
-  filter: brightness(1.05);
-  box-shadow: 0 8px 18px rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.5);
+
+button:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35),0 2px 0 rgba(255, 255, 255, 0.5);
 }
-.btn:active {
+
+button:active {
   background: #1cb5a9;
-  box-shadow: 0 2px 4px rgba(0,0,0,.35), inset 0 1px 1px rgba(0,0,0,.15);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35), 0 1px 1px rgba(0, 0, 0, 0.15);
   transform: translateY(1px);
 }
-.muted{text-align:center; font-size:14px; margin:8px 0 10px; opacity:.95}
-.divider{display:flex; align-items:center; gap:10px; margin:8px 0 12px}
-.line{flex:1; height:1px; background:rgba(255,255,255,.38)}
-.divider span{font-size:12px; opacity:.95}
-.btn-google{
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  width:66%; align-self:center; height:48px; border:none; border-radius:999px;
-  background:#F1F3F4; color:#1F2937; font-weight:700; cursor:pointer;
-  box-shadow:0 6px 16px rgba(0,0,0,.25), inset 0 2px 0 rgba(255,255,255,.35);
-  margin-top:14px;
-  transition: all 0.2s ease-out;
+
+
+.muted {
+  text-align: center;
+  font-size: 14px;
+  margin: 12px 0 10px;
 }
-.btn-google:hover {
-  filter: brightness(1.02);
-  box-shadow: 0 8px 18px rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.5);
-}
-.btn-google:active {
-  background: #E9EEF0;
-  box-shadow: 0 2px 4px rgba(0,0,0,.35), inset 0 1px 1px rgba(0,0,0,.15);
-  transform: translateY(1px);
-}
-.btn-google svg{width:18px; height:18px}
-
-/* SR only */
-.sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0 }
-.sheet{ padding:22px 22px calc(30px + var(--safe-bottom)); }
-.title{ margin:12px 0 18px; }
-
-.form{ display:flex; flex-direction:column; gap:14px; }
-.field{ margin-bottom:0; }
-
-.row{ margin:10px 4px 16px; align-items:center; justify-content:space-between; gap:10px; }
-.btn{ margin:16px 0 12px; }
-.muted{ margin:12px 0 10px; }
-.divider{ margin:14px 0 16px; }
-.btn-google{ margin-top:14px; }
-
-/* --- Media Query สำหรับ Desktop (หน้าจอใหญ่) --- */
 @media (min-width: 768px) {
-    body.page-login {
-        /* เปลี่ยน layout เป็นแถวแนวนอน (Desktop) */
-        flex-direction: row; 
-        align-items: center; 
-        justify-content: center;
-        background: var(--g3); 
-        min-height: 100vh;
-    }
+  body {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-end);
+    min-height: 100vh;
+  }
 
-    /* รูปด้านบน (Hero) ยังคงเดิม: 50% ของหน้าจอ */
-    .hero {
-        width: 50%; 
-        height: 100vh; 
-        padding-top: 0;
-    }
+  .hero {
+    width: 50%;
+    height: 100vh;
+  }
 
-    /* แผ่นฟอร์ม (Sheet) */
-    .sheet {
-        width: 50%; 
-        height: 100vh;
-        flex: none;
-        margin-top: 0; 
-        border-radius: 0; 
-        background: linear-gradient(180deg, var(--g1) 0%, var(--g2) 2%, var(--g3) 100%);
-        justify-content: center;
-        padding: 22px 22px 30px; 
-    }
-    
-    .form {
-        max-width: 360px;
-        align-self: center;
-        width: 100%;
-    }
+  .sheet {
+    width: 50%;
+    height: 100vh;
+    flex: none;
+    margin-top: 0;
+    border-radius: 0;
+    justify-content: center;
+  }
 
-    .btn, .btn-google {
-        width: 100%;
-    }
+  .form {
+    max-width: 360px;
+    align-self: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .sheet { padding: 18px 16px 26px; }
+  h1 { font-size: 28px; }
 }

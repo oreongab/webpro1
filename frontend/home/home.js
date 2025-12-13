@@ -1,36 +1,42 @@
-// ========== เมนูมือถือ (สามขีด) ==========
-function setupMobileMenu() {
+const getLoggedInUser = () => {
+  const userStr = localStorage.getItem("loggedInUser");
+  if (!userStr) return null;
+  try {
+    return JSON.parse(userStr);
+  } catch {
+    localStorage.removeItem("loggedInUser");
+    return null;
+  }
+};
+
+const updateUsernameDisplay = () => {
+  const user = getLoggedInUser();
+  const name = user?.user_name || user?.first_name || "Guest";
+  document.querySelectorAll(".mobile-menu .username, .mobile-menu-header .username").forEach(el => {
+    el.textContent = name;
+  });
+};
+
+const setupMobileMenu = () => {
   const toggle = document.querySelector(".nav-toggle");
   const menu = document.getElementById("mobileMenu");
-  const closeBtn = document.querySelector(".mobile-menu-close");
-
   if (!toggle || !menu) return;
 
-  toggle.addEventListener("click", () => {
-    menu.classList.add("open");
-  });
+  toggle.addEventListener("click", () => menu.classList.add("open"));
+  document.querySelector(".mobile-menu-close")?.addEventListener("click", () => menu.classList.remove("open"));
 
-  closeBtn?.addEventListener("click", () => {
-    menu.classList.remove("open");
-  });
-}
+  window.navigation?.updateAvatarDisplay?.();
+  updateUsernameDisplay();
+};
 
-// ========== ดาว ==========
-function buildStars(place_score) {
-  if (place_score == null) return "";
-  const full = Math.round(place_score);
-  let html = "";
-  for (let i = 0; i < 5; i++) {
-    html += i < full ? "★" : "☆";
-  }
-  return html;
-}
-
-// ========== renderPlaceCards (รอข้อมูลหลังบ้าน) ==========
-function renderPlaceCards(places) {
+const buildStars = (score) => {
+  if (score == null) return "";
+  const full = Math.round(score);
+  return Array(5).fill().map((_, i) => i < full ? "★" : "☆").join("");
+};
+const renderPlaceCards = (places) => {
   const grid = document.getElementById("placeGrid");
   const tpl = document.getElementById("placeCardTemplate");
-
   if (!grid || !tpl) return;
 
   grid.innerHTML = "";
@@ -41,439 +47,230 @@ function renderPlaceCards(places) {
   }
 
   grid.style.display = "grid";
+  const defaultImg = "https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg";
 
-  places.forEach((p, index) => {
+  places.forEach((p, idx) => {
     const node = tpl.content.firstElementChild.cloneNode(true);
-
-    // ใช้ place_id หรือ id
-    const placeId = p.place_id || p.id || (index + 1);
-    node.dataset.id = placeId;
-
-    // คลิกการ์ดไปหน้า detail
+    node.dataset.id = p.place_id || p.id || (idx + 1);
     node.style.cursor = 'pointer';
+    
     node.addEventListener('click', (e) => {
-      // ถ้าคลิกที่ปุ่มหัวใจให้ไม่ไปหน้า detail
       if (e.target.closest('.card-fav-btn')) return;
-      
-      const placeId = node.dataset.id;
-      if (placeId) {
-        window.location.href = `../place/place-detail.html?id=${placeId}`;
-      }
+      if (node.dataset.id) window.location.href = `../place/place-detail.html?id=${node.dataset.id}`;
     });
 
-    // ซ่อน rank badge
-    const rankBadge = node.querySelector(".card-rank-badge");
-    if (rankBadge) rankBadge.style.display = "none";
+    node.querySelector(".card-rank-badge").style.display = "none";
 
-    const imgEl = node.querySelector(".card-image");
-    if (imgEl) {
-      imgEl.src = p.imageUrl || "https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg";
-      imgEl.alt = p.title || "";
-      // ถ้าโหลดรูปไม่สำเร็จให้แสดงรูป default
-      imgEl.onerror = function() {
-        this.onerror = null;
-        this.src = "https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg";
-      };
+    const img = node.querySelector(".card-image");
+    if (img) {
+      img.src = p.imageUrl || defaultImg;
+      img.alt = p.title || "";
+      img.onerror = function() { this.onerror = null; this.src = defaultImg; };
     }
 
-    const dayEl = node.querySelector(".card-open-days");
-    const hourEl = node.querySelector(".card-open-hours");
-    if (dayEl) dayEl.textContent = p.openDays || "";
-    if (hourEl) hourEl.textContent = p.openHours || "";
+    node.querySelector(".card-open-days").textContent = p.openDays || "";
+    node.querySelector(".card-open-hours").textContent = p.openHours || "";
 
-    const starEl = node.querySelector(".card-stars");
-    const rateEl = node.querySelector(".card-rating");
-    if (starEl && p.rating != null) starEl.textContent = buildStars(p.rating);
-    if (rateEl && p.rating != null) {
-      const rating = typeof p.rating === 'number' ? p.rating : parseFloat(p.rating) || 0;
-      rateEl.textContent = rating.toFixed(1);
-    }
-
-    const titleEl = node.querySelector(".card-title");
-    if (titleEl) titleEl.textContent = p.title || "";
+    const rating = typeof p.rating === 'number' ? p.rating : parseFloat(p.rating) || 0;
+    node.querySelector(".card-stars").textContent = buildStars(rating);
+    node.querySelector(".card-rating").textContent = rating.toFixed(1);
+    node.querySelector(".card-title").textContent = p.title || "";
 
     grid.appendChild(node);
   });
   
-  // โหลดสถานะ favorite หลังจาก render cards (ใช้ setTimeout เพื่อให้ DOM update เสร็จก่อน)
-  setTimeout(() => {
-    if (window.favoriteHandler) {
-      console.log('[Home] Loading favorite states after render...');
-      window.favoriteHandler.loadFavoriteStates();
-    }
-  }, 50);
-}
+  setTimeout(() => window.favoriteHandler?.loadFavoriteStates(), 50);
+};
 
-// เปิดให้หลังบ้านใช้
 window.renderPlaceCards = renderPlaceCards;
-
-// ========== toggle หัวใจ ==========
-function setupFavoriteToggle() {
+const setupFavoriteToggle = () => {
   document.addEventListener("click", async (e) => {
     const btn = e.target.closest(".card-fav-btn");
     if (!btn) return;
 
-    // หา place_id จาก card
     const card = btn.closest('.place-card');
     const placeId = card?.dataset.id;
-    
-    if (!placeId) {
-      console.warn('No place_id found');
-      return;
-    }
+    if (!placeId) return;
 
-    // ใช้ favorite handler
     if (window.favoriteHandler) {
       await window.favoriteHandler.toggleFavorite(placeId, btn);
     } else {
-      // fallback ถ้ายังไม่โหลด handler
       btn.classList.toggle("is-active");
       const icon = btn.querySelector(".material-icons");
-      if (icon) {
-        icon.textContent = btn.classList.contains("is-active")
-          ? "favorite"
-          : "favorite_border";
-      }
+      if (icon) icon.textContent = btn.classList.contains("is-active") ? "favorite" : "favorite_border";
     }
   });
-}
+};
 
-// ========== Category Filter Panel ==========
-let selectedTypes = [];
-let selectedProvinces = [];
-
-// ฟังก์ชันสำหรับล้าง category selections โดยไม่โหลดข้อมูลใหม่
-function clearCategorySelections() {
-  selectedTypes = [];
-  selectedProvinces = [];
-  
-  document.querySelectorAll('.category-list input[type="checkbox"]').forEach(cb => {
-    cb.checked = false;
-  });
+const clearCategorySelections = () => {
+  document.querySelectorAll('.category-list input[type="checkbox"]').forEach(cb => cb.checked = false);
   
   const searchInput = document.getElementById('provinceSearch');
   if (searchInput) searchInput.value = '';
   
-  document.querySelectorAll('.category-province-list li').forEach(item => {
-    item.style.display = '';
-  });
-}
+  document.querySelectorAll('.category-province-list li').forEach(item => item.style.display = '');
+};
 
-// Export เพื่อให้ chip-filter.js เรียกใช้ได้
 window.clearCategorySelections = clearCategorySelections;
 
-
-
-// ========== เช็ค Login Status และแสดงข้อมูล User ==========
-function setupAuthButtons() {
-  const userStr = localStorage.getItem('loggedInUser');
-  const usernameDisplay = document.querySelector('.mobile-menu-header .username');
-  
-  if (userStr) {
-    try {
-      const user = JSON.parse(userStr);
-      console.log('User logged in:', user);
-      
-      // แสดงชื่อ user ใน mobile menu
-      if (usernameDisplay) {
-        usernameDisplay.textContent = user.user_name || user.first_name || 'User';
-      }
-      
-      // อาจเพิ่มการแสดงสถานะ login ในที่อื่นๆ ได้
-    } catch (e) {
-      console.error('Parse user error:', e);
-      localStorage.removeItem('loggedInUser');
-    }
-  } else {
-    console.log('No user logged in');
-    
-    // ถ้าไม่ได้ login ให้แสดง "Guest" หรือ "Login"
-    if (usernameDisplay) {
-      usernameDisplay.textContent = 'Guest';
-    }
-  }
-}
-
-// ========== ดึงข้อมูลสถานที่จาก backend ==========
-async function fetchPlaces() {
-  console.log('Fetching places from backend...');
+const setupAuthButtons = () => {
+  updateUsernameDisplay();
+};
+const fetchPlaces = async () => {
   try {
-    const response = await fetch('http://localhost:3000/places/place?page=home');
-    console.log('Response status:', response.status);
+    const res = await fetch('http://localhost:3000/places/place?page=home');
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const result = await response.json();
-    console.log('Result received:', result);
+    const result = await res.json();
     const data = result.success ? result.data : [];
-    console.log('Number of places:', data.length);
     
     if (!data || data.length === 0) {
-      console.warn('No places found in database');
-      // แสดงข้อมูลตัวอย่างถ้าไม่มีข้อมูล
-      const samplePlaces = [
-        {
-          id: 1,
-          rank: 1,
-          title: 'Sample Place 1',
-          imageUrl: '../../img_place/4-3_1.jpg',
-          openDays: 'Mon-Sun',
-          openHours: '09:00-18:00',
-          rating: 4.5
-        },
-        {
-          id: 2,
-          rank: 2,
-          title: 'Sample Place 2',
-          imageUrl: '../../img_place/watpho_front.jpg',
-          openDays: 'Mon-Fri',
-          openHours: '10:00-20:00',
-          rating: 4.0
-        },
-        {
-          id: 3,
-          rank: 3,
-          title: 'Sample Place 3',
-          imageUrl: '../../img_place/iconsiam.jpg',
-          openDays: 'Everyday',
-          openHours: '24 Hours',
-          rating: 5.0
-        }
-      ];
-      renderPlaceCards(samplePlaces);
+      renderPlaceCards([]);
       return;
     }
     
-    //รูป
-    const places = data.map((item, index) => {
-      // ถ้า image_path มี path เต็มให้ตัดเอาแค่ชื่อไฟล์
-      let imagePath = 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
-      if (item.image_path) {
-        const fileName = item.image_path.includes('/') || item.image_path.includes('\\') 
-          ? item.image_path.split(/[/\\]/).pop() 
-          : item.image_path;
-        imagePath = `../../img_place/${fileName}`;
-      }
-      
-      return {
-        id: item.place_id,
-        rank: index + 1,
-        title: item.place_name,
-        imageUrl: imagePath,
-        openDays: '',
-        openHours: item.opening_hours || '',
-        rating: item.place_score || 0
-      };
-    });
+    const places = data.map((item, idx) => ({
+      id: item.place_id,
+      rank: idx + 1,
+      title: item.place_name,
+      imageUrl: item.image_path ? `../../img_place/${item.image_path.split(/[\/\\]/).pop()}` : null,
+      openDays: '',
+      openHours: item.opening_hours || '',
+      rating: item.place_score || 0
+    }));
     
-    console.log('Transformed places:', places);
     renderPlaceCards(places);
-    
-    // โหลดสถานะ favorite หลัง render
-    if (window.favoriteHandler && typeof window.favoriteHandler.loadFavoriteStates === 'function') {
-      window.favoriteHandler.loadFavoriteStates();
-    }
+    window.favoriteHandler?.loadFavoriteStates();
     
   } catch (error) {
-    console.error('Error fetching places:', error);
-    console.error('Error details:', error.message);
-    // แสดงข้อความ error ให้ user เห็น
     const grid = document.getElementById("placeGrid");
     if (grid) {
-      grid.innerHTML = '<p style="text-align:center; padding:2rem; color:#666;">ไม่สามารถโหลดข้อมูลได้ กรุณาตรวจสอบว่า backend server ทำงานอยู่</p>';
+      grid.innerHTML = '<p style="text-align:center; padding:2rem; color:#666;">ไม่สามารถโหลดข้อมูลได้</p>';
       grid.style.display = 'block';
     }
   }
-}
+};
 
-// Export ให้ chip-filter.js ใช้
 window.fetchPlaces = fetchPlaces;
-
-// ========== SEARCH ในหน้า Home ==========
-function setupHomeSearch() {
+const setupHomeSearch = () => {
   const searchInput = document.getElementById('searchInput');
   const suggestionsDiv = document.getElementById('searchSuggestions');
-  
   if (!searchInput) return;
   
   let searchTimeout;
-  let allPlaces = []; // เก็บข้อมูลสถานที่ทั้งหมดสำหรับ suggestions
+  let allPlaces = [];
   
-  // โหลดข้อมูลสถานที่ทั้งหมดสำหรับ suggestions
-  async function loadAllPlaces() {
+  (async () => {
     try {
-      const response = await fetch('http://localhost:3000/places/place?page=home');
-      if (response.ok) {
-        const result = await response.json();
+      const res = await fetch('http://localhost:3000/places/place?page=home');
+      if (res.ok) {
+        const result = await res.json();
         allPlaces = result.success ? result.data : [];
-        console.log('Loaded', allPlaces.length, 'places for suggestions');
       }
-    } catch (error) {
-      console.error('Error loading places for suggestions:', error);
-    }
-  }
+    } catch (e) {}
+  })();
   
-  loadAllPlaces();
-  
-  // แสดง suggestions
-  function showSuggestions(query) {
+  const showSuggestions = (query) => {
     if (!suggestionsDiv || !query || query.length < 1) {
       if (suggestionsDiv) suggestionsDiv.style.display = 'none';
       return;
     }
     
-    const lowerQuery = query.toLowerCase();
-    const filtered = allPlaces.filter(place => 
-      place.place_name.toLowerCase().includes(lowerQuery) ||
-      place.place_province.toLowerCase().includes(lowerQuery)
-    ).slice(0, 8); // แสดงแค่ 8 รายการ
+    const filtered = allPlaces.filter(p => 
+      p.place_name.toLowerCase().includes(query.toLowerCase()) ||
+      p.place_province.toLowerCase().includes(query.toLowerCase())
+    ).slice(0, 8);
     
     if (filtered.length === 0) {
       suggestionsDiv.style.display = 'none';
       return;
     }
     
-    suggestionsDiv.innerHTML = filtered.map(place => `
-      <div class="search-suggestion-item" data-id="${place.place_id}">
-        <div class="suggestion-name">${place.place_name}</div>
+    suggestionsDiv.innerHTML = filtered.map(p => `
+      <div class="search-suggestion-item" data-id="${p.place_id}">
+        <div class="suggestion-name">${p.place_name}</div>
         <div class="suggestion-province">
-          ${place.place_province}
-          <span class="suggestion-score">★ ${parseFloat(place.place_score || 0).toFixed(1)}</span>
+          ${p.place_province}
+          <span class="suggestion-score">★ ${parseFloat(p.place_score || 0).toFixed(1)}</span>
         </div>
       </div>
     `).join('');
     
     suggestionsDiv.style.display = 'block';
-    
-    // คลิก suggestion
     suggestionsDiv.querySelectorAll('.search-suggestion-item').forEach(item => {
       item.addEventListener('click', () => {
-        const placeId = item.dataset.id;
-        window.location.href = `../place/place-detail.html?id=${placeId}`;
+        window.location.href = `../place/place-detail.html?id=${item.dataset.id}`;
       });
     });
-  }
+  };
   
   searchInput.addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
-    
     const query = e.target.value.trim();
     
-    console.log('Search input:', query);
-    
-    // แสดง suggestions
     showSuggestions(query);
     
-    // ถ้าไม่มีคำค้นหา ให้โหลดข้อมูลปกติ
     if (query === '') {
       fetchPlaces();
       return;
     }
     
-    // รอ 500ms หลังจากพิมพ์เสร็จ
-    searchTimeout = setTimeout(() => {
-      searchPlaces(query);
-    }, 500);
+    searchTimeout = setTimeout(() => searchPlaces(query), 500);
   });
   
-  // ปิด suggestions เมื่อคลิกข้างนอก
   document.addEventListener('click', (e) => {
     if (suggestionsDiv && !searchInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
       suggestionsDiv.style.display = 'none';
     }
   });
-}
+};
 
-// ========== ค้นหาสถานที่ในหน้า Home ==========
-async function searchPlaces(query) {
+const searchPlaces = async (query) => {
   try {
-    console.log('Searching in home page for:', query);
-    
-    const params = new URLSearchParams({
-      q: query,
-      page: 'home'
-    });
-    
-    const url = `http://localhost:3000/places/search?${params.toString()}`;
-    console.log('Search URL:', url);
-    
-    const response = await fetch(url);
-    const result = await response.json();
+    const params = new URLSearchParams({ query, page: 'home' });
+    const res = await fetch(`http://localhost:3000/places/search?${params}`);
+    const result = await res.json();
     const data = result.success ? result.data : [];
     
-    console.log('Search results:', data);
-    
     if (data && Array.isArray(data)) {
-      const places = data.map((item, index) => {
-        let imagePath = 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
-        if (item.image_path) {
-          const fileName = item.image_path.includes('/') || item.image_path.includes('\\') 
-            ? item.image_path.split(/[/\\]/).pop() 
-            : item.image_path;
-          imagePath = `../../img_place/${fileName}`;
-        }
-        
-        return {
-          place_id: item.place_id,
-          id: item.place_id,
-          rank: index + 1,
-          title: item.place_name,
-          imageUrl: imagePath,
-          openDays: item.place_province || '',
-          openHours: item.opening_hours || '',
-          rating: item.place_score || 0
-        };
-      });
+      const places = data.map((item, idx) => ({
+        place_id: item.place_id,
+        id: item.place_id,
+        rank: idx + 1,
+        title: item.place_name,
+        imageUrl: item.image_path ? `../../img_place/${item.image_path.split(/[\/\\]/).pop()}` : null,
+        openDays: item.place_province || '',
+        openHours: item.opening_hours || '',
+        rating: item.place_score || 0
+      }));
       
       renderPlaceCards(places);
-      
-      // โหลดสถานะ favorite
-      if (window.favoriteHandler && typeof window.favoriteHandler.loadFavoriteStates === 'function') {
-        window.favoriteHandler.loadFavoriteStates();
-      }
+      window.favoriteHandler?.loadFavoriteStates();
     } else {
       renderPlaceCards([]);
     }
     
   } catch (error) {
-    console.error('Search error:', error);
     const grid = document.getElementById("placeGrid");
     if (grid) {
-      grid.innerHTML = '<p style="text-align:center; padding:2rem; color:#666;">ไม่สามารถค้นหาได้ กรุณาลองใหม่อีกครั้ง</p>';
+      grid.innerHTML = '<p style="text-align:center; padding:2rem; color:#666;">ไม่สามารถค้นหาได้</p>';
       grid.style.display = 'block';
     }
   }
-}
-
-// ========== INIT ==========
+};
 document.addEventListener("DOMContentLoaded", () => {
-  // ตั้งค่า page สำหรับ combined filter
-  if (window.combinedFilter) {
-    window.combinedFilter.setCurrentPage('home');
-  }
+  window.combinedFilter?.setCurrentPage('home');
   
   setupMobileMenu();
-  if (typeof setupChipActive === 'function') {
-    setupChipActive(); // จาก chip-filter.js
-  }
+  if (typeof setupChipActive === 'function') setupChipActive();
   
-  // Initialize Category Filter Module
-  if (window.CategoryFilter) {
-    window.CategoryFilter.init('home', [], async (filteredPlaces) => {
-      renderPlaceCards(filteredPlaces);
-    });
-  }
+  window.CategoryFilter?.init('home', [], renderPlaceCards);
   
   setupFavoriteToggle();
   setupAuthButtons();
-  setupHomeSearch();     // เพิ่มฟังก์ชัน search
+  setupHomeSearch();
   
-  // Setup opening filter
-  if (typeof setupOpeningDaysFilter === 'function') {
-    setupOpeningDaysFilter('home');
-  }
+  if (typeof setupOpeningDaysFilter === 'function') setupOpeningDaysFilter('home');
   
-  fetchPlaces();         // ดึงข้อมูลสถานที่ (จะเรียก loadFavoriteStates ภายใน)
+  fetchPlaces();
 });
