@@ -5,21 +5,22 @@
   --ink: #222;
   --muted: #777;
   --footer-grad: linear-gradient(180deg, #00a8a8, #006a70);
-  --card-radius: 18px;
+
+  /* ลดขอบมนของเทมเพลต */
+  --card-radius: 12px;
+
   --shadow-soft: 0 6px 18px rgba(0,0,0,0.18);
   --transition: 0.25s ease;
 }
 
+/* ===== base ===== */
 *,
 *::before,
-*::after {
-  box-sizing: border-box;
-}
+*::after { box-sizing: border-box; }
 
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: var(--bg);
   color: var(--ink);
   min-height: 100vh;
   display: flex;
@@ -27,40 +28,50 @@ body {
   overflow-x: hidden;
 }
 
+body.favorites-page {
+  background: #fff;
+}
+
+/* ===== layout ===== */
 .page-main {
   max-width: 1180px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 1.5rem 4rem;
   flex: 1;
 }
 
-/* ========== TOP NAV (ใช้ร่วมทุกหน้า) ========== */
+/* เฟรมของหน้า favorites (ไม่เต็มจอบนมือถือด้วย padding) */
+.favorites-main {
+  padding: 2rem 1.5rem;
+}
 
-.top-nav {
-  position: absolute;
+/* ===== top nav (favorites) ===== */
+.top-nav.favorites-nav {
+  position: sticky;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 20;
-  background: transparent;
+  z-index: 40;
+  background: var(--footer-grad);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.28);
 }
 
 .top-nav-inner {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 0.7rem 1.5rem 0.3rem;
+  padding: 0.7rem 1.5rem;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .nav-left {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
-/* avatar button */
-
+/* avatar */
 .avatar-btn {
   border: none;
   background: transparent;
@@ -78,49 +89,27 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.55);
-  box-shadow: 0 0 0 3px rgba(0,0,0,0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: rgba(0,0,0,0.45);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.25);
 }
 
-.avatar-circle .material-icons {
-  font-size: 24px;
-  color: #fff;
-}
+.avatar-circle .material-icons { font-size: 24px; color: #fff; }
+.avatar-circle.big { width: 56px; height: 56px; }
 
-.avatar-circle.big {
-  width: 56px;
-  height: 56px;
-}
-
-.avatar-btn:hover .avatar-circle,
-.avatar-btn:focus-visible .avatar-circle {
-  transform: scale(1.06);
-  box-shadow: 0 0 0 4px rgba(255,255,255,0.7);
-}
-
-/* เมนูกลาง */
-
+/* desktop links */
 .nav-links {
-  flex: 1;
   display: flex;
   justify-content: center;
   gap: 2.5rem;
+  flex: 1;
 }
 
 .nav-link {
-  color: #ffffff;
+  color: #fff;
   text-decoration: none;
   font-size: 0.95rem;
   position: relative;
   padding-bottom: 4px;
-  transition: color var(--transition);
-  cursor: pointer;
-}
-
-.nav-link.active,
-.nav-link:hover {
-  color: #ffffff;
 }
 
 .nav-link.active::after,
@@ -134,41 +123,7 @@ body {
   background: #fff;
 }
 
-/* ขวา */
-
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* ปุ่ม auth (ถ้าจะใช้) */
-
-.auth-btn {
-  padding: 0.25rem 0.9rem;
-  border-radius: 999px;
-  border: 1px solid #fff;
-  background: rgba(0,0,0,0.35);
-  color: #fff;
-  font-size: 0.8rem;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
-}
-
-.auth-btn:hover {
-  background: #fff;
-  color: #00727a;
-  transform: translateY(-1px);
-}
-
-.auth-btn.sign-up {
-  background: #fff;
-  color: #00727a;
-}
-
-/* ปุ่มสามขีด (มือถือ) */
-
+/* hamburger */
 .nav-toggle {
   border: none;
   background: none;
@@ -177,40 +132,48 @@ body {
   display: none;
 }
 
-/* ========== MOBILE MENU ========== */
+/* mobile back */
+.fav-back {
+  border: none;
+  background: none;
+  display: none; /* โชว์เฉพาะมือถือ */
+  align-items: center;
+  gap: 4px;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0;
+}
 
-.mobile-menu {
+.fav-back .material-icons { font-size: 20px; }
+
+.mobile-menu{
   position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
+  inset: 0;
   display: none;
   flex-direction: column;
-  z-index: 40;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  z-index: 60;
+
+  /* สีเดียวเหมือนกันทุกหน้า */
+  background: linear-gradient(
+    180deg,
+    rgba(0,151,167,0.88),
+    rgba(0,114,122,0.96)
+  );
+
+  color: #fff;
 }
 
-.mobile-menu.open {
-  display: flex;
-}
-
+.mobile-menu.open{ display: flex; }
 .mobile-menu-header {
   display: flex;
   align-items: center;
   gap: 0.8rem;
   padding: 1.2rem 1.2rem 0.8rem;
-  background: linear-gradient(180deg, #0097a7, #00727a);
-  color: #fff;
 }
 
-.user-info {
-  flex: 1;
-}
-
-.username {
-  font-weight: 600;
-  margin-bottom: 0.15rem;
-}
+.user-info { flex: 1; }
+.username { font-weight: 600; }
 
 .mobile-menu-close {
   border: none;
@@ -220,218 +183,31 @@ body {
 }
 
 .mobile-menu-links {
-  background: #ffffff;
-  padding: 1rem 1.4rem 1.2rem;
+  flex: 1;
+  padding: 1rem 1.4rem 1.5rem;
 }
 
 .mobile-link {
   display: block;
-  padding: 0.7rem 0;
-  border-bottom: 1px solid #eee;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.55);
   text-decoration: none;
-  color: #333;
+  color: #fff;
   font-size: 0.95rem;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease;
 }
 
-.mobile-link:hover {
-  background: #f3f8f8;
-}
-
-.mobile-link:active {
-  background: #e0f2f1;
-}
-
+.mobile-link:hover { background: rgba(255,255,255,0.08); }
 .mobile-link.active {
-  color: var(--primary-dark);
-  font-weight: 600;
+  font-weight: 700;
+  background: rgba(255,255,255,0.18);
 }
 
-/* ปุ่ม auth ในเมนูมือถือ */
-
-.mobile-auth {
-  width: 100%;
-  margin-top: 0.35rem;
-  padding: 0.4rem 0;
-  font-weight: 600;
-  border-radius: 999px;
-  border: 1px solid #00a8a8;
-  text-align: center;
-  background: #fff;
-  color: #00a8a8;
-  cursor: pointer;
-}
-
-.mobile-auth:first-of-type {
-  background: #00a8a8;
-  color: #fff;
-}
-
-/* ========== HERO (หน้า Home) ========== */
-
-.hero {
-  position: relative;
-
-  /* ให้รูปเต็มจอ */
-  width: 100vw;
-  height: 100vh;
-  max-width: none;
-  margin: 0;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-
-  border-radius: 0;
-  overflow: hidden;
-  box-shadow: none;
-}
-
-.hero-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 40%, rgba(0,0,0,0.15), rgba(0,0,0,0.55));
-}
-
-.hero-content {
-  position: absolute;
-  top: 55%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(80%, 820px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.6rem;
-  color: #fff;
-  text-align: center;
-}
-
-.hero-content h1 {
-  margin: 0;
-  font-size: 3rem;
-  letter-spacing: 0.03em;
-  text-shadow: 0 3px 10px rgba(0,0,0,0.7);
-}
-
-/* search บนรูป */
-
-.hero-search-row {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-}
-
-.search-box {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: #fff;
-  border-radius: 999px;
-  padding: 0.35rem 0.9rem;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
-  cursor: text;
-}
-
-.search-box .material-icons {
-  color: var(--muted);
-}
-
-.search-box input {
-  border: none;
-  outline: none;
-  font-size: 0.9rem;
-  width: 100%;
-}
-
-/* ปุ่ม filter icon */
-
-.filter-icon-btn {
-  flex: 0 0 auto;
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
-  border: none;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.filter-icon-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-}
-
-.filter-icon-btn .material-icons {
-  color: var(--primary);
-}
-
-/* ========== CHIP BAR ========== */
-
-.chip-bar {
-  max-width: 1180px;
-  margin: 1.4rem auto 1.2rem;
-  padding: 0 1.5rem;
-  display: flex;
-  gap: 0.35rem;
-  -webkit-overflow-scrolling: touch;
-  overflow-x: auto;
-  flex-wrap: nowrap;
-}
-
-.chip-bar::-webkit-scrollbar {
-  height: 6px;
-}
-.chip-bar::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.18);
-  border-radius: 999px;
-}
-
-.chip {
-  border-radius: 999px;
-  border: 1px solid #ddd;
-  background: #fff;
-  padding: 0.18rem 0.7rem;
-  font-size: 0.8rem;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background var(--transition), color var(--transition),
-              border-color var(--transition), transform var(--transition),
-              box-shadow var(--transition);
-}
-
-.chip:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 6px rgba(0,0,0,0.12);
-}
-
-.chip.active {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: #fff;
-}
-
-/* ========== CARD GRID ========== */
-
-.card-grid-section {
-  min-height: 240px;
-}
+/* ===== cards (template) ===== */
+.card-grid-section { min-height: 320px; }
 
 .card-grid {
-  display: none; /* เริ่มต้นซ่อน รอ JS แสดง */
+  display: none; /* รอ renderPlaceCards */
   grid-template-columns: repeat(3, minmax(0,1fr));
   gap: 1rem;
   width: 100%;
@@ -440,7 +216,7 @@ body {
 .place-card {
   position: relative;
   width: 100%;
-  border-radius: var(--card-radius);
+  border-radius: var(--card-radius); /* ✅ มุมมนลดลง */
   overflow: hidden;
   background: #000;
   box-shadow: var(--shadow-soft);
@@ -460,8 +236,6 @@ body {
   display: block;
 }
 
-/* rank badge */
-
 .card-rank-badge {
   position: absolute;
   top: 10px;
@@ -477,12 +251,7 @@ body {
   z-index: 2;
 }
 
-.card-rank-number {
-  color: #fff;
-  font-weight: 700;
-}
-
-/* heart btn */
+.card-rank-number { color: #fff; font-weight: 700; }
 
 .card-fav-btn {
   position: absolute;
@@ -499,24 +268,10 @@ body {
   cursor: pointer;
   box-shadow: 0 3px 10px rgba(0,0,0,0.28);
   z-index: 2;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.card-fav-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-}
-
-.card-fav-btn .material-icons {
-  font-size: 22px;
-  color: #ff6b6b;
-}
-
-.card-fav-btn.is-fav .material-icons {
-  color: #ff1744;
-}
-
-/* open info */
+.card-fav-btn .material-icons { font-size: 22px; color: #ff6b6b; }
+.card-fav-btn.is-fav .material-icons { color: #ff1744; }
 
 .card-open-info {
   position: absolute;
@@ -527,11 +282,7 @@ body {
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
-.card-open-days {
-  font-weight: 500;
-}
-
-/* bottom bar */
+.card-open-days { font-weight: 500; }
 
 .card-bottom {
   position: absolute;
@@ -548,14 +299,8 @@ body {
   font-size: 0.83rem;
 }
 
-.card-stars {
-  color: #ffd700;
-  white-space: nowrap;
-}
-
-.card-rating {
-  font-weight: 600;
-}
+.card-stars { color: #ffd700; white-space: nowrap; }
+.card-rating { font-weight: 600; }
 
 .card-title {
   text-align: right;
@@ -565,22 +310,15 @@ body {
   text-overflow: ellipsis;
 }
 
-/* ========== FOOTER ========== */
-
+/* ===== footer (คงเดิม) ===== */
 .site-footer {
   background: var(--footer-grad);
   color: #e0f7fa;
   padding: 1.5rem 1.5rem 0.6rem;
 }
 
-.site-footer a {
-  color: #e0f7fa;
-  text-decoration: none;
-}
-
-.site-footer a:hover {
-  text-decoration: underline;
-}
+.site-footer a { color: #e0f7fa; text-decoration: none; }
+.site-footer a:hover { text-decoration: underline; }
 
 .footer-main {
   max-width: 1180px;
@@ -588,17 +326,8 @@ body {
   text-align: center;
 }
 
-.footer-title {
-  font-weight: 700;
-  margin-bottom: 0.2rem;
-}
-
-.footer-subtitle {
-  font-size: 0.9rem;
-  margin-bottom: 1.2rem;
-}
-
-/* About | Terms| Privacy */
+.footer-title { font-weight: 700; margin-bottom: 0.2rem; }
+.footer-subtitle { font-size: 0.9rem; margin-bottom: 1.2rem; }
 
 .footer-links {
   display: inline-flex;
@@ -607,21 +336,10 @@ body {
   margin-bottom: 1rem;
 }
 
-.footer-links a {
-  padding: 0.5rem 2.5rem;
-  font-size: 0.95rem;
-}
+.footer-links a { padding: 0.5rem 2.5rem; font-size: 0.95rem; }
+.footer-links a + a { border-left: 1px solid rgba(255,255,255,0.5); }
 
-.footer-links a + a {
-  border-left: 1px solid rgba(255,255,255,0.5);
-}
-
-.footer-madeby {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-}
-
-/* IG */
+.footer-madeby { font-size: 0.9rem; margin-bottom: 0.5rem; }
 
 .footer-ig-list {
   display: inline-flex;
@@ -634,16 +352,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  text-decoration: none;
   color: #e0f7fa;
   font-size: 0.92rem;
 }
-
-.footer-ig:hover span:last-child {
-  text-decoration: underline;
-}
-
-/* โลโก้ IG จริง */
 
 .ig-icon {
   width: 22px;
@@ -655,8 +366,6 @@ body {
   background-repeat: no-repeat;
 }
 
-/* bottom */
-
 .footer-bottom {
   max-width: 1180px;
   margin: 0.7rem auto 0;
@@ -667,287 +376,20 @@ body {
   font-size: 0.8rem;
 }
 
-/* ========== RESPONSIVE ========== */
-
-/* จอเล็ก: การ์ดแถวเดียวไล่ลงมา */
-
+/* ===== responsive ===== */
 @media (max-width: 900px) {
-  .page-main {
-    padding-inline: 1rem;
-  }
-
-  .card-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-content h1 {
-    font-size: 2.3rem;
-  }
+  .card-grid { grid-template-columns: 1fr; }
 }
 
-/* มือถือทั่วไป */
-
+/* มือถือ: เฟรมไม่เต็มจอ + header เปลี่ยนเป็น back */
 @media (max-width: 768px) {
-  .page-main {
-    padding-top: 0;
-    padding-right: 0;
-    padding-left: 0;
-    padding-bottom: 3rem;
-  }
+  .favorites-main { padding: 1.2rem 0.9rem 2.6rem; } /* ✅ เฟรมพอดี ไม่เต็มจอ */
 
-  .hero {
-    border-radius: 0;
-    height: 100vh;
-  }
+  .nav-links { display: none; }
+  .nav-toggle { display: inline-flex; }
 
-  .nav-links {
-    display: none;
-  }
+  .fav-back { display: inline-flex; } /* ✅ โชว์ < My Favorites */
+  .top-nav .nav-left .avatar-btn { display: none; } /* ✅ ซ่อน avatar บนแถบ */
 
-  .nav-toggle {
-    display: inline-flex;
-  }
-
-  .top-nav-inner {
-    padding-inline: 1rem;
-    justify-content: space-between;
-  }
-}
-
-/* มือถือจอเล็กมาก */
-
-@media (max-width: 480px) {
-  .hero {
-    height: 380px;
-  }
-
-  .hero-content h1 {
-    font-size: 1.9rem;
-  }
-
-  .chip-bar {
-    padding-inline: 0.75rem;
-  }
-}
-
-/* ======== FAVORITES PAGE (เฉพาะหน้า favorites.html) ======== */
-
-/* ให้ทั้งหน้าของ favorites เป็นสีขาวเหมือนกันหมด */
-body.favorites-page {
-  background: #ffffff;          /* เดิมเป็น var(--bg) */
-}
-
-/* header หน้า Favorites = แถบเขียวด้านบนเหมือนเดิม */
-.favorites-page .top-nav.favorites-nav {
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 40;
-  background: var(--footer-grad);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.28);
-}
-
-/* เนื้อหากลาง: ไม่ต้องเป็นกล่อง ไม่ต้องมีเงา ให้กลืนกับพื้นเลย */
-.favorites-page .page-main.favorites-main {
-  max-width: 1180px;
-  width: 100%;
-  margin: 0 auto;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding: 2rem 1.5rem;
-  background: transparent;      /* เอาสีพื้นกล่องออก */
-  box-shadow: none;             /* เอาเงากรอบออก */
-  border-radius: 0;
-}
-
-/* เราไม่ได้ใช้หัวข้อ My Favorites แล้ว ซ่อนเผื่อมีหลงเหลือ */
-.favorites-page .favorites-title {
-  display: none;
-}
-
-.favorites-grid-section {
-  min-height: 320px;
-}
-
-/* เดสก์ท็อป: 3 คอลัมน์ */
-@media (min-width: 901px) {
-  .favorites-page .card-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-/* มือถือ: 1 คอลัมน์ */
-@media (max-width: 900px) {
-  .favorites-page .page-main.favorites-main {
-    padding-inline: 1rem;
-  }
-
-  .favorites-page .card-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* มือถือ: header เหมือนเดิม */
-@media (max-width: 768px) {
-  .favorites-page .top-nav.favorites-nav .top-nav-inner {
-    padding-inline: 1rem;
-    justify-content: space-between;
-  }
-
-  .favorites-page .nav-links {
-    display: none;
-  }
-
-  .favorites-page .nav-toggle {
-    display: inline-flex;
-  }
-}
-/* ===== FAVORITES HEADER (DESKTOP + MOBILE) ===== */
-
-/* เริ่มต้น (เดสก์ท็อป): แสดง avatar, ซ่อนปุ่ม < My Favorites */
-.desktop-only {
-  display: inline-flex;
-}
-.mobile-only {
-  display: none;
-}
-
-/* ปุ่มย้อนกลับ My Favorites */
-.fav-back {
-  border: none;
-  background: none;
-  display: inline-flex;      /* เดี๋ยวไปซ่อนตอน desktop ด้วย .mobile-only */
-  align-items: center;
-  gap: 4px;
-  color: #ffffff;
-  font-size: 0.95rem;
-  cursor: pointer;
-  padding: 0;
-}
-/* ----- FAVORITES HEADER ----- */
-
-/* เดสก์ท็อป: ซ่อนปุ่ม fav-back ไปเลย */
-.favorites-page .fav-back {
-  display: none;   /* desktop และจอใหญ่ ทุกขนาด เริ่มจากซ่อนก่อน */
-}
-
-/* มือถือ: โชว์ < My Favorites และซ่อน avatar + เมนูกลาง */
-@media (max-width: 768px) {
-
-  /* แสดงปุ่ม < My Favorites */
-  .favorites-page .fav-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    border: none;
-    background: none;
-    color: #ffffff;
-    font-size: 0.95rem;
-    cursor: pointer;
-    padding: 0;
-  }
-
-  .favorites-page .fav-back .material-icons {
-    font-size: 20px;
-  }
-
-  /* ซ่อน avatar บนมือถือ */
-  .favorites-page .avatar-btn {
-    display: none;
-  }
-
-  /* ซ่อนเมนูด้านบน ให้ไปอยู่ในปุ่มสามขีดแทน */
-  .favorites-page .nav-links {
-    display: none;
-  }
-
-  .favorites-page .nav-toggle {
-    display: inline-flex;
-  }
-
-  .favorites-page .top-nav.favorites-nav .top-nav-inner {
-    padding-inline: 1rem;
-    justify-content: space-between;
-  }
-}
-/* ===== FAVORITES: mobile menu (ใช้ layout เดียวกับหน้า Home) ===== */
-
-/* แค่เปลี่ยนพื้นหลังให้มีเขียวโปร่ง + รูปด้านหลัง */
-.favorites-page .mobile-menu {
-  position: fixed;
-  inset: 0;
-  display: none;
-  flex-direction: column;
-  z-index: 60;
-  background:
-    linear-gradient(180deg, rgba(0,151,167,0.88), rgba(0,114,122,0.96)),
-    url("image1.png") center/cover no-repeat;
-  color: #fff;
-}
-
-/* เปิดเมนู */
-.favorites-page .mobile-menu.open {
-  display: flex;
-}
-
-/* header ด้านบนของเมนู – ใช้ padding เท่าหน้า Home */
-.favorites-page .mobile-menu-header {
-  background: transparent;
-  padding: 1.2rem 1.2rem 0.8rem;
-}
-
-/* บังคับให้ avatar ในเมนูโผล่ (เพราะเราซ่อน .avatar-btn บน header มือถือไว้) */
-.favorites-page .mobile-menu-header .avatar-btn {
-  display: inline-flex;
-}
-
-/* list เมนูด้านล่าง – ใช้ระยะห่างเหมือนหน้า Home */
-.favorites-page .mobile-menu-links {
-  flex: 1;
-  padding: 1rem 1.4rem 1.5rem ;  
-  background: transparent;
-}
-
-/* เมนู Favorites – ขยับตัวอักษรเข้าไป แต่เส้นยังเต็มจอ */
-.favorites-page .mobile-link {
-  display: block;
-  padding: 0.7rem 0 0.7rem 1rem;  /* ← เลื่อนตัวอักษรเข้าไปทางขวา */
-  border-bottom: 1px solid rgba(255,255,255,0.55);
-  text-decoration: none;
-  color: #ffffff;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-/* hover แบบบาง ๆ */
-.favorites-page .mobile-link:hover {
-  background: rgba(255,255,255,0.08);
-}
-
-/* อันที่เป็นหน้าปัจจุบัน (Favorites) ให้เป็นแทบขาวโปร่ง */
-.favorites-page .mobile-link.active {
-  font-weight: 700;
-  background: rgba(255,255,255,0.18);
-}
-
-/* มือถือ: ซ่อน avatar ที่อยู่บนแถบเขียวด้านบน เหลือเฉพาะในเมนู */
-@media (max-width: 768px) {
-  .favorites-page .avatar-btn {
-    display: none;
-  }
-
-  .favorites-page .nav-links {
-    display: none;
-  }
-
-  .favorites-page .nav-toggle {
-    display: inline-flex;
-  }
-
-  .favorites-page .top-nav.favorites-nav .top-nav-inner {
-    padding-inline: 1rem;
-    justify-content: space-between;
-  }
+  .top-nav-inner { padding-inline: 1rem; }
 }

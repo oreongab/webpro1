@@ -6,51 +6,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Material Icons -->
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 
-  <!-- CSS & JS -->
+  <!-- Favorites only -->
   <link rel="stylesheet" href="style.css" />
-  <script defer src="home.js"></script>
+  <script defer src="favorite.js"></script>
 </head>
 
 <body class="favorites-page">
-  <!-- ========== TOP NAV (แถบเขียวเต็มจอ) ========== -->
+  <!-- ===== TOP NAV (แถบเขียว) ===== -->
   <header class="top-nav favorites-nav">
-  <div class="top-nav-inner">
-    <!-- ซ้าย -->
-    <div class="nav-left">
-  <!-- desktop: avatar -->
-  <button class="avatar-btn" aria-label="Open profile">
-    <div class="avatar-circle">
-      <span class="material-icons">person</span>
+    <div class="top-nav-inner">
+      <div class="nav-left">
+        <!-- desktop: avatar -->
+        <button class="avatar-btn" aria-label="Open profile">
+          <div class="avatar-circle">
+            <span class="material-icons">person</span>
+          </div>
+        </button>
+
+        <!-- mobile: < My Favorites -->
+        <button class="fav-back" type="button" onclick="history.back()">
+          <span class="material-icons">chevron_left</span>
+          <span>My Favorites</span>
+        </button>
+      </div>
+
+      <!-- desktop links -->
+      <nav class="nav-links">
+        <a href="home.html" class="nav-link">Home</a>
+        <a href="rank.html" class="nav-link">Rank</a>
+        <a href="category.html" class="nav-link">Category</a>
+        <a href="favorites.html" class="nav-link active">Favorites</a>
+      </nav>
+
+      <!-- mobile toggle -->
+      <button class="nav-toggle" aria-label="Open menu">
+        <span class="material-icons">menu</span>
+      </button>
     </div>
-  </button>
+  </header>
 
-  <!-- mobile: < My Favorites -->
-  <button class="fav-back" type="button" onclick="history.back()">
-    <span class="material-icons">chevron_left</span>
-    <span>My Favorites</span>
-  </button>
-</div>
-
-    <!-- กลาง: เมนู desktop -->
-    <nav class="nav-links">
-      <a href="home.html" class="nav-link">Home</a>
-      <a href="rank.html" class="nav-link">Rank</a>
-      <a href="category.html" class="nav-link">Category</a>
-      <a href="favorites.html" class="nav-link active">Favorites</a>
-    </nav>
-
-    <!-- ขวา: hamburger (มือถือ) -->
-    <button class="nav-toggle" aria-label="Open menu">
-      <span class="material-icons">menu</span>
-    </button>
-  </div>
-</header>
-
-  <!-- ========== MOBILE MENU ========== -->
-  <div class="mobile-menu" id="mobileMenu">
+  <!-- ===== MOBILE MENU ===== -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
     <div class="mobile-menu-header">
       <button class="avatar-btn" aria-label="Open profile from menu">
         <div class="avatar-circle big">
@@ -75,10 +73,8 @@
     </nav>
   </div>
 
-  <!-- ========== MAIN ========== -->
-  <!-- ลบกรอบขาวออก ให้เนื้อหาทั้งหมดเป็นพื้นขาวตามขอบจอ -->
+  <!-- ===== MAIN ===== -->
   <main class="page-main favorites-main">
-    <!-- ลบหัวข้อ My Favorites -->
     <section class="card-grid-section favorites-grid-section">
       <template id="placeCardTemplate">
         <article class="place-card">
@@ -105,18 +101,16 @@
         </article>
       </template>
 
-      <!-- เริ่มแรกยังไม่แสดงอะไร รอหลังบ้านเรียก window.renderPlaceCards([...]) -->
+      <!-- รอหลังบ้านเรียก window.renderPlaceCards([...]) -->
       <div id="placeGrid" class="card-grid"></div>
     </section>
   </main>
 
-  <!-- ========== FOOTER ========== -->
+  <!-- ===== FOOTER ===== -->
   <footer class="site-footer" id="about">
     <div class="footer-main">
       <div class="footer-title">Aow Ngai Dee Wa</div>
-      <div class="footer-subtitle">
-        Website for finding places to visit
-      </div>
+      <div class="footer-subtitle">Website for finding places to visit</div>
 
       <div class="footer-links">
         <a href="#about">About</a>
@@ -127,20 +121,14 @@
       <div class="footer-madeby">Make by / Contact us</div>
 
       <div class="footer-ig-list">
-        <!-- Yada Intra -->
         <a href="https://www.instagram.com/8y_punch?igsh=bXB3NnI2MmN4Mjls"
-           target="_blank"
-           rel="noopener"
-           class="footer-ig">
+           target="_blank" rel="noopener" class="footer-ig">
           <span class="ig-icon"></span>
           <span>Yada Intra</span>
         </a>
 
-        <!-- Pattamapon Thongplew -->
         <a href="https://www.instagram.com/pmyoyu_?igsh=NGwyNGpxN2Y0MXEx"
-           target="_blank"
-           rel="noopener"
-           class="footer-ig">
+           target="_blank" rel="noopener" class="footer-ig">
           <span class="ig-icon"></span>
           <span>Pattamapon Thongplew</span>
         </a>
@@ -148,10 +136,7 @@
     </div>
 
     <div class="footer-bottom">
-      <span>
-        2025 <strong>Aow Ngai Dee Wa</strong><br />
-        All rights reserved
-      </span>
+      <span>2025 <strong>Aow Ngai Dee Wa</strong><br />All rights reserved</span>
       <span>v1.0.0</span>
     </div>
   </footer>
