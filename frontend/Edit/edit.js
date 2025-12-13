@@ -13,64 +13,84 @@ function getCurrentUserId() {
   return getLoggedInUser()?.user_id ?? null;
 }
 
-document.querySelectorAll('.back-icon').forEach(btn => {
-  btn.addEventListener('click', () => {
-    window.history.back();
-  });
-});
 
-const togglePassword = document.getElementById('togglePassword');
-const passwordInput = document.getElementById('passwordInput');
-
-if (togglePassword && passwordInput) {
-  togglePassword.addEventListener('click', () => {
-    const type = passwordInput.type === 'password' ? 'text' : 'password';
-    passwordInput.type = type;
-    
-    const eyeIcon = togglePassword.querySelector('.eye-icon');
-    if (type === 'text') {
-      eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
-    } else {
-      eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
-    }
-  });
-}
-
-const avatarContainer = document.querySelector('.profile-avatar');
-const avatarImg = document.getElementById('profileAvatar');
-const avatarInput = document.getElementById('avatarInput');
-const changePhotoTrigger = document.getElementById('changePhotoTrigger');
 
 let selectedAvatarFile = null;
+let passwordInput, avatarContainer, avatarImg, avatarInput;
 
-const openAvatarPicker = () => avatarInput?.click();
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize elements
+  passwordInput = document.getElementById('passwordInput');
+  avatarContainer = document.querySelector('.profile-avatar');
+  avatarImg = document.getElementById('profileAvatar');
+  avatarInput = document.getElementById('avatarInput');
+  const changePhotoTrigger = document.getElementById('changePhotoTrigger');
+  const togglePassword = document.getElementById('togglePassword');
+  const form = document.querySelector('.edit-form');
 
-if (changePhotoTrigger) {
-  changePhotoTrigger.addEventListener('click', openAvatarPicker);
-}
-if (avatarContainer) {
-  avatarContainer.addEventListener('click', openAvatarPicker);
-}
-
-// เมื่อ user เลือกรูปจากเครื่อง
-if (avatarInput) {
-  avatarInput.addEventListener('change', () => {
-    const file = avatarInput.files[0];
-    if (!file) return;
-
-    selectedAvatarFile = file;
-
-    const previewUrl = URL.createObjectURL(file);
-    avatarImg.src = previewUrl;
-
-    avatarContainer.classList.add('has-image');
+  console.log('Elements found:', {
+    avatarContainer: !!avatarContainer,
+    avatarImg: !!avatarImg,
+    avatarInput: !!avatarInput,
+    changePhotoTrigger: !!changePhotoTrigger
   });
-}
 
-const form = document.querySelector('.edit-form');
+  // Toggle password visibility
+  if (togglePassword && passwordInput) {
+    togglePassword.addEventListener('click', () => {
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+      
+      const eyeIcon = togglePassword.querySelector('.eye-icon');
+      if (type === 'text') {
+        eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+      } else {
+        eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+      }
+    });
+  }
 
-if (form) {
-  form.addEventListener('submit', async function(event) {
+  // Avatar picker
+  const openAvatarPicker = (e) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    console.log('Opening avatar picker');
+    if (avatarInput) {
+      avatarInput.click();
+    }
+  };
+
+  if (changePhotoTrigger) {
+    changePhotoTrigger.addEventListener('click', openAvatarPicker);
+  }
+  if (avatarContainer) {
+    avatarContainer.addEventListener('click', openAvatarPicker);
+  }
+
+  // Avatar file change
+  if (avatarInput) {
+    avatarInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      console.log('File selected:', file?.name);
+      if (!file) return;
+
+      selectedAvatarFile = file;
+
+      const previewUrl = URL.createObjectURL(file);
+      if (avatarImg) {
+        avatarImg.src = previewUrl;
+        avatarImg.style.display = 'block';
+      }
+      if (avatarContainer) {
+        avatarContainer.classList.add('has-image');
+      }
+      console.log('Avatar preview updated');
+    });
+  }
+
+  // Form submit
+  if (form) {
+    form.addEventListener('submit', async function(event) {
     event.preventDefault();
     
     const userId = getCurrentUserId();
@@ -110,8 +130,32 @@ if (form) {
     } else {
       await saveProfile(updateData, userName);
     }
+    });
+  }
+
+  // Load user data
+  loadCurrentUserData();
+  
+  // Setup back button
+  document.querySelectorAll('.back-icon, .back-button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = '../user1/user-profile.html';
+      }
+    });
   });
-}
+
+  // Touch feedback
+  addTouchFeedback('.back-icon');
+  addTouchFeedback('.profile-avatar');
+  addTouchFeedback('.change-photo');
+  addTouchFeedback('.save-button button');
+});
 
 async function saveProfile(updateData, userName) {
   try {
@@ -153,46 +197,42 @@ async function saveProfile(updateData, userName) {
 }
 
 async function loadCurrentUserData() {
-  const userId = getCurrentUserId();
+  const user = getLoggedInUser();
   
-  if (!userId) {
+  if (!user) {
     alert('Please login first');
     window.location.href = '../login/login.html';
     return;
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/users/${userId}/edit`);
-    
-    if (!response.ok) throw new Error('Failed to fetch user data');
-    
-    const result = await response.json();
-    
-    const user = result.data || result;
-    
     document.getElementById('firstName').value = user.first_name || '';
     document.getElementById('lastName').value = user.last_name || '';
     document.getElementById('userName').value = user.user_name || '';
     document.getElementById('email').value = user.user_email || '';
     
     const savedPassword = localStorage.getItem('currentUserPassword') || '';
-    passwordInput.value = savedPassword;
-    passwordInput.dataset.isPlaceholder = 'false';
+    if (passwordInput) {
+      passwordInput.value = savedPassword;
+    }
     
-    const savedAvatar = localStorage.getItem(`userAvatar_${userId}`) || user.avatar_url;
-    if (savedAvatar) {
+    const savedAvatar = localStorage.getItem(`userAvatar_${user.user_id}`);
+    console.log('Loading avatar for user:', user.user_id);
+    console.log('Avatar found:', savedAvatar ? 'Yes' : 'No');
+    
+    if (savedAvatar && avatarImg && avatarContainer) {
       avatarImg.src = savedAvatar;
+      avatarImg.style.display = 'block';
       avatarContainer.classList.add('has-image');
+      console.log('Avatar loaded successfully');
+    } else {
+      console.log('Avatar elements:', { avatarImg: !!avatarImg, avatarContainer: !!avatarContainer });
     }
   } catch (error) {
     console.error('Error loading user data:', error);
     alert('Failed to load user data');
   }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  loadCurrentUserData();
-});
 
 function addTouchFeedback(selector) {
   document.querySelectorAll(selector).forEach(el => {
@@ -206,8 +246,3 @@ function addTouchFeedback(selector) {
   });
 }
 
-addTouchFeedback('.back-icon');
-addTouchFeedback('.profile-avatar');
-addTouchFeedback('.change-photo');
-addTouchFeedback('.change-inline');
-addTouchFeedback('.save-button button');

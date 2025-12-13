@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Profile Edit</title>
     <link rel="stylesheet" href="edit.css" />
+    <script src="edit.js"></script>
 </head>
 <body>
 
-    <div class="back-button">
+    <div class="back">
         <button class="back-icon" aria-label="Go back">
             <svg viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2"
@@ -25,39 +26,21 @@
             <div class="profile-avatar" aria-label="Profile Picture">
 
                 <svg class="avatar-placeholder" viewBox="0 0 48 48" aria-hidden="true">
-                    <circle cx="24" cy="24" r="21"
-                            fill="none"
-                            stroke="#CFCFCF"
-                            stroke-width="2.5" />
-                    <circle cx="24" cy="18" r="6"
-                            fill="#B5B5B5" />
-                    <path d="M13 33c2-4.2 5.5-6.5 11-6.5S33 28.8 35 33"
-                          fill="#B5B5B5" />
+                    <circle cx="24" cy="24" r="21" fill="none" stroke="#CFCFCF" stroke-width="2.5" />
+                    <circle cx="24" cy="18" r="6" fill="#B5B5B5" />
+                    <path d="M13 33c2-4.2 5.5-6.5 11-6.5S33 28.8 35 33" fill="#B5B5B5" />
                 </svg>
 
-
-                <img
-                    id="profileAvatar"
-                    class="avatar-image"
-                    src=""
-                    alt="User avatar"
-                />
+                <img id="profileAvatar" class="avatar-image" src="" alt="User avatar"/>
             </div>
-
 
             <div class="change-photo" id="changePhotoTrigger">
                 <span>Change Photo</span>
             </div>
 
-
-            <input
-                type="file"
-                id="avatarInput"
-                accept="image/*"
-                hidden
-            />
+             <input type="file" id="avatarInput" accept="image/*" hidden />
+        
         </div>
-
 
         <form class="edit-form" novalidate>
             <input id="firstName" type="text" placeholder="First Name" >
@@ -81,7 +64,7 @@
         </form>
     </div>
 
-    <script src="edit.js"></script>
+   
 </body>
 </html>
 

@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const backBtn = document.getElementById('backBtn');
-  if (!backBtn) return;
+  const back = document.querySelector('.back');
+  if (!back) return;
 
   const params = new URLSearchParams(window.location.search);
   const from = params.get('from');
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     privacy: '../Privacy/privacy.html'
   };
 
-  backBtn.addEventListener('click', () => {
+  back.addEventListener('click', () => {
     if (from && fromMap[from]) {
       window.location.href = fromMap[from];
       return;

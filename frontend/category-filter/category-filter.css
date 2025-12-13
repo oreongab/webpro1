@@ -27,7 +27,7 @@
 .category-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-bottom: 8px;
 }
 
@@ -61,7 +61,7 @@
   min-width: 0;
 }
 
-.category-pill {
+.category-pt {
   border-radius: 999px;
   border: 1px solid #ddd;
   padding: 6px 16px;
