@@ -6,12 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Material Icons -->
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 
-  <!-- CSS & JS -->
+  <!-- CSS & JS (ของหน้านี้) -->
   <link rel="stylesheet" href="style.css" />
-  <script defer src="home.js"></script>
+  <script defer src="rank.js"></script>
 </head>
 
 <body class="rank-page">
@@ -30,7 +29,7 @@
         <!-- mobile: < rank -->
         <button class="rank-back mobile-only" type="button" onclick="history.back()">
           <span class="material-icons">chevron_left</span>
-          <span>rank</span>
+          <span>Rank</span>
         </button>
       </div>
 
@@ -49,8 +48,8 @@
     </div>
   </header>
 
-  <!-- ========== MOBILE MENU ========== -->
-  <div class="mobile-menu" id="mobileMenu">
+  <!-- ========== MOBILE MENU (พื้นฟ้าโปร่งเหมือนเดิม) ========== -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
     <div class="mobile-menu-header">
       <button class="avatar-btn" aria-label="Open profile from menu">
         <div class="avatar-circle big">
@@ -85,63 +84,60 @@
           <input type="text" id="rankSearchInput" placeholder="Search for places" />
         </div>
 
-        <button class="filter-icon-btn"
-                id="categoryBtn"
-                aria-label="Open category filter">
+        <button class="filter-icon-btn" id="filterBtn" aria-label="Open opening-days filter">
           <span class="material-icons">tune</span>
         </button>
       </div>
     </section>
 
-    <!-- FILTER PANEL ใช้ชุดเดียวกับหน้า Home -->
-    <!-- ====== FILTER PANEL: Opening days (เด้งจากปุ่มฟิลเตอร์) ====== -->
-<div class="filter-panel" id="openingDaysPanel" aria-hidden="true">
-  <div class="filter-panel-inner">
-    <h2 class="filter-title">Opening days</h2>
-    <div class="filter-divider"></div>
+    <!-- ====== FILTER PANEL: Opening days ====== -->
+    <div class="filter-panel" id="openingDaysPanel" aria-hidden="true">
+      <div class="filter-panel-inner">
+        <h2 class="filter-title">Opening days</h2>
+        <div class="filter-divider"></div>
 
-    <div class="filter-options">
-      <label class="filter-checkbox">
-        <input type="checkbox" name="everyday" />
-        <span>Every day</span>
-      </label>
+        <div class="filter-options">
+          <label class="filter-checkbox">
+            <input type="checkbox" name="everyday" />
+            <span>Every day</span>
+          </label>
 
-      <label class="filter-checkbox">
-        <input type="checkbox" name="opennow" />
-        <span>Open Now</span>
-      </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" name="opennow" />
+            <span>Open Now</span>
+          </label>
 
-      <label class="filter-checkbox">
-        <input type="checkbox" name="weekday" />
-        <span>Week day</span>
-      </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" name="weekday" />
+            <span>Week day</span>
+          </label>
 
-      <label class="filter-checkbox">
-        <input type="checkbox" name="24hour" />
-        <span>24 hours</span>
-      </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" name="24hour" />
+            <span>24 hours</span>
+          </label>
+        </div>
+
+        <h3 class="filter-subtitle">Days</h3>
+        <div class="filter-divider"></div>
+
+        <div class="filter-days-grid">
+          <button type="button" class="day-chip">Mon</button>
+          <button type="button" class="day-chip">Tue</button>
+          <button type="button" class="day-chip">Wed</button>
+          <button type="button" class="day-chip">Thu</button>
+          <button type="button" class="day-chip">Fri</button>
+          <button type="button" class="day-chip">Sat</button>
+          <button type="button" class="day-chip">Sun</button>
+        </div>
+
+        <div class="filter-footer">
+          <button type="button" class="filter-btn filter-clear">Clear</button>
+          <button type="button" class="filter-btn filter-apply">Apply</button>
+        </div>
+      </div>
     </div>
-
-    <h3 class="filter-subtitle">Days</h3>
-    <div class="filter-divider"></div>
-
-    <div class="filter-days-grid">
-      <button type="button" class="day-chip">Mon</button>
-      <button type="button" class="day-chip">Tue</button>
-      <button type="button" class="day-chip">Wed</button>
-      <button type="button" class="day-chip">Thu</button>
-      <button type="button" class="day-chip">Fri</button>
-      <button type="button" class="day-chip">Sat</button>
-      <button type="button" class="day-chip">Sun</button>
-    </div>
-
-    <div class="filter-footer">
-      <button type="button" class="filter-btn filter-clear">Clear</button>
-      <button type="button" class="filter-btn filter-apply">Apply</button>
-    </div>
-  </div>
-</div>
-<!-- ====== END FILTER PANEL ====== -->
+    <!-- ====== END FILTER PANEL ====== -->
 
     <!-- Chips -->
     <section class="chip-bar">
@@ -194,9 +190,7 @@
   <footer class="site-footer" id="about">
     <div class="footer-main">
       <div class="footer-title">Aow Ngai Dee Wa</div>
-      <div class="footer-subtitle">
-        Website for finding places to visit
-      </div>
+      <div class="footer-subtitle">Website for finding places to visit</div>
 
       <div class="footer-links">
         <a href="#about">About</a>
@@ -207,18 +201,12 @@
       <div class="footer-madeby">Make by / Contact us</div>
 
       <div class="footer-ig-list">
-        <a href="https://www.instagram.com/8y_punch?igsh=bXB3NnI2MmN4Mjls"
-           target="_blank"
-           rel="noopener"
-           class="footer-ig">
+        <a href="https://www.instagram.com/8y_punch?igsh=bXB3NnI2MmN4Mjls" target="_blank" rel="noopener" class="footer-ig">
           <span class="ig-icon"></span>
           <span>Yada Intra</span>
         </a>
 
-        <a href="https://www.instagram.com/pmyoyu_?igsh=NGwyNGpxN2Y0MXEx"
-           target="_blank"
-           rel="noopener"
-           class="footer-ig">
+        <a href="https://www.instagram.com/pmyoyu_?igsh=NGwyNGpxN2Y0MXEx" target="_blank" rel="noopener" class="footer-ig">
           <span class="ig-icon"></span>
           <span>Pattamapon Thongplew</span>
         </a>
