@@ -66,7 +66,7 @@ async function applyCombinedFilters() {
     };
 
     const chipDbName = filters.chipCategory ? chipToDbCategory[filters.chipCategory] : null;
-    const effectiveTypes = [...(filters.types || [])];
+    const effectiveTypes = [(filters.types || [])];
     if (chipDbName && !effectiveTypes.includes(chipDbName)) {
       effectiveTypes.push(chipDbName);
     }
@@ -127,7 +127,7 @@ async function applyCombinedFilters() {
           rank: idx + 1,
           title: item.place_name,
           imageUrl: img,
-          openDays: item.place_province || '',
+          openDays: '',
           openHours: item.opening_hours || '',
           rating: item.place_score || 0
         };
