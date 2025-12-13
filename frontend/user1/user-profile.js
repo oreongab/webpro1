@@ -123,46 +123,70 @@
     loadUser();
     loadFavorites();
 
-    document.getElementById('btnBack')?.addEventListener('click', () => window.history.back());
-    document.getElementById('btnHome')?.addEventListener('click', () => window.location.href = '../home/home.html');
+    const btnBack = document.getElementById('btnBack');
+    const btnHome = document.getElementById('btnHome');
+    const editBtn = document.querySelector('.edit-btn');
+    const logOutBtn = document.querySelector('.log-out-btn-link');
+    const deleteAccountBtn = document.querySelector('.delete-account-btn-link');
 
-    document.querySelector('.edit-btn')?.addEventListener('click', () => {
-      window.location.href = '../Edit/edit.html';
-    });
-
-    document.querySelector('.log-out-btn-link')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (window.navigation?.handleLogout) {
-        window.navigation.handleLogout();
-      } else {
-        if (confirm('Log out?')) {
-          localStorage.removeItem('loggedInUser');
-          window.location.href = '../login/login.html';
+    if (btnBack) {
+      btnBack.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = '../home/home.html';
         }
-      }
-    });
+      });
+    }
 
-    document.querySelector('.delete-account-btn-link')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (confirm('Delete account? This cannot be undone.')) {
-        const userStr = localStorage.getItem('loggedInUser');
-        if (userStr) {
-          const userData = JSON.parse(userStr);
-          
-          fetch(`http://localhost:3000/users/${userData.user_id}`, { method: 'DELETE' })
-            .then(res => res.json())
-            .then(data => {
-              alert(data.message || 'Account deleted');
-              localStorage.removeItem('loggedInUser');
-              localStorage.removeItem(`userAvatar_${userData.user_id}`);
-              window.location.href = '../login/login.html';
-            })
-            .catch(err => {
-              console.error('Delete error:', err);
-              alert('Failed to delete');
-            });
+    if (btnHome) {
+      btnHome.addEventListener('click', () => window.location.href = '../home/home.html');
+    }
+
+    if (editBtn) {
+      editBtn.addEventListener('click', () => {
+        window.location.href = '../Edit/edit.html';
+      });
+    }
+
+    if (logOutBtn) {
+      logOutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (window.navigation?.handleLogout) {
+          window.navigation.handleLogout();
+        } else {
+          if (confirm('Log out?')) {
+            localStorage.removeItem('loggedInUser');
+            window.location.href = '../login/login.html';
+          }
         }
-      }
-    });
+      });
+    }
+
+    if (deleteAccountBtn) {
+      deleteAccountBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm('Delete account? This cannot be undone.')) {
+          const userStr = localStorage.getItem('loggedInUser');
+          if (userStr) {
+            const userData = JSON.parse(userStr);
+            
+            fetch(`http://localhost:3000/users/${userData.user_id}`, { method: 'DELETE' })
+              .then(res => res.json())
+              .then(data => {
+                alert(data.message || 'Account deleted');
+                localStorage.removeItem('loggedInUser');
+                localStorage.removeItem(`userAvatar_${userData.user_id}`);
+                window.location.href = '../login/login.html';
+              })
+              .catch(err => {
+                console.error('Delete error:', err);
+                alert('Failed to delete');
+              });
+          }
+        }
+      });
+    }
   });
 })();

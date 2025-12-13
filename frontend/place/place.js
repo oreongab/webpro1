@@ -40,8 +40,20 @@ function buildStars(rating) {
 }
 
 function displayPlaceDetail(place) {
-  const detailImage = document.getElementById('detail-image');
-  if (detailImage) {
+  const placeDetailImage = document.getElementById('detail-image');
+  const placeDetailTitle = document.getElementById('detail-title');
+  const placeDetailOpening = document.getElementById('detail-opening');
+  const placeDetailAddress = document.getElementById('detail-address');
+  const placeDetailProvince = document.getElementById('detail-province');
+  const placeDetailRatingLabel = document.getElementById('detail-rating-label');
+  const placeDetailStars = document.getElementById('detail-stars');
+  const placeDetailRatingScore = document.getElementById('detail-rating-score');
+  const placeDetailPrice = document.getElementById('detail-price');
+  const placeDetailCategory = document.getElementById('detail-category');
+  const placeDetailEvent = document.getElementById('detail-event');
+  const placeDetailContent = document.querySelector('.place-detail-content');
+  
+  if (placeDetailImage) {
     let imagePath = getDefaultImageUrl();
 
     if (place.images && Array.isArray(place.images) && place.images.length > 0) {
@@ -50,73 +62,67 @@ function displayPlaceDetail(place) {
       imagePath = `../../img_place/${fileName}`;
     }
     
-    detailImage.src = imagePath;
-    detailImage.alt = place.place_name || '';
-    detailImage.onerror = function() {
+    placeDetailImage.src = imagePath;
+    placeDetailImage.alt = place.place_name || '';
+    placeDetailImage.onerror = function() {
       this.onerror = null;
       this.src = getDefaultImageUrl();
     };
   }
 
-  const detailTitle = document.getElementById('detail-title');
-  if (detailTitle) {
-    detailTitle.textContent = place.place_name || 'ไม่ระบุชื่อ';
+  if (placeDetailTitle) {
+    placeDetailTitle.textContent = place.place_name || 'ไม่ระบุชื่อ';
   }
 
-  const detailOpening = document.getElementById('detail-opening');
-  if (detailOpening) {
-    detailOpening.textContent = place.opening_hours || 'ไม่ระบุเวลา';
+  if (placeDetailOpening) {
+    placeDetailOpening.textContent = place.opening_hours || 'ไม่ระบุเวลา';
   }
-
-  const detailAddress = document.getElementById('detail-address');
-  const detailProvince = document.getElementById('detail-province');
   
-  if (detailAddress) {
-    detailAddress.textContent = place.place_address || '';
+  if (placeDetailAddress) {
+    placeDetailAddress.textContent = place.place_address || '';
   }
-  if (detailProvince) {
-    detailProvince.textContent = place.place_province || '';
+  if (placeDetailProvince) {
+    placeDetailProvince.textContent = place.place_province || '';
   }
-
-  const detailRatingLabel = document.getElementById('detail-rating-label');
-  const detailStars = document.getElementById('detail-stars');
-  const detailRatingScore = document.getElementById('detail-rating-score');
 
   const rating = place.place_score ? parseFloat(place.place_score) : 0;
   
   if (rating > 0) {
-    if (detailRatingLabel) detailRatingLabel.textContent = 'Review';
-    if (detailStars) detailStars.innerHTML = buildStars(rating);
-    if (detailRatingScore) detailRatingScore.textContent = rating.toFixed(1);
+    if (placeDetailRatingLabel) placeDetailRatingLabel.textContent = 'Review';
+    if (placeDetailStars) placeDetailStars.innerHTML = buildStars(rating);
+    if (placeDetailRatingScore) placeDetailRatingScore.textContent = rating.toFixed(1);
   } else {
-    if (detailRatingLabel) detailRatingLabel.textContent = 'ไม่มีรีวิว';
-    if (detailStars) detailStars.innerHTML = '';
-    if (detailRatingScore) detailRatingScore.textContent = '';
+    if (placeDetailRatingLabel) placeDetailRatingLabel.textContent = 'ไม่มีรีวิว';
+    if (placeDetailStars) placeDetailStars.innerHTML = '';
+    if (placeDetailRatingScore) placeDetailRatingScore.textContent = '';
   }
 
-  const detailPrice = document.getElementById('detail-price');
-  if (detailPrice) {
+  if (placeDetailPrice) {
     const price = place.starting_price ? parseFloat(place.starting_price) : 0;
-    detailPrice.textContent = price > 0 ? `${price} บาท` : 'ฟรี';
+    placeDetailPrice.textContent = price > 0 ? `${price} บาท` : 'ฟรี';
   }
 
-  const detailCategory = document.getElementById('detail-category');
-  if (detailCategory) {
-    detailCategory.textContent = place.categories || 'ไม่ระบุหมวด';
+  if (placeDetailCategory) {
+    placeDetailCategory.textContent = place.categories || 'ไม่ระบุหมวด';
   }
 
-  const detailEvent = document.getElementById('detail-event');
-  if (detailEvent) {
-    detailEvent.textContent = place.place_event || 'ไม่มีอีเวนท์';
+  if (placeDetailEvent) {
+    placeDetailEvent.textContent = place.place_event || 'ไม่มีอีเวนท์';
   }
 
-  const content = document.querySelector('.place-detail-content');
-  if (content) {
-    content.style.display = 'block';
+  if (placeDetailContent) {
+    placeDetailContent.style.display = 'block';
   }
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  const backBtn = document.querySelector('.back');
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      window.history.back();
+    });
+  }
+
   const urlParams = new URLSearchParams(window.location.search);
   const placeId = urlParams.get('id');
 
@@ -133,25 +139,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.history.back();
   }
 
-  const favBtn = document.querySelector(".place-detail-fav");
-  if (favBtn && placeId) {
+  const placeDetailFavBtn = document.querySelector(".place-detail-fav");
+  if (placeDetailFavBtn && placeId) {
     if (window.favoriteHandler) {
       const isFav = await window.favoriteHandler.checkIsFavorite(placeId);
       if (isFav) {
-        favBtn.classList.add('is-active');
-        const icon = favBtn.querySelector('.material-icons');
-        if (icon) icon.textContent = 'favorite';
+        placeDetailFavBtn.classList.add('is-active');
+        const favIcon = placeDetailFavBtn.querySelector('.material-icons');
+        if (favIcon) favIcon.textContent = 'favorite';
       }
     }
 
-    favBtn.addEventListener("click", async () => {
+    placeDetailFavBtn.addEventListener("click", async () => {
       if (window.favoriteHandler) {
-        await window.favoriteHandler.toggleFavorite(placeId, favBtn);
+        await window.favoriteHandler.toggleFavorite(placeId, placeDetailFavBtn);
       } else {
-        favBtn.classList.toggle("is-active");
-        const icon = favBtn.querySelector(".material-icons");
-        if (icon) {
-          icon.textContent = favBtn.classList.contains("is-active")
+        placeDetailFavBtn.classList.toggle("is-active");
+        const favIcon = placeDetailFavBtn.querySelector(".material-icons");
+        if (favIcon) {
+          favIcon.textContent = placeDetailFavBtn.classList.contains("is-active")
             ? "favorite"
             : "favorite_border";
         }

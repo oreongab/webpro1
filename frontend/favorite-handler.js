@@ -66,13 +66,13 @@ const checkIsFavorite = async (placeId) => {
 
 const toggleFavorite = async (placeId, heartButton) => {
   const isActive = heartButton.classList.contains('is-active');
-  const icon = heartButton.querySelector('.material-icons');
+  const heartIcon = heartButton.querySelector('.material-icons');
   
   const success = isActive ? await removeFromFavorites(placeId) : await addToFavorites(placeId);
   
   if (success) {
     heartButton.classList.toggle('is-active');
-    if (icon) icon.textContent = isActive ? 'favorite_border' : 'favorite';
+    if (heartIcon) heartIcon.textContent = isActive ? 'favorite_border' : 'favorite';
   }
 };
 
@@ -98,20 +98,22 @@ const loadFavoriteStates = async () => {
 
 const updateAllHeartButtons = () => {
   const favs = Array.isArray(window.userFavorites) ? window.userFavorites : [];
-  document.querySelectorAll('.place-card').forEach(card => {
+  const placeCards = document.querySelectorAll('.place-card');
+  
+  placeCards.forEach(card => {
     const placeId = card.dataset.id;
     const heartBtn = card.querySelector('.card-fav-btn');
-    const icon = heartBtn?.querySelector('.material-icons');
     
     if (heartBtn && placeId) {
+      const heartIcon = heartBtn.querySelector('.material-icons');
       const isFav = favs.some(id => parseInt(id, 10) === parseInt(placeId, 10));
       
       if (isFav) {
         heartBtn.classList.add('is-active');
-        if (icon) icon.textContent = 'favorite';
+        if (heartIcon) heartIcon.textContent = 'favorite';
       } else {
         heartBtn.classList.remove('is-active');
-        if (icon) icon.textContent = 'favorite_border';
+        if (heartIcon) heartIcon.textContent = 'favorite_border';
       }
     }
   });

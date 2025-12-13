@@ -29,15 +29,15 @@ const go = (page, opts = {}) => {
   if (!path) return;
 
   if (page === "category") {
-    const overlay = document.getElementById("categoryOverlay");
-    if (overlay) {
-      const isOpen = overlay.classList.contains("open");
+    const categoryOverlay = document.getElementById("categoryOverlay");
+    if (categoryOverlay) {
+      const isOpen = categoryOverlay.classList.contains("open");
       if (isOpen) {
-        overlay.classList.remove("open");
-        overlay.setAttribute("aria-hidden", "true");
+        categoryOverlay.classList.remove("open");
+        categoryOverlay.setAttribute("aria-hidden", "true");
       } else {
-        overlay.classList.add("open");
-        overlay.setAttribute("aria-hidden", "false");
+        categoryOverlay.classList.add("open");
+        categoryOverlay.setAttribute("aria-hidden", "false");
       }
       return;
     }

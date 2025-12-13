@@ -1,4 +1,4 @@
-body.place-detail-body {
+body {
   margin: 0;
   background: #fff;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -8,30 +8,40 @@ body.place-detail-body {
 .place-detail-page {
   max-width: 960px;
   margin: 0 auto;
-  padding: 16px 24px 40px;
+  padding: 56px 24px 40px;
+
 }
 
-.place-detail-back {
+
+.back {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 100;
   border: 0;
   background: transparent;
-  padding: 0;
-  margin-bottom: 16px;
+  padding: 8px;
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   align-items: center;
 }
 
-.place-detail-back:focus {
+.back:active {
+  transform: scale(1);
+}
+
+.back:focus {
   outline: none;
 }
 
-.place-detail-back .material-icons {
+.back .material-icons {
   font-size: 24px;
   color: #000;
 }
 
 .place-detail-content {
   display: none;
+  margin-top: 56px;
 }
 
 .place-detail-body.has-data .place-detail-content {
@@ -84,14 +94,14 @@ body.place-detail-body {
 .place-detail-main {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  font-size: .95rem;
+  gap: 16px;
+  font-size: 18px;
 }
 
 .place-detail-row {
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: center;
+  gap: 12px;
 }
 
 .place-detail-icon {
@@ -111,14 +121,18 @@ body.place-detail-body {
 }
 
 .place-detail-text {
-  line-height: 1.5;
+  line-height: 1.6;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .place-detail-stars {
   color: #ffd700;
-  margin-left: 4px;
-  margin-right: 6px;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
 }
 
 .place-detail-rating {
@@ -133,13 +147,13 @@ body.place-detail-body {
 
 .place-detail-description h2 {
   margin: 0 0 8px;
-  font-size: 1rem;
+  font-size: 18px;
 }
 
 .place-detail-description p {
   margin: 0;
   line-height: 1.7;
-  font-size: .95rem;
+  font-size: 18px;
   color: #444;
   text-align: justify;
 }
@@ -163,9 +177,5 @@ body.place-detail-body {
     left: 16px;
     z-index: 50;
     margin-bottom: 0;
-  }
-
-  .place-detail-page {
-    padding-top: 56px;
   }
 }

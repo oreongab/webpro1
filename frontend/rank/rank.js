@@ -12,18 +12,24 @@ const getLoggedInUser = () => {
 const updateUsernameDisplay = () => {
   const user = getLoggedInUser();
   const name = user?.user_name || user?.first_name || "Guest";
-  document.querySelectorAll(".mobile-menu .username, .mobile-menu-header .username").forEach(el => {
+  const usernameElements = document.querySelectorAll(".mobile-menu .username, .mobile-menu-header .username");
+  
+  usernameElements.forEach(el => {
     el.textContent = name;
   });
 };
 
 const setupMobileMenu = () => {
-  const toggle = document.querySelector(".nav-toggle");
-  const menu = document.getElementById("mobileMenu");
-  if (!toggle || !menu) return;
+  const navToggle = document.querySelector(".nav-toggle");
+  const mobileMenu = document.getElementById("mobileMenu");
+  if (!navToggle || !mobileMenu) return;
 
-  toggle.addEventListener("click", () => menu.classList.add("open"));
-  document.querySelector(".mobile-menu-close")?.addEventListener("click", () => menu.classList.remove("open"));
+  navToggle.addEventListener("click", () => mobileMenu.classList.add("open"));
+  
+  const mobileMenuClose = document.querySelector(".mobile-menu-close");
+  if (mobileMenuClose) {
+    mobileMenuClose.addEventListener("click", () => mobileMenu.classList.remove("open"));
+  }
 
   window.navigation?.updateAvatarDisplay?.();
   updateUsernameDisplay();
@@ -36,18 +42,19 @@ const chipCategoryMap = {
 };
 
 const setupChipActive = () => {
-  const bar = document.querySelector(".chip-bar");
-  if (!bar) return;
+  const chipBar = document.querySelector(".chip-bar");
+  if (!chipBar) return;
 
-  bar.addEventListener("click", async (e) => {
+  chipBar.addEventListener("click", async (e) => {
     const chip = e.target.closest(".chip");
     if (!chip) return;
 
     const isActive = chip.classList.contains("active");
-    bar.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+    const allChips = chipBar.querySelectorAll(".chip");
+    allChips.forEach(c => c.classList.remove("active"));
     
-    const searchInput = document.getElementById('rankSearchInput');
-    if (searchInput) searchInput.value = '';
+    const rankSearchInput = document.getElementById('rankSearchInput');
+    if (rankSearchInput) rankSearchInput.value = '';
     
     if (isActive) {
       window.combinedFilter?.setChipFilter(null);
@@ -72,9 +79,12 @@ const buildStars = (score) => {
 };
 
 const renderPlaceCards = (places) => {
-  const grid = document.getElementById("placeGrid");
-  const tpl = document.getElementById("placeCardTemplate");
-  if (!grid || !tpl) return;
+  const placeGrid = document.getElementById("placeGrid");
+  const placeCardTemplate = document.getElementById("placeCardTemplate");
+  if (!placeGrid || !placeCardTemplate) return;
+  
+  const grid = placeGrid;
+  const tpl = placeCardTemplate;
 
   grid.innerHTML = "";
 
@@ -147,9 +157,12 @@ const fetchRankPlaces = async () => {
   }
 };
 const setupSearch = () => {
-  const searchInput = document.getElementById('rankSearchInput');
-  const suggestionsDiv = document.getElementById('rankSearchSuggestions');
-  if (!searchInput) return;
+  const rankSearchInput = document.getElementById('rankSearchInput');
+  const rankSearchSuggestions = document.getElementById('rankSearchSuggestions');
+  if (!rankSearchInput) return;
+  
+  const searchInput = rankSearchInput;
+  const suggestionsDiv = rankSearchSuggestions;
   
   let searchTimeout;
   let allPlaces = [];

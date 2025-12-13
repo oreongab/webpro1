@@ -2,28 +2,20 @@
 <html lang="th">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <title>Aow Ngai Dee Wa - User Profile </title>
-
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
-        rel="stylesheet">
-
-
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
   <link rel="stylesheet" href="./user-profile.css" />
+  <script src="./user-profile.js"></script>
 </head>
 
-<body class="page-profile">
-
+<body>
 
   <header class="top-actions" aria-label="Top actions">
+    
     <button class="icon-btn btn-back" id="btnBack" aria-label="Go back">
       <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor"
            stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
@@ -42,8 +34,6 @@
 
   <main class="container">
     <div class="content">
-
-
       <section class="profile-card">
         <div class="avatar" id="userAvatarContainer" role="button" aria-label="Change avatar">
           <img id="profileAvatarImg" class="avatar-image" alt="Profile Image" />
@@ -62,21 +52,17 @@
         <button class="edit-btn" type="button">Edit Profile</button>
       </section>
 
-
-
-      <section class="favorites-section" style="display:none;">
+      <section class="favorites-section">
         <div class="fav-header">
           <h3 class="fav-title">
             <span class="material-icons fav-icon" aria-hidden="true">favorite</span>
             Favorites
           </h3>
 
-
           <a href="#" class="view-all" id="viewAllBtn" style="display:none;">
             <span>View all</span>
           </a>
         </div>
-
 
         <template id="favoritePlaceTemplate">
           <article class="place-card">
@@ -100,6 +86,7 @@
               <div class="card-rating"></div>
               <div class="card-title"></div>
             </div>
+
           </article>
         </template>
 
@@ -139,7 +126,7 @@
   <input type="file" id="avatarInput" accept="image/*" hidden />
 
 
-  <script src="./user-profile.js"></script>
+  
 </body>
 </html>
 

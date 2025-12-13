@@ -125,6 +125,7 @@ body{
 .edit-btn:active{ opacity:.75; }
 .favorites-section{
   background: transparent;
+  display: none;
 }
 
 .fav-header{
@@ -150,7 +151,7 @@ body{
 }
 
 .view-all{
-  display:inline-flex;
+  display:none;
   align-items:center;
   gap:6px;
   text-decoration:none;
@@ -160,7 +161,7 @@ body{
   padding: 0;
   border-radius: 0;
 }
-.view-all:active{ opacity:.65; }
+
 .fav-list.card-grid{
   display:grid;
   grid-template-columns: 1fr;

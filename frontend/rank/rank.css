@@ -132,12 +132,7 @@ body{
   display: none;
   flex-direction: column;
   z-index: 60;
-  background: linear-gradient(
-    180deg,
-    rgba(0,151,167,0.88),
-    rgba(0,114,122,0.96)
-  );
-
+  background: linear-gradient(180deg,rgba(0,151,167,0.88),rgba(0,114,122,0.96) );
   color: #fff;
 }
 

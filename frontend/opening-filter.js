@@ -173,13 +173,16 @@ function checkOpeningHours(openingHours, filters) {
 function setupOpeningDaysFilter(page = 'home') {
     currentPage = page;
     
-    const filterBtn = document.getElementById('openingFilterBtn');
-    const panel = document.getElementById('openingDaysPanel');
+    const openingFilterBtn = document.getElementById('openingFilterBtn');
+    const openingDaysPanel = document.getElementById('openingDaysPanel');
     
-    if (!filterBtn || !panel) {
+    if (!openingFilterBtn || !openingDaysPanel) {
         console.warn('Opening filter: button or panel not found');
         return;
     }
+    
+    const filterBtn = openingFilterBtn;
+    const panel = openingDaysPanel;
 
     if (filterBtn.dataset.openingFilterBound === '1') {
         return;
@@ -311,13 +314,18 @@ function setupOpeningDaysFilter(page = 'home') {
 
 async function applyOpeningFilter() {
     try {
-        const panel = document.getElementById('openingDaysPanel');
-        if (!panel) return;
+        const openingDaysPanel = document.getElementById('openingDaysPanel');
+        if (!openingDaysPanel) return;
 
-        const everyday = panel.querySelector('input[name="everyday"]')?.checked || false;
-        const opennow = panel.querySelector('input[name="opennow"]')?.checked || false;
-        const weekday = panel.querySelector('input[name="weekday"]')?.checked || false;
-        const hours24 = panel.querySelector('input[name="24hour"]')?.checked || false;
+        const everydayCheckbox = openingDaysPanel.querySelector('input[name="everyday"]');
+        const opennowCheckbox = openingDaysPanel.querySelector('input[name="opennow"]');
+        const weekdayCheckbox = openingDaysPanel.querySelector('input[name="weekday"]');
+        const hours24Checkbox = openingDaysPanel.querySelector('input[name="24hour"]');
+        
+        const everyday = everydayCheckbox?.checked || false;
+        const opennow = opennowCheckbox?.checked || false;
+        const weekday = weekdayCheckbox?.checked || false;
+        const hours24 = hours24Checkbox?.checked || false;
 
         if (window.combinedFilter) {
             window.combinedFilter.setOpeningFilters(everyday, opennow, weekday, hours24, selectedDays);
@@ -336,14 +344,17 @@ async function applyOpeningFilter() {
 async function clearOpeningFilter() {
     selectedDays = [];
     
-    const panel = document.getElementById('openingDaysPanel');
-    if (!panel) return;
+    const openingDaysPanel = document.getElementById('openingDaysPanel');
+    if (!openingDaysPanel) return;
     
-    panel.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    const allCheckboxes = openingDaysPanel.querySelectorAll('input[type="checkbox"]');
+    const allDayChips = openingDaysPanel.querySelectorAll('.day-chip');
+    
+    allCheckboxes.forEach(cb => {
         cb.checked = false;
     });
     
-    panel.querySelectorAll('.day-chip').forEach(chip => {
+    allDayChips.forEach(chip => {
         chip.classList.remove('active');
     });
     

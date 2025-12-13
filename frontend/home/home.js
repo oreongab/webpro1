@@ -12,18 +12,24 @@ const getLoggedInUser = () => {
 const updateUsernameDisplay = () => {
   const user = getLoggedInUser();
   const name = user?.user_name || user?.first_name || "Guest";
-  document.querySelectorAll(".mobile-menu .username, .mobile-menu-header .username").forEach(el => {
+  const usernameElements = document.querySelectorAll(".mobile-menu .username, .mobile-menu-header .username");
+  
+  usernameElements.forEach(el => {
     el.textContent = name;
   });
 };
 
 const setupMobileMenu = () => {
-  const toggle = document.querySelector(".nav-toggle");
-  const menu = document.getElementById("mobileMenu");
-  if (!toggle || !menu) return;
+  const navToggle = document.querySelector(".nav-toggle");
+  const mobileMenu = document.getElementById("mobileMenu");
+  if (!navToggle || !mobileMenu) return;
 
-  toggle.addEventListener("click", () => menu.classList.add("open"));
-  document.querySelector(".mobile-menu-close")?.addEventListener("click", () => menu.classList.remove("open"));
+  navToggle.addEventListener("click", () => mobileMenu.classList.add("open"));
+  
+  const mobileMenuClose = document.querySelector(".mobile-menu-close");
+  if (mobileMenuClose) {
+    mobileMenuClose.addEventListener("click", () => mobileMenu.classList.remove("open"));
+  }
 
   window.navigation?.updateAvatarDisplay?.();
   updateUsernameDisplay();
@@ -35,9 +41,12 @@ const buildStars = (score) => {
   return Array(5).fill().map((_, i) => i < full ? "★" : "☆").join("");
 };
 const renderPlaceCards = (places) => {
-  const grid = document.getElementById("placeGrid");
-  const tpl = document.getElementById("placeCardTemplate");
-  if (!grid || !tpl) return;
+  const placeGrid = document.getElementById("placeGrid");
+  const placeCardTemplate = document.getElementById("placeCardTemplate");
+  if (!placeGrid || !placeCardTemplate) return;
+  
+  const grid = placeGrid;
+  const tpl = placeCardTemplate;
 
   grid.innerHTML = "";
 
@@ -103,12 +112,15 @@ const setupFavoriteToggle = () => {
 };
 
 const clearCategorySelections = () => {
-  document.querySelectorAll('.category-list input[type="checkbox"]').forEach(cb => cb.checked = false);
+  const categoryCheckboxes = document.querySelectorAll('.category-list input[type="checkbox"]');
+  const provinceSearch = document.getElementById('provinceSearch');
+  const provinceListItems = document.querySelectorAll('.category-province-list li');
   
-  const searchInput = document.getElementById('provinceSearch');
-  if (searchInput) searchInput.value = '';
+  categoryCheckboxes.forEach(cb => cb.checked = false);
   
-  document.querySelectorAll('.category-province-list li').forEach(item => item.style.display = '');
+  if (provinceSearch) provinceSearch.value = '';
+  
+  provinceListItems.forEach(item => item.style.display = '');
 };
 
 window.clearCategorySelections = clearCategorySelections;
@@ -153,9 +165,12 @@ const fetchPlaces = async () => {
 
 window.fetchPlaces = fetchPlaces;
 const setupHomeSearch = () => {
-  const searchInput = document.getElementById('searchInput');
-  const suggestionsDiv = document.getElementById('searchSuggestions');
-  if (!searchInput) return;
+  const homeSearchInput = document.getElementById('searchInput');
+  const searchSuggestionsDiv = document.getElementById('searchSuggestions');
+  if (!homeSearchInput) return;
+  
+  const searchInput = homeSearchInput;
+  const suggestionsDiv = searchSuggestionsDiv;
   
   let searchTimeout;
   let allPlaces = [];
