@@ -1,221 +1,203 @@
-// user-profile.js
 (function () {
-  /* ---------------------------------------------
-   * 1. Touch feedback (mobile active state)
-   * ------------------------------------------- */
-  function attachTouchListeners() {
-    document
-      .querySelectorAll(
-        '.log-out-btn-link, .delete-account-btn-link, .edit-btn, ' +
-        '.setting-item, .header .back-btn, .header .home-btn, ' +
-        '.desktop-back-button .back-icon, .view-all'
-      )
-      .forEach((btn) => {
-        btn.addEventListener(
-          'touchstart',
-          function () {
-            this.classList.add('active-touch');
-          },
-          { passive: true }
-        );
-        const clear = function () {
-          this.classList.remove('active-touch');
-        };
-        btn.addEventListener('touchend', clear, { passive: true });
-        btn.addEventListener('touchcancel', clear, { passive: true });
+  // ===== 1) touch feedback (เบาๆ) =====
+  function touchFx() {
+    document.querySelectorAll('.setting-item, .edit-btn, .view-all, .icon-btn')
+      .forEach((el) => {
+        el.addEventListener('touchstart', function () {
+          this.classList.add('active-touch');
+        }, { passive: true });
+
+        const clear = function () { this.classList.remove('active-touch'); };
+        el.addEventListener('touchend', clear, { passive: true });
+        el.addEventListener('touchcancel', clear, { passive: true });
       });
   }
 
-  /* ---------------------------------------------
-   * 2. Avatar helper – สลับ icon / รูปจริง
-   * ------------------------------------------- */
+  // ===== 2) top buttons =====
+  function setupTopButtons() {
+    const backBtn = document.getElementById('btnBack');
+    const homeBtn = document.getElementById('btnHome');
+
+    backBtn?.addEventListener('click', () => history.back());
+    homeBtn?.addEventListener('click', () => {
+      window.location.href = 'home.html';
+    });
+  }
+
+  // ===== 3) avatar helper =====
   function setAvatar(url) {
-    const container = document.getElementById('userAvatarContainer');
+    const box = document.getElementById('userAvatarContainer');
     const img = document.getElementById('profileAvatarImg');
-    if (!container || !img) return;
+    if (!box || !img) return;
 
     if (!url || !url.trim()) {
-      container.classList.remove('has-image');
+      box.classList.remove('has-image');
       img.src = '';
     } else {
-      container.classList.add('has-image');
+      box.classList.add('has-image');
       img.src = url;
     }
   }
 
-  /* ---------------------------------------------
-   * 3. Render user info (ชื่อ + email + avatar)
-   * ------------------------------------------- */
-  function renderUserFromObject(u) {
-    const usernameEl = document.getElementById('username');
+  // ===== 4) render user info =====
+  function renderUser(u) {
+    const nameEl = document.getElementById('username');
     const emailEl = document.getElementById('email');
-    if (!usernameEl || !emailEl) return;
+    if (!nameEl || !emailEl) return;
 
-    const display = u.displayName || u.username || u.name || 'Guest';
-    usernameEl.textContent = display;
+    const name = u.displayName || u.username || u.name || 'Guest';
+    nameEl.textContent = name;
     emailEl.textContent = u.email || '';
 
-    usernameEl.dataset.username = u.username || u.displayName || '';
-    emailEl.dataset.email = u.email || '';
-
-    if (u.avatarUrl) {
-      setAvatar(u.avatarUrl);
-    } else {
-      setAvatar('');
-    }
+    if (u.avatarUrl) setAvatar(u.avatarUrl);
+    else setAvatar('');
   }
 
-  /* ---------------------------------------------
-   * 4. โหลด user จาก window.__USER__ หรือ /api/me
-   * ------------------------------------------- */
-  async function tryLoadCurrentUser() {
-    // 1) หลังบ้าน inject window.__USER__ ไว้แล้ว
+  // ===== 5) try load current user =====
+  async function loadMe() {
     if (window.__USER__ && typeof window.__USER__ === 'object') {
-      try {
-        renderUserFromObject(window.__USER__);
-        return;
-      } catch (err) {
-        console.warn('render window.__USER__ failed:', err);
-      }
+      try { renderUser(window.__USER__); return; } catch (e) {}
     }
 
-    // 2) ถ้ายังไม่มี ลองเรียก API ฝั่ง backend
     try {
-      const resp = await fetch('/api/me', {
+      const res = await fetch('/api/me', {
         credentials: 'include',
-        headers: { Accept: 'application/json' },
+        headers: { Accept: 'application/json' }
       });
-      if (!resp.ok) throw new Error('fetch /api/me failed');
-      const user = await resp.json();
-      renderUserFromObject(user);
-    } catch (err) {
-      console.info('No user info, fallback to Guest.', err);
-      const usernameEl = document.getElementById('username');
-      const emailEl = document.getElementById('email');
-      if (usernameEl) usernameEl.textContent = 'Guest';
-      if (emailEl) emailEl.textContent = '';
-      setAvatar('');
+      if (!res.ok) throw new Error('no /api/me');
+      const u = await res.json();
+      renderUser(u);
+    } catch (e) {
+      renderUser({ name: 'Guest', email: '', avatarUrl: '' });
     }
   }
 
-  /* ---------------------------------------------
-   * 5. ช่วยเช็ค favorites ว่าว่างไหม → ซ่อน section
-   * ------------------------------------------- */
-  function ensureFavoritesVisibility() {
-    const section = document.querySelector('.favorites-section');
-    const list = document.getElementById('favoriteList');
-    if (!section || !list) return;
+  // =====================================================
+  // Favorites: โชว์ 3 ใบก่อน / กด View all ค่อยโชว์ทั้งหมด
+  // =====================================================
+  let favAll = [];
+  let showAll = false;
+  const showMax = 3;
 
-    if (!list.children.length) {
-      section.style.display = 'none';
-    }
+  function renderStars(rate) {
+    if (rate == null) return '';
+    const full = Math.round(rate);
+    let s = '';
+    for (let i = 0; i < 5; i++) s += i < full ? '★' : '☆';
+    return s;
   }
 
-  /* ---------------------------------------------
-   * 6. ฟังก์ชันให้หลังบ้าน render การ์ด Favorites
-   * ------------------------------------------- */
-  function renderFavoritePlaces(places) {
+  function renderFavCards(listData) {
     const tpl = document.getElementById('favoritePlaceTemplate');
     const list = document.getElementById('favoriteList');
-    const section = document.querySelector('.favorites-section');
-    if (!tpl || !list || !section) return;
+    if (!tpl || !list) return;
 
     list.innerHTML = '';
 
-    if (!Array.isArray(places) || places.length === 0) {
-      section.style.display = 'none';
-      return;
-    }
-
-    places.forEach((p, index) => {
+    listData.forEach((p, idx) => {
       const node = tpl.content.firstElementChild.cloneNode(true);
 
-      // id/rank
-      node.dataset.id = p.id ?? index + 1;
+      node.dataset.id = p.id ?? idx + 1;
 
       const rankEl = node.querySelector('.card-rank-number');
-      if (rankEl) rankEl.textContent = p.rank ?? index + 1;
+      if (rankEl) rankEl.textContent = p.rank ?? idx + 1;
 
-      // image
       const imgEl = node.querySelector('.card-image');
       if (imgEl) {
         imgEl.src = p.imageUrl || '';
         imgEl.alt = p.title || '';
       }
 
-      // open info
       const dayEl = node.querySelector('.card-open-days');
       const hourEl = node.querySelector('.card-open-hours');
       if (dayEl) dayEl.textContent = p.openDays || '';
       if (hourEl) hourEl.textContent = p.openHours || '';
 
-      // rating + stars
       const starEl = node.querySelector('.card-stars');
       const rateEl = node.querySelector('.card-rating');
-      if (p.rating != null) {
-        if (starEl) {
-          const full = Math.round(p.rating);
-          let stars = '';
-          for (let i = 0; i < 5; i++) {
-            stars += i < full ? '★' : '☆';
-          }
-          starEl.textContent = stars;
-        }
-        if (rateEl) {
-          rateEl.textContent = p.rating.toFixed(1);
-        }
-      }
+      if (starEl) starEl.textContent = renderStars(p.rating);
+      if (rateEl && p.rating != null) rateEl.textContent = p.rating.toFixed(1);
 
-      // title
       const titleEl = node.querySelector('.card-title');
       if (titleEl) titleEl.textContent = p.title || '';
 
-      // ปุ่มหัวใจ → เอาไว้อนุญาตให้ unfavorite ได้ (frontend)
+      // กดหัวใจ: ลบออกจากหน้า (เหมือนเดิม) — ถ้าจะให้ call backend ค่อยเพิ่ม
       const favBtn = node.querySelector('.card-fav-btn');
-      const favIcon = favBtn?.querySelector('.material-icons');
-      if (favBtn && favIcon) {
-        favBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          // TODO: call backend เพื่อลบออกจาก favorites จริง ๆ ถ้าต้องการ
-          node.remove();
-          ensureFavoritesVisibility();
-        });
-      }
+      favBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        node.remove();
+      });
 
       list.appendChild(node);
     });
-
-    section.style.display = 'block';
   }
 
-  // เปิดให้หลังบ้านใช้
+  function updateViewAll() {
+    const viewBtn = document.getElementById('viewAllBtn');
+    if (!viewBtn) return;
+
+    if (!showAll && favAll.length > showMax) {
+      viewBtn.style.display = 'inline-flex';
+    } else {
+      viewBtn.style.display = 'none';
+    }
+  }
+
+  function renderFavoritePlaces(places) {
+    const section = document.querySelector('.favorites-section');
+    if (!section) return;
+
+    favAll = Array.isArray(places) ? places : [];
+    showAll = false;
+
+    if (favAll.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = 'block';
+
+    const showList = favAll.slice(0, showMax);
+    renderFavCards(showList);
+    updateViewAll();
+  }
+
+  function setupViewAll() {
+    const viewBtn = document.getElementById('viewAllBtn');
+    if (!viewBtn) return;
+
+    viewBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      showAll = true;
+      renderFavCards(favAll);
+      updateViewAll();
+    });
+  }
+
+  // ให้หลังบ้านเรียกใช้
   window.renderFavoritePlaces = renderFavoritePlaces;
 
-  /* ---------------------------------------------
-   * 7. Init
-   * ------------------------------------------- */
+  // ===== init =====
   document.addEventListener('DOMContentLoaded', function () {
-    // เปลี่ยนรูปโปรไฟล์ (เลือกไฟล์จากเครื่อง)
-    const avatarContainer = document.getElementById('userAvatarContainer');
+    // เปลี่ยนรูปโปรไฟล์
+    const avatarBox = document.getElementById('userAvatarContainer');
     const avatarImg = document.getElementById('profileAvatarImg');
-    const avatarInput = document.getElementById('avatarInput');
+    const fileInput = document.getElementById('avatarInput');
 
-    if (avatarContainer && avatarInput && avatarImg) {
-      avatarContainer.addEventListener('click', () => {
-        avatarInput.click();
-      });
-
-      avatarInput.addEventListener('change', () => {
-        const file = avatarInput.files[0];
-        if (!file) return;
-        const previewUrl = URL.createObjectURL(file);
-        avatarImg.src = previewUrl;
-        avatarContainer.classList.add('has-image');
+    if (avatarBox && avatarImg && fileInput) {
+      avatarBox.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', () => {
+        const f = fileInput.files?.[0];
+        if (!f) return;
+        const url = URL.createObjectURL(f);
+        avatarImg.src = url;
+        avatarBox.classList.add('has-image');
       });
     }
 
-    tryLoadCurrentUser();
-    attachTouchListeners();
-    ensureFavoritesVisibility();
+    setupTopButtons();
+    setupViewAll();
+    touchFx();
+    loadMe();
   });
 })();

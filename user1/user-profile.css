@@ -1,562 +1,363 @@
-:root {
-  --primary: #2EC4B6;
-  --ink: #0B0F10;
-  --white: #FFF;
-  --gray-bg: #F5F5F5;
-  --gray-text: #666;
-  --border-color: #EEE;
-  --log-out-red: #D9534F;
-  --delete-red: #CC0000;
-  --active-bg: #EAF8F7;
+:root{
+  --primary:#00a8a8;
+  --primary-dark:#00727a;
 
-  --card-radius: 18px;
-  --shadow-soft: 0 6px 18px rgba(0,0,0,0.18);
+  --bg:#f5f7f9;
+  --card:#ffffff;
+
+  --ink:#222;
+  --muted:#777;
+  --border:#eee;
+
+  --log-out-red:#D9534F;
+  --delete-red:#CC0000;
+
+  /* ให้เหมือนหน้าอื่น */
+  --card-radius:12px;
+  --shadow-soft:0 6px 18px rgba(0,0,0,0.18);
 }
 
-/* --- Base Styles (Mobile First) --- */
-* {
-  box-sizing: border-box;
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
 }
 
-body {
-  margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-  background: var(--gray-bg);
-  color: var(--ink);
-  min-height: 100vh;
-}
-
-/* --- Utility Classes --- */
-.desktop-only { display: none; }
-.mobile-only  { display: flex; }
-
-/* ===================================================== */
-/* Header (Mobile)                                       */
-/* ===================================================== */
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 16px;
-  background: var(--gray-bg);
+/* ===== top actions (ไม่มีแถบเขียว) ===== */
+.top-actions{
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 50;
+
+  /* ไม่มีแถบสี / ให้กลืนกับหน้า */
+  background: transparent;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding: 14px 18px;
+  padding-top: calc(14px + env(safe-area-inset-top));
 }
 
-.header button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 5px;
-  color: var(--ink);
-  border-radius: 6px;
-  transition:
-    background-color 0.15s ease,
-    transform 0.1s ease,
-    opacity 0.1s ease;
+.icon-btn{
+  border:none;
+  background:transparent;
+  padding:0;
+  margin:0;
+  cursor:pointer;
+  color: #222; /* สีไอคอน */
+  line-height:0;
 }
 
-.header button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+.icon-btn:active{
+  opacity:.65;  /* แตะแล้ว feedback แต่ไม่ทำเป็นกรอบ */
 }
 
-.header button:active,
-.header button.active-touch {
-  background-color: rgba(0, 0, 0, 0.12);
-  transform: scale(0.96);
-  opacity: 0.9;
+/* ===== layout ===== */
+.container{
+  padding: 0 16px 28px;
 }
 
-/* ===================================================== */
-/* Desktop Back Button                                   */
-/* ===================================================== */
-
-.desktop-back-button {
-  position: absolute;
-  top: 18px;
-  left: 18px;
-  z-index: 20;
-  display: none; /* เปิดเฉพาะบน desktop ใน media query ด้านล่าง */
+.content{
+  display:flex;
+  flex-direction:column;
+  gap: 16px;
 }
 
-.desktop-back-button .back-icon {
-  background: none;
-  border: none;
-  padding: 4px;
-  cursor: pointer;
-  border-radius: 6px;
-  transition:
-    background-color 0.15s ease,
-    transform 0.1s ease,
-    opacity 0.1s ease;
+/* ===== profile card ===== */
+.profile-card{
+  background: var(--card);
+  border-radius: var(--card-radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+  padding: 18px 16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
 }
 
-.desktop-back-button .back-icon svg {
-  width: 24px;
-  height: 24px;
-  stroke: #444;
+.avatar{
+  position:relative;
+  width:110px;
+  height:110px;
+  border-radius:999px;
+  background:#F7F7F7;
+  border:3px solid #CFCFCF;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  margin-bottom:14px;
 }
 
-.desktop-back-button .back-icon:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+.avatar-placeholder{ width:80%; height:80%; }
+.avatar-image{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:none;
 }
 
-.desktop-back-button .back-icon:active,
-.desktop-back-button .back-icon.active-touch {
-  background-color: rgba(0, 0, 0, 0.12);
-  transform: scale(0.96);
-  opacity: 0.9;
+.avatar.has-image .avatar-placeholder{ display:none; }
+.avatar.has-image .avatar-image{ display:block; }
+
+.username{
+  margin:0 0 4px;
+  font-size:18px;
+  font-weight:800;
+}
+.email{
+  margin:0;
+  font-size:14px;
+  color:var(--muted);
 }
 
-/* --- Main Content --- */
-.container {
-  padding: 0 16px;
-}
-.content {
-  display: flex;
-  flex-direction: column;
-}
-
-/* ===================================================== */
-/* 1. Profile Card                                       */
-/* ===================================================== */
-
-.profile-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 20px 0;
-  background: var(--gray-bg);
-}
-
-.profile-card .avatar {
-  position: relative;
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  background: #F7F7F7;           /* วงในเทาอ่อน */
-  border: 3px solid #CFCFCF;     /* วงนอกเทาอ่อน */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
-  overflow: hidden;
-}
-
-/* svg placeholder */
-.profile-card .avatar .avatar-placeholder {
-  width: 80%;
-  height: 80%;
-}
-
-/* รูปจริงของ user */
-.profile-card .avatar .avatar-image {
-  position: absolute;
-  inset: 0;
+.edit-btn{
+  margin-top:12px;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: none;
+  max-width: 260px;
+
+  border-radius:999px;
+  border:1px solid var(--primary);
+  background:#fff;
+  color:var(--primary);
+  padding: 9px 16px;
+  font-weight:700;
+  cursor:pointer;
+}
+.edit-btn:active{ opacity:.75; }
+
+/* ===== favorites ===== */
+.favorites-section{
+  background: transparent;
 }
 
-/* ถ้า .has-image → แสดงรูปจริงแทน svg */
-.profile-card .avatar.has-image .avatar-placeholder {
-  display: none;
-}
-.profile-card .avatar.has-image .avatar-image {
-  display: block;
-}
-
-.profile-card .info {
-  margin-bottom: 0;
+.fav-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top: 4px;
+  margin-bottom: 10px;
 }
 
-.profile-card .username {
-  margin: 0 0 4px;
-  font-size: 18px;
+.fav-title{
+  display:flex;
+  align-items:center;
+  gap: 6px;
+  margin:0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.fav-icon{
+  font-size: 20px;
+  color: var(--primary);
+}
+
+.view-all{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  text-decoration:none;
+  color: var(--primary-dark);
   font-weight: 700;
-}
-.profile-card .email {
-  margin: 0 0 10px;
   font-size: 14px;
-  color: var(--gray-text);
-}
 
-/* Edit Button */
-.edit-btn {
-  background: var(--white);
-  color: var(--primary);
-  border: 1px solid var(--primary);
-  border-radius: 999px;
-  padding: 8px 18px;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    transform 0.1s ease,
-    opacity 0.1s ease;
-  margin-top: 10px;
+  /* ไม่ทำเป็นกรอบ */
+  padding: 0;
+  border-radius: 0;
 }
-.edit-btn:hover {
-  background: #F0F0F0;
-}
-.edit-btn:active,
-.edit-btn.active-touch {
-  background: var(--active-bg);
-  transform: scale(0.98);
-  opacity: 0.96;
-}
+.view-all:active{ opacity:.65; }
 
-/* ===================================================== */
-/* 2. Favorites Section                                  */
-/* ===================================================== */
-
-.favorites-section {
-  padding: 20px 0;
-}
-
-.fav-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-.fav-header h3 {
-  display: flex;
-  align-items: center;
-  margin: 0;
-}
-.fav-header svg {
-  margin-right: 5px;
-  stroke: var(--primary);
-}
-
-/* View all link */
-.view-all {
-  font-size: 14px;
-  color: var(--primary);
-  text-decoration: none;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 999px;
-  transition:
-    background-color 0.15s ease,
-    color 0.15s ease,
-    transform 0.1s ease,
-    opacity 0.1s ease;
-}
-.view-all:hover {
-  background-color: rgba(46, 196, 182, 0.08);
-}
-.view-all:active,
-.view-all.active-touch {
-  background-color: rgba(46, 196, 182, 0.16);
-  transform: scale(0.97);
-  opacity: 0.9;
-}
-
-/* ใช้เป็นกริดการ์ดเหมือนหน้า Home */
-.fav-list.card-grid {
-  display: grid;
+/* grid cards (เหมือนหน้าอื่น) */
+.fav-list.card-grid{
+  display:grid;
   grid-template-columns: 1fr;
   gap: 16px;
-  padding-top: 10px;
 }
 
-/* ---------- Card แบบหน้า Home สำหรับ Favorites ---------- */
-
-.place-card {
-  position: relative;
-  width: 100%;
+/* ===== card template (ใช้ class เดียวกับหน้าอื่น) ===== */
+.place-card{
+  position:relative;
+  width:100%;
   border-radius: var(--card-radius);
-  overflow: hidden;
-  background: #000;
+  overflow:hidden;
+  background:#000;
   box-shadow: var(--shadow-soft);
-  cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor:pointer;
+  transition: transform .25s ease, box-shadow .25s ease;
 }
-
-.place-card:hover {
-  transform: translateY(-4px);
+.place-card:hover{
+  transform: translateY(-3px);
   box-shadow: 0 10px 26px rgba(0,0,0,0.25);
 }
 
-.card-image {
-  width: 100%;
-  height: 210px;
-  object-fit: cover;
-  display: block;
+.card-image{
+  width:100%;
+  height:210px;
+  object-fit:cover;
+  display:block;
 }
 
-/* Rank มุมซ้ายบน */
-.card-rank-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  border: 2px solid #fff;
+/* rank badge */
+.card-rank-badge{
+  position:absolute;
+  top:10px;
+  left:10px;
+  width:40px;
+  height:40px;
+  border-radius:999px;
+  border:2px solid #fff;
   background: rgba(0,0,0,0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2;
 }
+.card-rank-number{ color:#fff; font-weight:800; }
 
-.card-rank-number {
-  color: #fff;
-  font-weight: 700;
-}
-
-/* หัวใจมุมขวาบน */
-.card-fav-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  border: none;
+/* fav btn */
+.card-fav-btn{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  border:none;
   background: rgba(255,255,255,0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
   box-shadow: 0 3px 10px rgba(0,0,0,0.28);
-  z-index: 2;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  z-index:2;
+}
+.card-fav-btn .material-icons{
+  font-size:22px;
+  color:#ff1744;
 }
 
-.card-fav-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-}
-
-.card-fav-btn .material-icons {
-  font-size: 22px;
-  color: #ff1744; /* หัวใจแดง (ถูกใจแล้ว) */
-}
-
-/* ข้อมูลเวลาเปิดบนรูป */
-.card-open-info {
-  position: absolute;
-  left: 12px;
-  bottom: 58px;
-  color: #fff;
-  font-size: 0.85rem;
+/* open info */
+.card-open-info{
+  position:absolute;
+  left:12px;
+  bottom:58px;
+  color:#fff;
+  font-size:.85rem;
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
+.card-open-days{ font-weight:600; }
 
-.card-open-days {
-  font-weight: 500;
-}
-
-/* แถบล่างสีขาว */
-.card-bottom {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  min-height: 38px;
+/* bottom bar */
+.card-bottom{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  min-height:38px;
   background: rgba(245,245,245,0.96);
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  align-items: center;
-  gap: 6px;
+  display:grid;
+  grid-template-columns:auto auto 1fr;
+  align-items:center;
+  gap:6px;
   padding: 3px 8px 5px;
-  font-size: 0.83rem;
+  font-size:.83rem;
+}
+.card-stars{ color:#ffd700; white-space:nowrap; }
+.card-rating{ font-weight:800; }
+.card-title{
+  text-align:right;
+  font-weight:600;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
 }
 
-.card-stars {
-  color: #ffd700;
-  white-space: nowrap;
+/* ===== settings (มีชุดเดียว ไม่ซ้ำ) ===== */
+.settings-list{
+  background: var(--card);
+  border-radius: var(--card-radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+  overflow:hidden;
 }
 
-.card-rating {
-  font-weight: 600;
-}
-
-.card-title {
-  text-align: right;
-  font-weight: 500;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-/* ===================================================== */
-/* 3. Settings List (Mobile Bottom)                      */
-/* ===================================================== */
-
-.settings-list.mobile-only {
-  padding: 0 16px 30px;
-  gap: 0;
-  flex-direction: column;
-}
-
-.setting-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 0;
-  font-size: 16px;
+.setting-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding: 12px 14px;
+  text-decoration:none;
   color: var(--ink);
-  text-decoration: none;
-  transition:
-    background-color 0.15s ease,
-    transform 0.08s ease,
-    opacity 0.08s ease;
-  width: 100%;
-  border-top: 1px solid var(--border-color);
+  font-weight:700;
+  border-top: 1px solid var(--border);
 }
-.setting-item:first-child {
-  border-top: none;
+.setting-item:first-child{ border-top:none; }
+
+.setting-item svg{
+  stroke: var(--muted);
+  color: var(--muted);
 }
 
-.setting-item svg {
-  color: var(--gray-text);
-  stroke: var(--gray-text);
-}
-.setting-item:hover {
-  background: #F8F8F8;
-}
-.setting-item:active,
-.setting-item.active-touch {
-  background: #F0F0F0;
-  transform: scale(0.99);
-  opacity: 0.96;
-}
+.log-out-btn-link{ color: var(--log-out-red); }
+.log-out-btn-link svg{ stroke: var(--log-out-red); }
 
-.log-out-btn-link,
-.delete-account-btn-link {
-  font-weight: 600;
-}
-.log-out-btn-link {
-  color: var(--log-out-red);
-}
-.log-out-btn-link svg {
-  stroke: var(--log-out-red);
-}
-.log-out-btn-link:active,
-.log-out-btn-link.active-touch {
-  background-color: #FEE;
-}
-.delete-account-btn-link {
-  color: var(--delete-red);
-}
-.delete-account-btn-link svg {
-  stroke: var(--delete-red);
-}
-.delete-account-btn-link:active,
-.delete-account-btn-link.active-touch {
-  background-color: #FDD;
-}
+.delete-account-btn-link{ color: var(--delete-red); }
+.delete-account-btn-link svg{ stroke: var(--delete-red); }
 
-/* ===================================================== */
-/* 4. Desktop Layout (min-width: 768px)                  */
-/* ===================================================== */
+.setting-item:active{ opacity:.7; }
 
-@media (min-width: 768px) {
-  /* ซ่อน header บน desktop (เราใช้ desktop-back-button แทน) */
-  .header,
-  .mobile-only .chevron {
-    display: none !important;
+/* ===== desktop layout ===== */
+@media (min-width: 900px){
+  .top-actions{
+    position: fixed;           /* ให้ปุ่มอยู่ริมจอตามที่ขอ */
+    left: 0;
+    right: 0;
+    top: 0;
+    padding: 18px 22px;
+    padding-top: calc(18px + env(safe-area-inset-top));
   }
 
-  /* แสดงปุ่ม back สำหรับ desktop */
-  .desktop-back-button {
-    display: block;
-  }
-
-  .desktop-only { display: flex; }
-  .mobile-only  { display: none !important; }
-
-  .container {
+  .container{
     max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 40px;
-  }
-  .content {
-    flex-direction: row;
-    gap: 40px;
+    margin: 72px auto 40px;    /* เผื่อพื้นที่ปุ่มบน */
+    padding: 0 40px 40px;
   }
 
-  .profile-card {
-    flex: 0 0 280px;
-    align-items: flex-start;
-    text-align: left;
-    padding: 20px;
-    background: var(--white);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,.05);
-  }
-  .profile-card .avatar {
-    margin: 0 auto 15px 0;
-  }
-  .profile-card .info {
-    margin-bottom: 20px;
+  .content{
+    display:grid;
+    grid-template-columns: 320px 1fr;
+    grid-template-rows: auto auto;
+    gap: 18px 26px;
+    align-items:start;
   }
 
-  .edit-btn.desktop-only {
-    width: 100%;
-    margin-top: 0;
-    margin-bottom: 20px;
+  .profile-card{
+    grid-column:1;
+    grid-row:1;
+    align-items:flex-start;
+    text-align:left;
   }
 
-  .settings-list.desktop-only {
-    padding: 0;
-    margin-top: 0;
-    width: 100%;
-    flex-direction: column;
-    gap: 0;
-  }
-  .setting-item {
-    padding: 12px 0;
-    border-top: none;
-    width: 100%;
-    border-bottom: 1px solid var(--border-color);
-  }
-  .setting-item:last-of-type {
-    border-bottom: none;
-  }
-  .setting-item:first-of-type {
-    border-top: none;
-    border-bottom: 1px solid var(--border-color);
+  .favorites-section{
+    grid-column:2;
+    grid-row: 1 / span 2; /* favorites อยู่ขวา ยาวลงมา */
   }
 
-  .log-out-btn-link,
-  .delete-account-btn-link {
-    color: var(--ink);
-  }
-  .log-out-btn-link svg,
-  .delete-account-btn-link svg {
-    stroke: var(--gray-text);
-  }
-  .log-out-btn-link {
-    color: var(--log-out-red);
-  }
-  .log-out-btn-link svg {
-    stroke: var(--log-out-red);
-  }
-  .delete-account-btn-link {
-    color: var(--delete-red);
-  }
-  .delete-account-btn-link svg {
-    stroke: var(--delete-red);
+  .settings-list{
+    grid-column:1;
+    grid-row:2;
   }
 
-  .favorites-section {
-    flex-grow: 1;
-    padding: 0;
-  }
-
-  .fav-list.card-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-    padding-top: 15px;
+  .fav-list.card-grid{
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 18px;
   }
 }
