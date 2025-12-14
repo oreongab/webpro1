@@ -36,7 +36,7 @@ const setupMobileMenu = () => {
 };
 
 const chipCategoryMap = {
-  'Cafés & Restaurants': 'cafes', 'Temple': 'temples', 'Natural': 'natural', 'Sports': 'sport',
+  'Cafe & Restaurants': 'cafes', 'Temple': 'temples', 'Natural': 'natural', 'Sports': 'sport',
   'Art': 'art', 'Museums': 'museums', 'Markets': 'markets', 'Beaches': 'beaches',
   'Parks & Gardens': 'parks', 'Historical Attractions': 'historical', 'Mall': 'malls', 'Other': 'other'
 };

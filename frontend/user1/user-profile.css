@@ -125,7 +125,6 @@ body{
 .edit-btn:active{ opacity:.75; }
 .favorites-section{
   background: transparent;
-  display: none;
 }
 
 .fav-header{
@@ -151,7 +150,7 @@ body{
 }
 
 .view-all{
-  display:none;
+  display:inline-flex;
   align-items:center;
   gap:6px;
   text-decoration:none;

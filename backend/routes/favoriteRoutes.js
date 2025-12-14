@@ -20,7 +20,7 @@ router.get('/:userId', async (req, res) => {
             FROM favorite f
             JOIN place p USING (place_id)
             WHERE f.user_id = ?
-            ORDER BY f.favorite_id DESC
+            ORDER BY f.favorite_id 
         `;
         
         const [rows] = await db.execute(sql, [userId]);

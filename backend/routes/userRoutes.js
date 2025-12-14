@@ -57,16 +57,6 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Get all users
-router.get('/', async (req, res) => {
-    try {
-        const [rows] = await db.execute('SELECT user_id, user_name, user_email FROM user');
-        res.json({ success: true, data: rows });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
 // Get user by ID
 router.get('/:id', async (req, res) => {
     const user_id = req.params.id;

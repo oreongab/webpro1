@@ -42,9 +42,9 @@ router.get('/rank', async (req, res) => {
                 p.place_province,
                 p.opening_hours,
                 p.place_score,
-                image_path 
+                pi.image_path 
             FROM place p
-            LEFT JOIN place_images USING (place_id)
+            LEFT JOIN place_images pi USING (place_id)
             ORDER BY place_score DESC, p.place_id
         `;
         
@@ -70,7 +70,7 @@ router.get('/search', async (req, res) => {
             : 'ORDER BY p.place_id';
         
         const sql = `
-            SELECT DISTINCT 
+            SELECT  
                 p.place_id,
                 p.place_name,
                 p.place_province,
@@ -168,9 +168,9 @@ router.get('/category/:type', async (req, res) => {
                 p.place_province,
                 p.opening_hours,
                 p.place_score,
-                image_path 
+                pi.image_path 
             FROM place p
-            LEFT JOIN place_images USING (place_id)
+            LEFT JOIN place_images pi USING (place_id)
             JOIN place_category USING (place_id)
             JOIN category USING (category_id) 
             WHERE category_name = ?

@@ -59,9 +59,12 @@
     
     if (!favList) return;
 
+    if (favSection) favSection.style.display = '';
+    if (viewAllBtn) viewAllBtn.href = '../favorite/favorite.html';
+    favList.innerHTML = '';
+
     const userStr = localStorage.getItem('loggedInUser');
     if (!userStr) {
-      if (favSection) favSection.style.display = 'none';
       return;
     }
 
@@ -70,19 +73,14 @@
       const response = await fetch(`http://localhost:3000/favorites/${userData.user_id}`);
       const result = await response.json();
 
-      if (!result.success || !result.data || result.data.length === 0) {
-        if (favSection) favSection.style.display = 'none';
+      const favorites = result?.data;
+      if (!result?.success || !Array.isArray(favorites) || favorites.length === 0) {
         return;
       }
 
-      const favorites = result.data;
-
       if (favSection) favSection.style.display = 'block';
 
-      if (viewAllBtn && favorites.length > 3) {
-        viewAllBtn.style.display = 'flex';
-        viewAllBtn.href = '../favorite/favorite.html';
-      }
+      if (viewAllBtn) viewAllBtn.href = '../favorite/favorite.html';
 
       const displayFavorites = favorites.slice(0, 3);
       
@@ -115,7 +113,6 @@
       }).join('');
     } catch (error) {
       console.error('Load favorites error:', error);
-      if (favSection) favSection.style.display = 'none';
     }
   }
 

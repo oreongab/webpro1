@@ -1,4 +1,5 @@
 const chipCategoryMap = {
+  'Cafe & Restaurants': 'cafes',
   'Cafés & Restaurants': 'cafes',
   'Temple': 'temples',
   'Natural': 'natural',
