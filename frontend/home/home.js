@@ -254,7 +254,7 @@ const searchPlaces = async (query) => {
         rank: idx + 1,
         title: item.place_name,
         imageUrl: item.image_path ? `../../img_place/${item.image_path.split(/[\/\\]/).pop()}` : null,
-        openDays: item.place_province || '',
+        openDays: '',
         openHours: item.opening_hours || '',
         rating: item.place_score || 0
       }));

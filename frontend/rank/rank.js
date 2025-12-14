@@ -117,7 +117,7 @@ const renderPlaceCards = (places) => {
       img.onerror = function() { this.onerror = null; this.src = defaultImg; };
     }
 
-    node.querySelector(".card-open-days").textContent = p.place_province || "";
+    node.querySelector(".card-open-days").textContent = "";
     node.querySelector(".card-open-hours").textContent = p.opening_hours || "";
 
     const score = parseFloat(p.place_score) || 0;
